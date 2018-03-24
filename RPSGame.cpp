@@ -20,7 +20,7 @@ RPSGame::RPSGame() : winner(0), player1Error(""), player2Error("") {
 int RPSGame::RPSGamePlayer1Init(string filename) {
     ifstream fin(filename);
     if (fin.fail()) {
-        cout << "Error: There's no such file or directory, ???";//TODO : update the sentence
+        cout << "Error: There's no such file or directory, Player 1 is not exist";
         return -1;
     }
     string lineToParse;
@@ -30,7 +30,13 @@ int RPSGame::RPSGamePlayer1Init(string filename) {
     string tool;
     while (true) {
         getline(fin, lineToParse);
-        if (fin == NULL) { break; } //TODO: check where to put it
+        if (lineToParse.empty()) {
+            if(lineNum==1){
+                cout << "Error: Init file of player 1 is empty"<<endl;
+                return -1;
+            }
+            break;
+        }
         parserResult=RPSParserParseLineInit(lineToParse,X,Y,tool);
         switch(parserResult){
             case 1:
