@@ -18,7 +18,7 @@ RPSGame::RPSGame() : winner(0), player1Error(""), player2Error("") {
 }
 
 
-int RPSGame::RPSGameInitFileCheck(string fileName, int player, map<string, int> toolCounter) {
+int RPSGame::RPSGameInitFileCheck(string fileName, int player,map<string, int> toolCounter) {
 
     ifstream fin(fileName);
     if (fin.fail()) {
@@ -31,7 +31,7 @@ int RPSGame::RPSGameInitFileCheck(string fileName, int player, map<string, int> 
     int lineNum = 1;
     int parserResult;
     string tool;
-    map<int[2], string> player2BoardMap;
+    map<int[2],string> player2BoardMap;
     while (true) {
         getline(fin, lineToParse);
         if (lineToParse.empty()) {
@@ -133,51 +133,87 @@ void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<int[2], string> mapBo
         if (board[it->first[0]][it->first[1]].empty())
             board[it->first[0]][it->first[1]] = it->second;
         else {
-            RPSGameFightOnPosition(it->first[0], it->first[1], it->second);
+            RPSGameFightOnPosition(it->first[0], it->first[1], it->second, 2);
         }
     }
 }
 
 
-void RPSGame::RPSGameFightOnPosition(int X, int Y, string tool) {
-    if (tool == board[X][Y]) {}// unknown for now
-    else if (tool == "B") {
-        player1ToolCounters[board[X][Y]]++;
-        board[X][Y] = "b";
-    } else if (board[X][Y] == "B") {
-        transform(tool.begin(), tool.end(), tool.begin(), ::tolower);
-        player2ToolCounters[tool]++;
-    } else if (board[X][Y] == "F") {
-        player1ToolCounters[board[X][Y]]++;
-        transform(tool.begin(), tool.end(), tool.begin(), ::tolower);
-        board[X][Y] = tool;
-    } else if (tool == "F") {
-        player2ToolCounters["f"]++;
-    } else
-        RPSGameRPSFight(X, Y, tool);
+void RPSGame::RPSGameFightOnPosition(int X, int Y, string &attackerTool, int attackerPlayer) {
+    if (attackerTool == board[X][Y]) {}// unknown for now TODO: board char may be in lower letter
+    else if (attackerTool == "B")
+        RPSGameFightAttackerWins(X, Y, attackerTool, attackerPlayer);
+    else if (board[X][Y] == "B" || board[X][Y] == "b")
+        RPSGameFightAttackerLoses(X, Y, attackerTool, attackerPlayer);
+    else if (attackerTool == "F")
+        RPSGameFightAttackerLoses(X, Y, attackerTool, attackerPlayer);
+    else if (board[X][Y] == "F" || board[X][Y] == "f")
+        RPSGameFightAttackerWins(X, Y, attackerTool, attackerPlayer);
+    else
+        RPSGameRPSFight(X, Y, attackerTool, attackerPlayer);
 
 }
 
-void RPSGame::RPSGameRPSFight(int X, int Y, const string &tool) {
-    if (board[X][Y] == "R" && tool == "P") {
-        player1ToolCounters["R"]++;
-        board[X][Y] = "p";
-    } else if (board[X][Y] == "P" && tool == "R") {
-        player2ToolCounters["r"]++;
-    } else if (board[X][Y] == "R" && tool == "S") {
-        player2ToolCounters["s"]++;
-    } else if (board[X][Y] == "S" && tool == "R") {
-        player1ToolCounters["S"]++;
-        board[X][Y] = "r";
-    } else if (board[X][Y] == "P" && tool == "S") {
-        player1ToolCounters["P"]++;
-        board[X][Y] = "s";
-    } else if (board[X][Y] == "S" && tool == "P") {
-        player2ToolCounters["p"]++;
+void RPSGame::RPSGameRPSFight(int X, int Y, string &attackerTool, int attackerPlayer) {
+    if ((board[X][Y] == "R" || board[X][Y] == "r") && attackerTool == "P") {
+        RPSGameFightAttackerWins(X, Y, attackerTool, attackerPlayer);
+    } else if ((board[X][Y] == "P" || board[X][Y] == "p") && attackerTool == "R") {
+        RPSGameFightAttackerLoses(X, Y, attackerTool, attackerPlayer);
+    } else if ((board[X][Y] == "R" || board[X][Y] == "r") && attackerTool == "S") {
+        RPSGameFightAttackerLoses(X, Y, attackerTool, attackerPlayer);
+    } else if ((board[X][Y] == "S" || board[X][Y] == "s") && attackerTool == "R") {
+        RPSGameFightAttackerWins(X, Y, attackerTool, attackerPlayer);
+    } else if ((board[X][Y] == "P" || board[X][Y] == "p") && attackerTool == "S") {
+        RPSGameFightAttackerWins(X, Y, attackerTool, attackerPlayer);
+    } else if ((board[X][Y] == "S" || board[X][Y] == "s") && attackerTool == "P") {
+        RPSGameFightAttackerLoses(X, Y, attackerTool, attackerPlayer);
     }
 
 }
-void RPSGame:: RPSGameUpdateToolsCounter(int X, int Y,const string &tool){}
+
+void RPSGame::RPSGameFightAttackerWins(int X, int Y, string &attackerTool, int player) {
+    int pos[2] = {X, Y};
+    if (player == 1) {
+        if (player2JokerLocations.find(pos) != player2JokerLocations.end()) {
+            player2JokerLocations.erase(player2JokerLocations.find(pos));
+            player2ToolCounters["j"]++;
+        } else {
+            player2ToolCounters[board[X][Y]]++;
+        }
+    } else {
+        if (player1JokerLocations.find(pos) != player1JokerLocations.end()) {
+            player1JokerLocations.erase(player1JokerLocations.find(pos));
+            player1ToolCounters["J"]++;
+        } else {
+            player1ToolCounters[board[X][Y]]++;
+        }
+    }
+    if (player == 2)
+        transform(attackerTool.begin(), attackerTool.end(), attackerTool.begin(), ::tolower);
+    board[X][Y] = attackerTool;
+}
+
+
+void RPSGame::RPSGameFightAttackerLoses(int X, int Y, string &attackerTool, int player) {
+    int pos[2] = {X, Y};
+    if (player == 1) {
+        if (player1JokerLocations.find(pos) != player1JokerLocations.end()) {
+            player1JokerLocations.erase(player1JokerLocations.find(pos));
+            player1ToolCounters["J"]++;
+        } else {
+            player1ToolCounters[attackerTool]++;
+        }
+    } else {
+        if (player2JokerLocations.find(pos) != player2JokerLocations.end()) {
+            player2JokerLocations.erase(player2JokerLocations.find(pos));
+            player1ToolCounters["j"]++;
+        } else {
+            transform(attackerTool.begin(), attackerTool.end(), attackerTool.begin(), ::tolower);
+            player2ToolCounters[attackerTool]++;
+        }
+    }
+}
+
 
 bool RPSGame::RPSGameCheckIfPlayer1Lose() {
     if (player1ToolCounters["F"] == F)
