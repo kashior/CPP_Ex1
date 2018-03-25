@@ -27,7 +27,7 @@ int RPSGame::RPSGameInitFileCheck(string fileName, int player, map<string, int> 
     }
     string lineToParse;
     int X = 0, Y = 0;
-    bool isJoker=false;
+    bool isJoker = false;
     int lineNum = 1;
     int parserResult;
     string tool;
@@ -95,8 +95,8 @@ bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(int X, int Y, string tool, int 
     }
     player1ToolCounters[tool]--;
     board[X][Y] = tool;
-    if(isJoker){
-        int loc[2]={X,Y};
+    if (isJoker) {
+        int loc[2] = {X, Y};
         player1JokerLocations.insert(loc);
     }
     return true;
@@ -119,8 +119,8 @@ RPSGame::RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string tool, int lineN
     }
     player2ToolCounters[tool]--;
     boardMap[key] = tool;
-    if(isJoker){
-        int loc[2]={X,Y};
+    if (isJoker) {
+        int loc[2] = {X, Y};
         player2JokerLocations.insert(loc);
     }
     return true;
@@ -139,8 +139,8 @@ void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<int[2], string> mapBo
 }
 
 
-void RPSGame::RPSGameFightOnPosition(int X, int Y, const string &tool) {
-    if (tool == board[X][Y]) {}
+void RPSGame::RPSGameFightOnPosition(int X, int Y, string tool) {
+    if (tool == board[X][Y]) {}// unknown for now
     else if (tool == "B") {
         player1ToolCounters[board[X][Y]]++;
         board[X][Y] = "b";
@@ -149,8 +149,8 @@ void RPSGame::RPSGameFightOnPosition(int X, int Y, const string &tool) {
         player2ToolCounters[tool]++;
     } else if (board[X][Y] == "F") {
         player1ToolCounters[board[X][Y]]++;
+        transform(tool.begin(), tool.end(), tool.begin(), ::tolower);
         board[X][Y] = tool;
-        transform(board[X][Y].begin(), board[X][Y].end(), board[X][Y].begin(), ::tolower);
     } else if (tool == "F") {
         player2ToolCounters["f"]++;
     } else
@@ -159,10 +159,10 @@ void RPSGame::RPSGameFightOnPosition(int X, int Y, const string &tool) {
 }
 
 void RPSGame::RPSGameRPSFight(int X, int Y, const string &tool) {
-    if (board[X][Y] == "R"  && tool == "P") {
+    if (board[X][Y] == "R" && tool == "P") {
         player1ToolCounters["R"]++;
         board[X][Y] = "p";
-    } else if (board[X][Y] == "P"&& tool == "R") {
+    } else if (board[X][Y] == "P" && tool == "R") {
         player2ToolCounters["r"]++;
     } else if (board[X][Y] == "R" && tool == "S") {
         player2ToolCounters["s"]++;
@@ -177,3 +177,22 @@ void RPSGame::RPSGameRPSFight(int X, int Y, const string &tool) {
     }
 
 }
+void RPSGame:: RPSGameUpdateToolsCounter(int X, int Y,const string &tool){}
+
+bool RPSGame::RPSGameCheckIfPlayer1Lose() {
+    if (player1ToolCounters["F"] == F)
+        return true;
+    return player1ToolCounters["R"] == R && player1ToolCounters["P"] == P
+           && player1ToolCounters["S"] == S && player1ToolCounters["B"] == B && player1ToolCounters["J"] == J;
+}
+
+bool RPSGame::RPSGameCheckIfPlayer2Lose() {
+
+    if (player2ToolCounters["f"] == F)
+        return true;
+    return player2ToolCounters["r"] == R && player2ToolCounters["p"] == P
+           && player2ToolCounters["s"] == S && player2ToolCounters["b"] == B && player2ToolCounters["j"] == J;
+
+}
+
+

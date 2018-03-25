@@ -56,8 +56,11 @@ public:
     bool RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string tool, int lineNum, map<int[2], string> &boardMap,
                                                 const bool &isJoker);
     void RPSGameMergePlayer2BoardWithPlayer1Board(map<int[2], string> mapBoard);
-    void RPSGameFightOnPosition(int X, int Y, const string &tool);
+    void RPSGameFightOnPosition(int X, int Y, string tool);
     void RPSGameRPSFight(int X, int Y, const string &tool);
+    bool RPSGameCheckIfPlayer1Lose();
+    bool RPSGameCheckIfPlayer2Lose();
+    void  RPSGameUpdateToolsCounter(int X, int Y,const string &tool);
 
 
 
