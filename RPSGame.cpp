@@ -74,7 +74,9 @@ int RPSGame::RPSGameInitFileCheck(string fileName, int player, map<string, int> 
              endl;
         return lineNum - 1;
     }
-
+    if (player == 2){
+        RPSGameMergePlayer2BoardWithPlayer1Board(player2BoardMap);
+    }
 
     return 0;
 }
@@ -113,3 +115,19 @@ bool RPSGame::RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string tool, int 
     return true;
 }
 
+
+void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<int[2], string> mapBoard){
+    map<int[2], string>::iterator it;
+    for ( it = mapBoard.begin() ; it != mapBoard.end() ; it++){
+        if (board[it->first[0]][it->first[1]].empty())
+            board[it->first[0]][it->first[1]] = it->second;
+        else {
+            RPSGameFightOnPosition(it->first[0], it->first[1], it->second);
+        }
+    }
+}
+
+
+void RPSGame::RPSGameFightOnPosition(int X, int Y, const string &tool) {
+
+}

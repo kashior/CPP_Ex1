@@ -54,8 +54,9 @@ public:
 
     bool RPSGameUpdateBoardPlayer1InitStage(int X, int Y, string tool, int lineNum);
     bool RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string tool, int lineNum, map<int[2], string>& boardMap);
+    void RPSGameMergePlayer2BoardWithPlayer1Board(map<int[2], string> mapBoard);
+    void RPSGameFightOnPosition(int X, int Y, const string &tool);
 
-    
 
 
 
