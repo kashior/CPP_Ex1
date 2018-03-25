@@ -38,7 +38,7 @@ int RPSParser3TokensInitLine(vector<string> tokens,int& X, int& Y, string& tool)
 bool RPSParserCheckIfPositionValid(string X, string Y);
 int RPSParser4TokensInitLine(vector<string> tokens, int &X, int &Y, string &tool);
 int RPSParser4TokensMoveLine(move& newMove, vector<string> tokens);
-int RPSParser8TokensMoveLine(move &newMove, vector<string> tokens);
+int RPSParser8TokensMoveLine(move& newMove, vector<string> tokens);
 
 
 #endif //OS_EX1_RPSPARER_H

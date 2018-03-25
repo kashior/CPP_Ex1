@@ -41,7 +41,7 @@ int RPSGame::RPSGameInitFileCheck(string fileName, int player, map<string, int> 
             }
             break;
         }
-        parserResult = RPSParserParseLineInit(lineToParse, X, Y, tool, <#initializer#>);
+        parserResult = RPSParserParseLineInit(lineToParse, X, Y, tool, isJoker);
         switch (parserResult) {
             case 1:
                 cout << "Error: Invalid number of arguments in line " << lineNum << " of player "
@@ -57,11 +57,11 @@ int RPSGame::RPSGameInitFileCheck(string fileName, int player, map<string, int> 
                 return lineNum;
             default:
                 if (player == 1) {
-                    if (!RPSGameUpdateBoardPlayer1InitStage(X, Y, tool, lineNum, <#initializer#>)) {
+                    if (!RPSGameUpdateBoardPlayer1InitStage(X, Y, tool, lineNum, isJoker)) {
                         return lineNum;
                     }
                 } else {
-                    if (!RPSGameUpdateBoardPlayer2InitStage(X, Y, tool, lineNum, player2BoardMap, <#initializer#>)) {
+                    if (!RPSGameUpdateBoardPlayer2InitStage(X, Y, tool, lineNum, player2BoardMap, isJoker)) {
                         return lineNum;
                     }
                 }
