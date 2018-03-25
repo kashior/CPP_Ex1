@@ -4,14 +4,16 @@
 #include "RPSParer.h"
 
 
-int RPSParserParseLineInit(string line, int &X, int &Y, string &tool) {
+int RPSParserParseLineInit(string line, int &X, int &Y, string &tool, bool &isJoker) {
 
     istringstream iss(line);
     vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
     if (tokens.size() > 4 || tokens.size() < 3) {
         return 1;
-    } else if (tokens.size() == 3)
+    }
+    if (tokens.size() == 3)
         return RPSParser3TokensInitLine(tokens, X, Y, tool);
+    isJoker=true;
     return RPSParser4TokensInitLine(tokens, X, Y, tool);
 }
 
@@ -19,9 +21,9 @@ int RPSParser3TokensInitLine(vector<string> tokens, int &X, int &Y, string &tool
     if (tokens[0] != "R" && tokens[0] != "P" && tokens[0] != "S" && tokens[0] != "F" &&
         tokens[0] != "B")
         return 2;
-    else {
-        tool = tokens[0];
-    }
+
+    tool = tokens[0];
+
     if (!RPSParserCheckIfPositionValid(tokens[1], tokens[2]))
         return 3;
     X = stoi(tokens[1]);
@@ -38,7 +40,7 @@ int RPSParser4TokensInitLine(vector<string> tokens, int &X, int &Y, string &tool
     Y = stoi(tokens[2]);
     if (tokens[3] != "R" && tokens[3] != "P" && tokens[3] != "S" && tokens[3] != "B")
         return 2;
-    tool = "J_" + tokens[3];
+    tool = tokens[3];
     return 0; // Success
 
 }
@@ -51,7 +53,7 @@ int RPSParserParseLineMove(const string &line, move &newMove) {
         return 1;
     if (tokens.size() == 4)
         return RPSParser4TokensMoveLine(newMove, tokens);
-    return RPSParser8TokensMoveLine(newMove,tokens);
+    return RPSParser8TokensMoveLine(newMove, tokens);
 }
 
 
