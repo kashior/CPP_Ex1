@@ -1,7 +1,7 @@
 
 
-#ifndef OS_EX1_RPSGAME_H
-#define OS_EX1_RPSGAME_H
+#ifndef RPSGAME_H
+#define RPSGAME_H
 
 #include <iostream>
 #include <map>
@@ -31,8 +31,7 @@ class RPSGame {
 //    int player2Tools[6] = {};
     map<string, int> player1ToolCounters;
     map<string, int> player2ToolCounters;
-
-    map<int[], string> initCheckPlayer2;
+    map<int[2], string> initCheckPlayer2;
 //    bool player1Illegal;
 //    bool player2Illegal;
     string player1Error;
@@ -42,6 +41,7 @@ class RPSGame {
 public:
 
     RPSGame();
+
 /**
  *
  * @param filename

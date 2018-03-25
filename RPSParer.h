@@ -1,10 +1,15 @@
+#ifndef RPSPARSER_H
+#define RPSPARSER_H
+
 #include <string>
+#include <vector>
+#include <sstream>
 #include "RPSGame.h"
+
+
+
+
 using namespace std;
-
-#ifndef OS_EX1_RPSPARER_H
-#define OS_EX1_RPSPARER_H
-
 
 /**
  *

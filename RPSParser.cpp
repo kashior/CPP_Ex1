@@ -1,5 +1,6 @@
-#include <sstream>
-#include <vector>
+
+
+#include <iterator>
 #include "RPSParer.h"
 
 int RPSParserParseLineInit(string line, int &X, int &Y, string &tool) {
