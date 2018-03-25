@@ -31,7 +31,7 @@ class RPSGame {
 //    int player2Tools[6] = {};
     map<string, int> player1ToolCounters;
     map<string, int> player2ToolCounters;
-    map<int[2], string> initCheckPlayer2;
+
 //    bool player1Illegal;
 //    bool player2Illegal;
     string player1Error;
@@ -50,10 +50,12 @@ public:
  * 0  - if the file is valid
  * (1-num_of_lines_in_file) - the line there was an error
  */
-    int RPSGamePlayer1Init(string filename);
+    int RPSGameInitFileCheck(string fileName, int player, map<string, int> toolCounter);
 
-    bool RPSGameUpdateBoardInitStage(int X, int Y, string tool, int lineNum);
+    bool RPSGameUpdateBoardPlayer1InitStage(int X, int Y, string tool, int lineNum);
+    bool RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string tool, int lineNum, map<int[2], string>& boardMap);
 
+    
 
 
 

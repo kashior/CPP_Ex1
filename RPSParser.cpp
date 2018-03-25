@@ -52,6 +52,4 @@ bool RPSParserCheckIfPositionValid(string X, string Y) {
     }
     catch (invalid_argument) { return false; }
     catch (out_of_range) { return false; }
-
-
 }
