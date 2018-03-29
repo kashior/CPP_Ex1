@@ -5,6 +5,10 @@
 
 int main() {
     RPSGame newGame;
+    newGame.RPSGameInitFileCheck("player1.rps_board",1,newGame.player1ToolCounters);
+    newGame.RPSGameInitFileCheck("player2.rps_board",2,newGame.player2ToolCounters);
+    cout << newGame.board[0][4] << endl;
+
 
 
 

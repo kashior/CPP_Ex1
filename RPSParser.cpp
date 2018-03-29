@@ -96,8 +96,8 @@ int RPSParser8TokensMoveLine(Move &newMove, vector<string> tokens) {
 
 bool RPSParserCheckIfPositionValid(string X, string Y) {
     try {
-        int posX = stoi(X)-1;
-        int posY = stoi(Y)-1;
+        int posX = stoi(X);
+        int posY = stoi(Y);
         return !(posX < 1 || posX > M || posY < 1 || posY > N);
 
     }

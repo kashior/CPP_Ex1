@@ -35,17 +35,18 @@ struct Position {
 
 class RPSGame {
 
+
+
+public:
     string board[M][N] = {};
-    map<string, int> player1ToolCounters;
-    map<string, int> player2ToolCounters;
+
     set<Position> player1JokerLocations;
     set<Position> player2JokerLocations;
     string player1Error;
     string player2Error;
     int winner;
-
-public:
-
+    map<string, int> player1ToolCounters;
+    map<string, int> player2ToolCounters;
     RPSGame();
 
 
@@ -57,12 +58,12 @@ public:
  * 0  - if the file is valid
  * (1-num_of_lines_in_file) - the line there was an error
  */
-    int RPSGameInitFileCheck(string fileName, int player, map<string, int> toolCounter);
+    int RPSGameInitFileCheck(string fileName, int player, map<string, int>& toolCounter);
 
     bool RPSGameUpdateBoardPlayer1InitStage(int X, int Y, string tool, int lineNum, const bool &isJoker);
 
     bool
-    RPSGameUpdateBoardPlayer2InitStage(int X, int Y, const string &tool, int lineNum, map<Position, string> &boardMap,
+    RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string &tool, int lineNum, map<Position, string> &boardMap,
                                        const bool &isJoker);
 
     void RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> &mapBoard);
@@ -82,6 +83,10 @@ public:
     void RPSGameFightAttackerWins(Move &newMove);
 
     void RPSGameFightAttackerLoses(Move &newMove);
+
+    int RPSGameMoveFileCheck(string fileName1, string fileName2);
+
+    int* RPSGameCheckIfMoveIsValid(int parseResult, int player, Move& curMove, int lineNum);
 
 
 };
