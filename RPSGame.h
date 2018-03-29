@@ -8,19 +8,13 @@
 #include <string>
 #include <fstream>
 #include <set>
-#include "RPSParer.h"
+#include "RPSParser.h"
+#include <algorithm>
 
 using namespace std;
 
 
-#define M 10
-#define N 10
-#define R 2
-#define P 5
-#define S 1
-#define J 2
-#define B 2
-#define F 1
+
 
 struct Position {
     int X;
@@ -73,17 +67,21 @@ public:
 
     void RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> &mapBoard);
 
-    void RPSGameFightOnPosition(int X, int Y, string &attackerTool, int attackerPlayer);
+    void RPSGameSetMoveOnBoard(Move &newMove);
 
-    void RPSGameRPSFight(int X, int Y, string &attackerTool, int attackerPlayer);
+    void RPSGameFightOnPosition(Move &newMove);
+
+    void RPSGameRemoveBothPiecesFromGame(Move &newMove);
+
+    void RPSGameRPSFight(Move &newMove);
 
     bool RPSGameCheckIfPlayer1Lose();
 
     bool RPSGameCheckIfPlayer2Lose();
 
-    void RPSGameFightAttackerWins(int X, int Y, string &attackerTool, int player);
+    void RPSGameFightAttackerWins(Move &newMove);
 
-    void RPSGameFightAttackerLoses(int X, int Y, string &attackerTool, int player);
+    void RPSGameFightAttackerLoses(Move &newMove);
 
 
 };

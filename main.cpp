@@ -1,6 +1,7 @@
-#include <iostream>
-#include <fstream>
+
+
 #include "RPSGame.h"
+
 
 int main() {
     RPSGame newGame;
