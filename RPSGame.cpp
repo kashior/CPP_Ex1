@@ -31,7 +31,7 @@ int RPSGame::RPSGameInitFileCheck(string fileName, int player,map<string, int> t
     int lineNum = 1;
     int parserResult;
     string tool;
-    map<int[2],string> player2BoardMap;
+    map<Position,string> player2BoardMap;
     while (true) {
         getline(fin, lineToParse);
         if (lineToParse.empty()) {
@@ -96,7 +96,7 @@ bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(int X, int Y, string tool, int 
     player1ToolCounters[tool]--;
     board[X][Y] = tool;
     if (isJoker) {
-        int loc[2] = {X, Y};
+        Position loc = {X, Y};
         player1JokerLocations.insert(loc);
     }
     return true;
@@ -104,9 +104,9 @@ bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(int X, int Y, string tool, int 
 
 
 bool
-RPSGame::RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string tool, int lineNum, map<int[2], string> &boardMap,
+RPSGame::RPSGameUpdateBoardPlayer2InitStage(int X, int Y, const string& tool, int lineNum, map<Position, string> &boardMap,
                                             const bool &isJoker) {
-    int key[2] = {X, Y};
+    Position key = {X, Y};
     if (boardMap.find(key) != boardMap.end()) { //position already contain piece
         cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
              " of player 2's file" << endl;
@@ -120,20 +120,20 @@ RPSGame::RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string tool, int lineN
     player2ToolCounters[tool]--;
     boardMap[key] = tool;
     if (isJoker) {
-        int loc[2] = {X, Y};
+        Position loc = {X, Y};
         player2JokerLocations.insert(loc);
     }
     return true;
 }
 
 
-void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<int[2], string> mapBoard) {
-    map<int[2], string>::iterator it;
+void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> mapBoard) {
+    map<Position, string>::iterator it;
     for (it = mapBoard.begin(); it != mapBoard.end(); it++) {
-        if (board[it->first[0]][it->first[1]].empty())
-            board[it->first[0]][it->first[1]] = it->second;
+        if (board[it->first.X][it->first.Y].empty())
+            board[it->first.X][it->first.Y] = it->second;
         else {
-            RPSGameFightOnPosition(it->first[0], it->first[1], it->second, 2);
+            RPSGameFightOnPosition(it->first.X, it->first.Y, it->second, 2);
         }
     }
 }
@@ -172,7 +172,7 @@ void RPSGame::RPSGameRPSFight(int X, int Y, string &attackerTool, int attackerPl
 }
 
 void RPSGame::RPSGameFightAttackerWins(int X, int Y, string &attackerTool, int player) {
-    int pos[2] = {X, Y};
+    Position pos = {X, Y};
     if (player == 1) {
         if (player2JokerLocations.find(pos) != player2JokerLocations.end()) {
             player2JokerLocations.erase(player2JokerLocations.find(pos));
@@ -195,7 +195,7 @@ void RPSGame::RPSGameFightAttackerWins(int X, int Y, string &attackerTool, int p
 
 
 void RPSGame::RPSGameFightAttackerLoses(int X, int Y, string &attackerTool, int player) {
-    int pos[2] = {X, Y};
+    Position pos = {X, Y};
     if (player == 1) {
         if (player1JokerLocations.find(pos) != player1JokerLocations.end()) {
             player1JokerLocations.erase(player1JokerLocations.find(pos));

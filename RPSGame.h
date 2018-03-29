@@ -22,18 +22,17 @@ using namespace std;
 #define B 2
 #define F 1
 
-
+struct Position{
+    int X;
+    int Y;
+};
 class RPSGame {
 
-    static int player1Points;
-    static int player2Points;
     string board[M][N] = {};
     map<string, int> player1ToolCounters;
     map<string, int> player2ToolCounters;
-    set<int[2]> player1JokerLocations;
-    set<int[2]> player2JokerLocations;
-//    bool player1Illegal;
-//    bool player2Illegal;
+    set<Position> player1JokerLocations;
+    set<Position> player2JokerLocations;
     string player1Error;
     string player2Error;
     int winner;
@@ -41,6 +40,7 @@ class RPSGame {
 public:
 
     RPSGame();
+
 
 /**
  *
@@ -53,9 +53,9 @@ public:
     int RPSGameInitFileCheck(string fileName, int player, map<string, int> toolCounter);
 
     bool RPSGameUpdateBoardPlayer1InitStage(int X, int Y, string tool, int lineNum, const bool &isJoker);
-    bool RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string tool, int lineNum, map<int[2], string> &boardMap,
+    bool RPSGameUpdateBoardPlayer2InitStage(int X, int Y, const string& tool, int lineNum, map<Position, string> &boardMap,
                                                 const bool &isJoker);
-    void RPSGameMergePlayer2BoardWithPlayer1Board(map<int[2], string> mapBoard);
+    void RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> mapBoard);
     void RPSGameFightOnPosition(int X, int Y, string &attackerTool, int attackerPlayer);
     void RPSGameRPSFight(int X, int Y, string &attackerTool, int attackerPlayer);
     bool RPSGameCheckIfPlayer1Lose();
