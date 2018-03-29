@@ -1,18 +1,9 @@
 #include <iostream>
 #include <fstream>
+#include "RPSGame.h"
 
 int main() {
-//    std::cout << "Hello, World!" << std::endl;
-//    return 0;
-//    std::ifstream fin("simpleBattleBoard.txt");
-//    std::string lineToParse;
-//    while (true) {
-//        getline(fin, lineToParse);
-//        if (lineToParse.empty())
-//            break;
-//        if (fin == NULL) { break; }
-//    }
-    std::cout << "Hey"<<std::endl;
+RPSGame newGame;
 
 //#include <iostream>
 //#include <string>

@@ -4,6 +4,7 @@
 #include "RPSParer.h"
 
 
+
 int RPSParserParseLineInit(string line, int &X, int &Y, string &tool, bool &isJoker) {
 
     istringstream iss(line);
@@ -16,6 +17,8 @@ int RPSParserParseLineInit(string line, int &X, int &Y, string &tool, bool &isJo
     isJoker=true;
     return RPSParser4TokensInitLine(tokens, X, Y, tool);
 }
+
+
 
 int RPSParser3TokensInitLine(vector<string> tokens, int &X, int &Y, string &tool) {
     if (tokens[0] != "R" && tokens[0] != "P" && tokens[0] != "S" && tokens[0] != "F" &&
@@ -32,6 +35,7 @@ int RPSParser3TokensInitLine(vector<string> tokens, int &X, int &Y, string &tool
 }
 
 
+
 int RPSParser4TokensInitLine(vector<string> tokens, int &X, int &Y, string &tool) {
     if (tokens[0] != "J") return 1; //invalid line
     if (!RPSParserCheckIfPositionValid(tokens[1], tokens[2]))
@@ -46,7 +50,7 @@ int RPSParser4TokensInitLine(vector<string> tokens, int &X, int &Y, string &tool
 }
 
 
-int RPSParserParseLineMove(const string &line, move &newMove) {
+int RPSParserParseLineMove(const string &line, Move &newMove) {
     istringstream iss(line);
     vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
     if (tokens.size() != 8 && tokens.size() != 4)
@@ -57,7 +61,7 @@ int RPSParserParseLineMove(const string &line, move &newMove) {
 }
 
 
-int RPSParser4TokensMoveLine(move &newMove, vector<string> tokens) {
+int RPSParser4TokensMoveLine(Move &newMove, vector<string> tokens) {
     if (RPSParserCheckIfPositionValid(tokens[0], tokens[1]) && RPSParserCheckIfPositionValid(tokens[2], tokens[3])) {
         newMove.fromX = stoi(tokens[0]);
         newMove.fromY = stoi(tokens[1]);
@@ -66,10 +70,10 @@ int RPSParser4TokensMoveLine(move &newMove, vector<string> tokens) {
         return 0;
     }
     return 3;
-
 }
 
-int RPSParser8TokensMoveLine(move &newMove, vector<string> tokens) {
+
+int RPSParser8TokensMoveLine(Move &newMove, vector<string> tokens) {
     if (RPSParserCheckIfPositionValid(tokens[0], tokens[1]) && RPSParserCheckIfPositionValid(tokens[2], tokens[3])) {
         newMove.fromX = stoi(tokens[0]);
         newMove.fromY = stoi(tokens[1]);
@@ -90,6 +94,7 @@ int RPSParser8TokensMoveLine(move &newMove, vector<string> tokens) {
 }
 
 
+
 bool RPSParserCheckIfPositionValid(string X, string Y) {
     try {
         int posX = stoi(X);
@@ -100,3 +105,6 @@ bool RPSParserCheckIfPositionValid(string X, string Y) {
     catch (invalid_argument) { return false; }
     catch (out_of_range) { return false; }
 }
+
+
+
