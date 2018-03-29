@@ -107,7 +107,7 @@ bool
 RPSGame::RPSGameUpdateBoardPlayer2InitStage(int X, int Y, const string& tool, int lineNum, map<Position, string> &boardMap,
                                             const bool &isJoker) {
     Position key = {X, Y};
-    if (boardMap.find(key) != boardMap.end()) { //position already contain piece
+    if (boardMap.find(key)!= boardMap.end()) { //position already contain piece
         cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
              " of player 2's file" << endl;
         return false;
@@ -118,7 +118,7 @@ RPSGame::RPSGameUpdateBoardPlayer2InitStage(int X, int Y, const string& tool, in
         return false;
     }
     player2ToolCounters[tool]--;
-    boardMap[key] = tool;
+    boardMap.emplace(key,tool);
     if (isJoker) {
         Position loc = {X, Y};
         player2JokerLocations.insert(loc);
@@ -127,7 +127,7 @@ RPSGame::RPSGameUpdateBoardPlayer2InitStage(int X, int Y, const string& tool, in
 }
 
 
-void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> mapBoard) {
+void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string>& mapBoard) {
     map<Position, string>::iterator it;
     for (it = mapBoard.begin(); it != mapBoard.end(); it++) {
         if (board[it->first.X][it->first.Y].empty())

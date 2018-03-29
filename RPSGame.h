@@ -22,10 +22,23 @@ using namespace std;
 #define B 2
 #define F 1
 
-struct Position{
+struct Position {
     int X;
     int Y;
+
+    bool operator<(const Position &rhs) const {
+        if (X < rhs.X)
+            return true;
+        else if (X > rhs.X)
+            return false;
+        return Y < rhs.Y;
+    }
+
+    bool operator==(const Position &rhs) const {
+        return X == rhs.X && Y == rhs.Y;
+    }
 };
+
 class RPSGame {
 
     string board[M][N] = {};
@@ -53,18 +66,24 @@ public:
     int RPSGameInitFileCheck(string fileName, int player, map<string, int> toolCounter);
 
     bool RPSGameUpdateBoardPlayer1InitStage(int X, int Y, string tool, int lineNum, const bool &isJoker);
-    bool RPSGameUpdateBoardPlayer2InitStage(int X, int Y, const string& tool, int lineNum, map<Position, string> &boardMap,
-                                                const bool &isJoker);
-    void RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> mapBoard);
+
+    bool
+    RPSGameUpdateBoardPlayer2InitStage(int X, int Y, const string &tool, int lineNum, map<Position, string> &boardMap,
+                                       const bool &isJoker);
+
+    void RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> &mapBoard);
+
     void RPSGameFightOnPosition(int X, int Y, string &attackerTool, int attackerPlayer);
+
     void RPSGameRPSFight(int X, int Y, string &attackerTool, int attackerPlayer);
+
     bool RPSGameCheckIfPlayer1Lose();
+
     bool RPSGameCheckIfPlayer2Lose();
-    void RPSGameFightAttackerWins(int X, int Y,string &attackerTool, int player);
-    void RPSGameFightAttackerLoses(int X, int Y,string &attackerTool, int player);
 
+    void RPSGameFightAttackerWins(int X, int Y, string &attackerTool, int player);
 
-
+    void RPSGameFightAttackerLoses(int X, int Y, string &attackerTool, int player);
 
 
 };
