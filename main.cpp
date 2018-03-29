@@ -3,7 +3,9 @@
 #include "RPSGame.h"
 
 int main() {
-RPSGame newGame;
+    RPSGame newGame;
+
+
 
 //#include <iostream>
 //#include <string>
