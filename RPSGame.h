@@ -84,10 +84,13 @@ public:
 
     void RPSGameFightAttackerLoses(Move &newMove);
 
-    int RPSGameMoveFileCheck(string fileName1, string fileName2);
+    int RPSGameMoveFileCheck(string fileName1, string fileName2, int &linePlayer1, int &linePlayer2);
 
-    int* RPSGameCheckIfMoveIsValid(int parseResult, int player, Move& curMove, int lineNum);
+    bool RPSGameCheckIfMoveIsValid(int parseResult, int player, Move& curMove, int lineNum);
 
+    bool RPSGameIsPositionContainsPlayers1Piece(int fromX, int fromY, int toX, int toY, int lineNum);
+
+    bool RPSGameIsPositionContainsPlayers2Piece(int fromX, int fromY, int toX, int toY, int lineNum);
 
 };
 

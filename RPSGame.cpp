@@ -330,15 +330,15 @@ bool RPSGame::RPSGameCheckIfPlayer2Lose() {
 
 }
 
-int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2) {
+int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int lineNum) {
 
     bool EOFile1=false;
     bool EOFile2=false;
-    int lineNum=1;
+    lineNum = 1;
     ifstream player1File(fileName1);
     ifstream player2File(fileName2);
     if (player1File.fail() && player2File.fail()) {
-        return 0;// both files does not exist
+        return 0;// both files does not exist - tie (need to write output message)
     }
     else if(player1File.fail()){
         EOFile1=true;
@@ -348,88 +348,103 @@ int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2) {
     }
     string lineToParse;
     int parseResult;
+    int validationResult;
     Move curMove;
-    while(!EOFile1 || !EOFile2) {
+    while(!EOFile1 || !EOFile2) { //while at least one of the files did not end
+        if (!EOFile1){ //player 1's file not ended
             getline(player1File, lineToParse);
             if (lineToParse.empty())
                 EOFile1 = true;
             else {
                 parseResult = RPSParserParseLineMove(lineToParse, curMove);
-                RPSGameCheckIfMoveIsValid(parseResult,1,curMove,lineNum);
-
-
-
-
+                if (!RPSGameCheckIfMoveIsValid(parseResult,1,curMove,lineNum)){ //if the line move not valid
+                    return 1; // "bad moves input file for player 1 line lineNum"
+                }
+                // otherwise the move was set
+            }
+        }
+        if (!EOFile2){ // player 2's file not ended
+            getline(player2File, lineToParse);
+            if (lineToParse.empty())
+                EOFile2 = true;
+            else {
+                /////////////////////////////////////////////////////////////////////////////////
             }
         }
 
     }
     return 0;
 }
-int * RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, Move& curMove, int lineNum){
-    int resArray[2];
+
+
+bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, Move& curMove, int lineNum){
 
     switch (parseResult) {
+
         case 1:
             cout << "Error: Invalid number of arguments in line " << lineNum << " of player "
                  << player << "'s file" << endl;
-            resArray[0] = player;
-            resArray[1] = lineNum;
-            return resArray;
+            return false;
+
         case 2:
             cout << "Error: Invalid piece argument in line " << lineNum << " of player "
                  << player << "'s file" << endl;
-            resArray[0] = player;
-            resArray[1] = lineNum;
-            return resArray;
+            return false;
+
         case 3:
             cout << "Error: Invalid position on board in line " << lineNum << " of player "
                  << player << "'s file" << endl;
-            resArray[0] = player;
-            resArray[1] = lineNum;
-            return resArray;
+            return false;
+
         default:
             if (player == 1) {
-                if((board[curMove.fromX][curMove.fromY]!="R" && board[curMove.fromX][curMove.fromY]!="P" &&
-                        board[curMove.fromX][curMove.fromY]!="S" && board[curMove.fromX][curMove.fromY]!="F") ||
-                   (board[curMove.toX][curMove.toY]=="R"|| board[curMove.toX][curMove.toY]=="P" ||
-                           board[curMove.toX][curMove.toY]=="S" || board[curMove.toX][curMove.toY]=="F" ||
-                           board[curMove.toX][curMove.toY]=="B")) {
-                    cout << "Error: Illegal move in line "<< lineNum << "of player 1's file" << endl;
-                    resArray[0] = 1;
-                    resArray[1] = lineNum;
-                    return resArray;
+                if (RPSGameIsPositionContainsPlayers1Piece(curMove.fromX, curMove.fromY, curMove.toX, curMove.toY, lineNum)){
+                    return false; //move is not valid
                 }
-                curMove.tool=board[curMove.fromX][curMove.fromY];
-                curMove.player=1;
-                Position pos={curMove.fromX,curMove.fromY};
-                if(player1JokerLocations.find(pos)!=player1JokerLocations.end())
+                //else update curMove
+                curMove.tool = board[curMove.fromX][curMove.fromY];
+                curMove.player = 1;
+                Position pos = {curMove.fromX, curMove.fromY};
+                if ( player1JokerLocations.find(pos)!=player1JokerLocations.end() )
                     curMove.isJoker=true;
                 RPSGameSetMoveOnBoard(curMove);
-            } else {
-                if((board[curMove.fromX][curMove.fromY]!="r" && board[curMove.fromX][curMove.fromY]!="p" &&
-                    board[curMove.fromX][curMove.fromY]!="s" && board[curMove.fromX][curMove.fromY]!="f") ||
-                   (board[curMove.toX][curMove.toY]=="r"|| board[curMove.toX][curMove.toY]=="p" ||
-                    board[curMove.toX][curMove.toY]=="s" || board[curMove.toX][curMove.toY]=="f" ||
-                    board[curMove.toX][curMove.toY]=="b")) {
-                    cout << "Error: Illegal move in line "<< lineNum << "of player 2's file" << endl;
-                    resArray[0] = 2;
-                    resArray[1] = lineNum;
-                    return resArray;
+            } else { //player == 2
+                if (RPSGameIsPositionContainsPlayers2Piece(curMove.fromX, curMove.fromY, curMove.toX, curMove.toY, lineNum)){
+                    return false;
                 }
-                curMove.tool=board[curMove.fromX][curMove.fromY];
+                curMove.tool = board[curMove.fromX][curMove.fromY];
                 transform(curMove.tool.begin(),curMove.tool.end(), curMove.tool.begin(), ::tolower);
-                curMove.player=2;
-                Position pos={curMove.fromX,curMove.fromY};
-                if(player2JokerLocations.find(pos)!=player2JokerLocations.end())
+                curMove.player = 2;
+                Position pos = {curMove.fromX,curMove.fromY};
+                if (player2JokerLocations.find(pos)!=player2JokerLocations.end())
                     curMove.isJoker=true;
                 RPSGameSetMoveOnBoard(curMove);
             }
     }
-    lineNum++;
-    return 0;
-
+    return true;
 }
 
 
+bool RPSGame::RPSGameIsPositionContainsPlayers1Piece(int fromX, int fromY, int toX, int toY, int lineNum){
+    if((board[fromX][fromY]!="R" && board[fromX][fromY]!="P" &&
+        board[fromX][fromY]!="S" && board[fromX][fromY]!="F") ||
+       (board[toX][toY]=="R"|| board[toX][toY]=="P" ||
+        board[toX][toY]=="S" || board[toX][toY]=="F" ||
+        board[toX][toY]=="B")) {
+        cout << "Error: Illegal move in line " << lineNum << "of player 1's file" << endl;
+        return true;
+    }
+    return false;
+}
+
+
+bool RPSGame::RPSGameIsPositionContainsPlayers2Piece(int fromX, int fromY, int toX, int toY, int lineNum){
+    if((board[fromX][fromY]!="r" && board[fromX][fromY]!="p" && board[fromX][fromY]!="s" && board[fromX][fromY]!="f")
+       || (board[toX][toY]=="r"|| board[toX][toY]=="p" || board[toX][toY]=="s" || board[toX][toY]=="f"
+           || board[toX][toY]=="b")) {
+        cout << "Error: Illegal move in line "<< lineNum << "of player 2's file" << endl;
+        return true;
+    }
+    return false; //all good
+}
 
