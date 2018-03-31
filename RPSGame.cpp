@@ -330,6 +330,22 @@ bool RPSGame::RPSGameCheckIfPlayer2Lose() {
 
 }
 
+
+
+
+/**
+ * Reads both moves files of the players simultaneously, begins with player 1's file.
+ * It parses each line in a time, checks if it is a valid move, and if it is valid, sets the move on the game
+ * board.
+ *
+ * @param fileName1 - player 1's moves file
+ * @param fileName2 - player 2's moves file
+ * @param lineNum - if there will be an error in one of the files, it will be in line number lineNum
+ * @return 0 - if both files are not exist, of if both were read without any errors
+ *         1 - if there was an error in player 1's file
+ *         2 - if there was an error in player 2's file
+ *
+ */
 int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int lineNum) {
 
     bool EOFile1=false;
@@ -338,6 +354,7 @@ int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int lineNu
     ifstream player1File(fileName1);
     ifstream player2File(fileName2);
     if (player1File.fail() && player2File.fail()) {
+        cout << "Both moves files don't exist. It's a tie!" << endl;
         return 0;// both files does not exist - tie (need to write output message)
     }
     else if(player1File.fail()){
@@ -350,34 +367,109 @@ int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int lineNu
     int parseResult;
     int validationResult;
     Move curMove;
-    while(!EOFile1 || !EOFile2) { //while at least one of the files did not end
+    while(!EOFile1 || !EOFile2) {//while at least one of the files did not end
+
+        curMove.joker_X = -1; //reset this field, -1 is invalid position on board
+
         if (!EOFile1){ //player 1's file not ended
             getline(player1File, lineToParse);
             if (lineToParse.empty())
-                EOFile1 = true;
+                EOFile1 = true; //player 1's file ended
             else {
                 parseResult = RPSParserParseLineMove(lineToParse, curMove);
                 if (!RPSGameCheckIfMoveIsValid(parseResult,1,curMove,lineNum)){ //if the line move not valid
                     return 1; // "bad moves input file for player 1 line lineNum"
                 }
+                if (curMove.joker_X != -1){ //the current move line contains a change of a joker
+                    if (!RPSGameCheckIfChangeJokerPieceCommandIsValid(curMove)){
+                        RPSGamePrintErrorMessageBadChangeOfJokerPiece(lineNum, curMove); //print error message to screen
+                        return 1; // "bad moves input file for player 1 line lineNum"
+                    }
+                }
                 // otherwise the move was set
             }
         }
+        curMove.joker_X = -1;
+
         if (!EOFile2){ // player 2's file not ended
             getline(player2File, lineToParse);
             if (lineToParse.empty())
                 EOFile2 = true;
             else {
-                /////////////////////////////////////////////////////////////////////////////////
+                parseResult = RPSParserParseLineMove(lineToParse, curMove);
+                if (!RPSGameCheckIfMoveIsValid(parseResult, 2, curMove, lineNum)){ //if the line move not valid
+                    return 2; // "bad moves input file for player 2 line lineNum"
+                }
+                if (curMove.joker_X != -1){ //the current move line contains a change of a joker
+                    if (!RPSGameCheckIfChangeJokerPieceCommandIsValid(curMove)){
+                        RPSGamePrintErrorMessageBadChangeOfJokerPiece(lineNum, curMove); //print error message to screen
+                        return 2; // "bad moves input file for player 2 line lineNum"
+                    }
+                }
             }
         }
-
+        lineNum++;// continue reading the next move lines in the file/s
     }
-    return 0;
+    return 0; // both files read without any errors - need to check the board
 }
 
 
+/**
+ * In case a move line contains also a change of a joker piece, this function checks if indeed
+ * <JOKER_X> <JOKER_Y> is a position containing a joker. If the position is valid,
+ * we update the position on the board to contain <NEW_REP>.
+ *
+ * @param curMove - the move we currently check and want to set
+ * @return false - if position does not contain a joker of the current player
+ *         true - otherwise
+ */
+bool RPSGame::RPSGameCheckIfChangeJokerPieceCommandIsValid(Move &curMove){
+    Position pos = {curMove.joker_X, curMove.joker_Y};
+    if (curMove.player == 1){
+        if (player1JokerLocations.find(pos)!=player1JokerLocations.end()){ //there is a joker in this pos
+            board[curMove.joker_X][curMove.joker_Y] = curMove.joker_tool; // change to the new piece in the board
+            return true;
+        }
+    }
+    else { //player 2
+        if (player2JokerLocations.find(pos)!=player2JokerLocations.end()){ //there is a joker in this pos
+            transform(curMove.joker_tool.begin(),curMove.joker_tool.end(), curMove.joker_tool.begin(), ::tolower);
+            board[curMove.joker_X][curMove.joker_Y] = curMove.joker_tool; // change to the new piece in the board
+            return true;
+        }
+    }
+    return false; // invalid command of changing the joker piece
+}
+
+
+/**
+ * In case RPSGameCheckIfChangeJokerPieceCommandIsValid(Move &curMove)==false,
+ * an error message will be printed to the screen by this function.
+ *
+ * @param lineNum - the current line num checked in a file
+ * @param curMove - the current move in the line
+ */
+void RPSGame::RPSGamePrintErrorMessageBadChangeOfJokerPiece(int lineNum, Move curMove){
+    cout << "Error: Invalid change of joker piece in line " << lineNum << " of player "
+         << curMove.player << "'s file" << endl;
+}
+
+
+/**
+ * According to the parseResult this function print an error message (in case the parser found a mistake
+ * in the move line) or checks a few more things to check if the move line is completely valid, if it indeed
+ * valid the move will be set on the board.
+ *
+ * @param parseResult - of the parser
+ * @param player - the current player
+ * @param curMove - the current move we check its validation
+ * @param lineNum - the line number in the file
+ * @return true - if the move line is valid
+ *         false - otherwise
+ */
 bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, Move& curMove, int lineNum){
+
+    curMove.isJoker = false; // we will check later if it a joker
 
     switch (parseResult) {
 
@@ -401,7 +493,7 @@ bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, Move& curMo
                 if (RPSGameIsPositionContainsPlayers1Piece(curMove.fromX, curMove.fromY, curMove.toX, curMove.toY, lineNum)){
                     return false; //move is not valid
                 }
-                //else update curMove
+                //else update the rest of the fields of curMove
                 curMove.tool = board[curMove.fromX][curMove.fromY];
                 curMove.player = 1;
                 Position pos = {curMove.fromX, curMove.fromY};
@@ -425,6 +517,20 @@ bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, Move& curMo
 }
 
 
+
+/**
+ * Checks if source position on board contains player 1's piece (capital letter), and if destination
+ * position is empty or if it contains player 2's piece (not capital letter).
+ *
+ * @param fromX - X coordinate of source
+ * @param fromY - Y coordinate of source
+ * @param toX - X coordinate of destination
+ * @param toY - Y coordinate of destination
+ * @param lineNum - the line number in the moves file
+ * @return false - if source position on board contains player 1's piece, and if destination
+ *         position is empty or if it contains player 2's piece (valid move)
+ *         true - otherwise (invalid move)
+ */
 bool RPSGame::RPSGameIsPositionContainsPlayers1Piece(int fromX, int fromY, int toX, int toY, int lineNum){
     if((board[fromX][fromY]!="R" && board[fromX][fromY]!="P" &&
         board[fromX][fromY]!="S" && board[fromX][fromY]!="F") ||
@@ -434,10 +540,23 @@ bool RPSGame::RPSGameIsPositionContainsPlayers1Piece(int fromX, int fromY, int t
         cout << "Error: Illegal move in line " << lineNum << "of player 1's file" << endl;
         return true;
     }
-    return false;
+    return false; //all good
 }
 
 
+/**
+ * Checks if source position on board contains player 2's piece (lower letter), and if destination
+ * position is empty or if it contains player 1's piece (not lower letter).
+ *
+ * @param fromX - X coordinate of source
+ * @param fromY - Y coordinate of source
+ * @param toX - X coordinate of destination
+ * @param toY - Y coordinate of destination
+ * @param lineNum - the line number in the moves file
+ * @return false - if source position on board contains player 2's piece, and if destination
+ *         position is empty or if it contains player 1's piece (valid move)
+ *         true - otherwise (invalid move)
+ */
 bool RPSGame::RPSGameIsPositionContainsPlayers2Piece(int fromX, int fromY, int toX, int toY, int lineNum){
     if((board[fromX][fromY]!="r" && board[fromX][fromY]!="p" && board[fromX][fromY]!="s" && board[fromX][fromY]!="f")
        || (board[toX][toY]=="r"|| board[toX][toY]=="p" || board[toX][toY]=="s" || board[toX][toY]=="f"

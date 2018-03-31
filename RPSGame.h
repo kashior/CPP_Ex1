@@ -84,7 +84,11 @@ public:
 
     void RPSGameFightAttackerLoses(Move &newMove);
 
-    int RPSGameMoveFileCheck(string fileName1, string fileName2, int &linePlayer1, int &linePlayer2);
+    int RPSGameMoveFileCheck(string fileName1, string fileName2, int lineNum);
+
+    bool RPSGameCheckIfChangeJokerPieceCommandIsValid(Move &curMove);
+
+    void RPSGamePrintErrorMessageBadChangeOfJokerPiece(int lineNum, Move curMove);
 
     bool RPSGameCheckIfMoveIsValid(int parseResult, int player, Move& curMove, int lineNum);
 

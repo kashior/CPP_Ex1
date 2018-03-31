@@ -32,8 +32,8 @@ struct Move{
     int fromY;
     int toX;
     int toY;
-    bool isJoker;
     string tool;
+    bool isJoker;
     int joker_X;
     int joker_Y;
     string joker_tool;
