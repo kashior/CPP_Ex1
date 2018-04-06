@@ -86,7 +86,6 @@ int RPSGame::RPSGameInitFileCheck(string fileName, int player, map<string, int>&
     if (player == 2) {
         RPSGameMergePlayer2BoardWithPlayer1Board(player2BoardMap);
     }
-
     return 0;
 }
 
