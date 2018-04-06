@@ -3,5 +3,5 @@ project(Ex1)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp RPSGame.cpp RPSParser.h RPSParser.cpp RPSGame.h)
+set(SOURCE_FILES main.cpp RPSGame.cpp RPSParser.h RPSParser.cpp RPSGame.h RPSMainAux.cpp RPSMainAux.h)
 add_executable(Ex1 ${SOURCE_FILES})

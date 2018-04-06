@@ -24,7 +24,8 @@ RPSGame::RPSGame() : winner(0), player1Error(""), player2Error("") {
 }
 
 
-int RPSGame::RPSGameInitFileCheck(string fileName, int player,map<string, int>& toolCounter) {
+
+int RPSGame::RPSGameInitFileCheck(string fileName, int player, map<string, int>& toolCounter) {
 
     ifstream fin(fileName);
     if (fin.fail()) {
@@ -80,7 +81,7 @@ int RPSGame::RPSGameInitFileCheck(string fileName, int player,map<string, int>& 
         cout << "Error: Missing Flags - Flags are not positioned according to their number in line " <<
              lineNum - 1 << " of player " << player << "'s file" <<
              endl;
-        return lineNum - 1;
+        return -1;
     }
     if (player == 2) {
         RPSGameMergePlayer2BoardWithPlayer1Board(player2BoardMap);
