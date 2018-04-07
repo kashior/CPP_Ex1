@@ -318,7 +318,6 @@ bool RPSGame::RPSGameCheckIfPlayer1Lose() {
 }
 
 bool RPSGame::RPSGameCheckIfPlayer2Lose() {
-
     if (player2ToolCounters["f"] == F)
         return true;
     return player2ToolCounters["r"] == R && player2ToolCounters["p"] == P
