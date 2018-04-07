@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <map>
-#include <string>
 #include <fstream>
 #include <set>
 #include "RPSParser.h"
@@ -23,7 +22,7 @@ struct Position {
     bool operator<(const Position &rhs) const {
         if (X < rhs.X)
             return true;
-        else if (X > rhs.X)
+        if (X > rhs.X)
             return false;
         return Y < rhs.Y;
     }
@@ -35,11 +34,8 @@ struct Position {
 
 class RPSGame {
 
-
-
 public:
     string board[M][N] = {};
-
     set<Position> player1JokerLocations;
     set<Position> player2JokerLocations;
     string player1Error;
@@ -47,6 +43,8 @@ public:
     int winner;
     map<string, int> player1ToolCounters;
     map<string, int> player2ToolCounters;
+    int player1Points;
+    int player2Points;
     RPSGame();
 
 
@@ -60,11 +58,10 @@ public:
  */
     int RPSGameInitFileCheck(string fileName, int player, map<string, int>& toolCounter);
 
-    bool RPSGameUpdateBoardPlayer1InitStage(int X, int Y, string tool, int lineNum, const bool &isJoker);
+    bool RPSGameUpdateBoardPlayer1InitStage(const Move &initMove, const int &lineNum);
 
     bool
-    RPSGameUpdateBoardPlayer2InitStage(int X, int Y, string &tool, int lineNum, map<Position, string> &boardMap,
-                                       const bool &isJoker);
+    RPSGameUpdateBoardPlayer2InitStage(Move &initMove, int lineNum, map<Position, string> &boardMap);
 
     void RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> &mapBoard);
 
@@ -84,7 +81,7 @@ public:
 
     void RPSGameFightAttackerLoses(Move &newMove);
 
-    int RPSGameMoveFileCheck(string fileName1, string fileName2, int lineNum);
+    int RPSGameMoveFileCheck(string fileName1, string fileName2, int &lineNum);
 
     bool RPSGameCheckIfChangeJokerPieceCommandIsValid(Move &curMove);
 

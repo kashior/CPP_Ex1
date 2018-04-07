@@ -4,7 +4,7 @@
 
 
 
-int RPSParserParseLineInit(string line, int &X, int &Y, string &tool, bool &isJoker) {
+int RPSParserParseLineInit(const string &line, Move &initMove) {
 
     istringstream iss(line);
     vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
@@ -12,38 +12,38 @@ int RPSParserParseLineInit(string line, int &X, int &Y, string &tool, bool &isJo
         return 1;
     }
     if (tokens.size() == 3)
-        return RPSParser3TokensInitLine(tokens, X, Y, tool);
-    isJoker=true;
-    return RPSParser4TokensInitLine(tokens, X, Y, tool);
+        return RPSParser3TokensInitLine(tokens, initMove);
+    initMove.isJoker=true;
+    return RPSParser4TokensInitLine(tokens, initMove);
 }
 
 
 
-int RPSParser3TokensInitLine(vector<string> tokens, int &X, int &Y, string &tool) {
+int RPSParser3TokensInitLine(vector<string> tokens, Move &initMove) {
     if (tokens[0] != "R" && tokens[0] != "P" && tokens[0] != "S" && tokens[0] != "F" &&
         tokens[0] != "B")
         return 2;
 
-    tool = tokens[0];
+    initMove.tool = tokens[0];
 
     if (!RPSParserCheckIfPositionValid(tokens[1], tokens[2]))
         return 3;
-    X = stoi(tokens[1])-1;
-    Y = stoi(tokens[2])-1;
+    initMove.toX=initMove.fromX = stoi(tokens[1])-1;
+    initMove.toY=initMove.fromY = stoi(tokens[2])-1;
     return 0; // Success
 }
 
 
 
-int RPSParser4TokensInitLine(vector<string> tokens, int &X, int &Y, string &tool) {
+int RPSParser4TokensInitLine(vector<string> tokens, Move &initMove) {
     if (tokens[0] != "J") return 1; //invalid line
     if (!RPSParserCheckIfPositionValid(tokens[1], tokens[2]))
         return 3;
-    X = stoi(tokens[1])-1;
-    Y = stoi(tokens[2])-1;
+    initMove.toX=initMove.fromX = initMove.joker_X=stoi(tokens[1])-1;
+    initMove.toY=initMove.fromY = initMove.joker_Y=stoi(tokens[2])-1;
     if (tokens[3] != "R" && tokens[3] != "P" && tokens[3] != "S" && tokens[3] != "B")
         return 2;
-    tool = tokens[3];
+    initMove.tool=initMove.joker_tool = tokens[3];
     return 0; // Success
 
 }

@@ -7,94 +7,55 @@ int main() {
     RPSGame newGame;
     newGame.RPSGameInitFileCheck("player1.rps_board",1,newGame.player1ToolCounters);
     newGame.RPSGameInitFileCheck("player2.rps_board",2,newGame.player2ToolCounters);
-    cout << newGame.board[0][4] << endl;
+    if(newGame.RPSGameCheckIfPlayer1Lose() && newGame.RPSGameCheckIfPlayer2Lose()){
+        cout << "It's a tie!" << endl;
+    }
+    else if(newGame.RPSGameCheckIfPlayer1Lose()) {
+        newGame.player2Points += 1;
+        cout << "Player 2 wins" << endl;
+    }
+    else if(newGame.RPSGameCheckIfPlayer1Lose()) {
+        newGame.player1Points += 1;
+        cout << "Player 1 wins" << endl;
+    }
+    int lineNum;
+    int res=newGame.RPSGameMoveFileCheck("player1.rps_moves","player2.rps_moves",lineNum);
+    switch(res){
+        case -1:
+            cout << "tie. both move files are shit" << endl;
+            break;
+        case 0:
+            cout << "tie, the move files left both players up and running" << endl;
+            break;
+        case 1:
+            cout << "player 2 win. player 1's file corrupted" << endl;
+            break;
+        case 2:
+            cout << "player 1 win. player 1's file corrupted" << endl;
+            break;
+        case 3:
+            cout << "player 1 did better moves." << endl;
+            break;
+        case 4:
+            cout << "player2 did better moves." << endl;
+            break;
+        case 5:
+            cout << "tie...both players lost" << endl;
+            break;
+        default:
+            cout << "weird..." << endl;
+    }
 
+    map<string, int>::iterator it;
+    for (it = newGame.player1ToolCounters.begin(); it != newGame.player1ToolCounters.end(); it++) {
+        printf("%d",it->second);
+        cout << it->first <<  "\t";
 
+    }
+    printf("\n");
+    for (it = newGame.player2ToolCounters.begin(); it != newGame.player2ToolCounters.end(); it++) {
+        printf("%d",it->second);
+        cout << it->first<<  "\t";
 
-
-//#include <iostream>
-//#include <string>
-//#include <fstream>
-//    using namespace std;
-//
-//
-//    class BattleBoard
-//    {
-//    public:
-//        string boardName;
-//        string playerName;
-//        int R;
-//        int C;
-//        string* matrix;
-//
-//        BattleBoard() : matrix(NULL) {}
-//        ~BattleBoard()
-//        {
-//            if (matrix != NULL)
-//            {
-//                delete[] matrix;
-//            }
-//        }
-//    };
-//
-//    void createSimple()
-//    {
-//        cout << "Creating file: simpleBattleBoard.txt" << endl;
-//        ofstream fout("simpleBattleBoard.txt");
-//        fout << "simpleBattleBoard" << endl;
-//        fout << "Nathanel" << endl;
-//        fout << 10 << endl;
-//        fout << 10 << endl;
-//        fout << "___XXX____" << endl;
-//        fout << "X______XX_" << endl;
-//        fout << "X____X____" << endl;
-//        fout << "X_________" << endl;
-//        fout << "X___X____X" << endl;
-//        fout << "__________" << endl;
-//        fout << "____X____X" << endl;
-//        fout << "X___X_____" << endl;
-//        fout << "X_________" << endl;
-//        fout << "X______XX_" << endl;
-//        fout.close();
-//    }
-//
-//    void input(BattleBoard& battleBoard)
-//    {
-//        cout << "Reading battleBoard from file: simpleBattleBoard.txt into class BattleBoard" << endl;
-//        ifstream fin("simpleBattleBoard.txt");
-//        getline(fin, battleBoard.boardName);
-//        std::getline(fin, battleBoard.playerName);
-//        fin >> battleBoard.R;
-//        fin >> battleBoard.C;
-//        fin.ignore(); //skip newline and go the begining of matrix
-//        battleBoard.matrix = new string[battleBoard.R];
-//        for (int i =0; i < battleBoard.R; ++i)
-//        {
-//            std::getline(fin, battleBoard.matrix[i]);
-//        }
-//    }
-//
-//    void output(const BattleBoard& battleBoard)
-//    {
-//        cout << "Printing battleBoard from instance into standard output" << endl;
-//        cout << "Board name: " << battleBoard.boardName << endl;
-//        cout << "Player name: " << battleBoard.playerName << endl;
-//        for (int i = 0; i < battleBoard.R; ++i)
-//        {
-//            for (int j =0; j < battleBoard.C; ++j)
-//            {
-//                cout << battleBoard.matrix[i][j];
-//            }
-//            cout << endl;
-//        }
-//    }
-//
-//    int main()
-//    {
-//        BattleBoard battleBoard;
-//        createSimple();
-//        input(battleBoard);
-//        output(battleBoard);
-//        return 0;
-//    }
+    }
 }
