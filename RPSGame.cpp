@@ -368,6 +368,7 @@ int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int &lineN
         curMove.joker_X = -1; //reset this field, -1 is invalid position on board
 
         if (!EOFile1) { //player 1's file not ended
+            curMove.player = 1;
             getline(player1File, lineToParse);
             if (lineToParse.empty())
                 EOFile1 = true; //player 1's file ended
@@ -394,6 +395,7 @@ int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int &lineN
         curMove.joker_X = -1;
 
         if (!EOFile2) { // player 2's file not ended
+            curMove.player = 2;
             getline(player2File, lineToParse);
             if (lineToParse.empty())
                 EOFile2 = true;

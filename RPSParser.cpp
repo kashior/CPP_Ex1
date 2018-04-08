@@ -78,15 +78,15 @@ int RPSParser8TokensMoveLine(Move &newMove, vector<string> tokens) {
         newMove.fromY = stoi(tokens[1])-1;
         newMove.toX = stoi(tokens[2])-1;
         newMove.toY = stoi(tokens[3])-1;
-        if (tokens[4] != "J:")
+        if (tokens[4] != "[J:")
             return 1;
         if (!RPSParserCheckIfPositionValid(tokens[5], tokens[6]))
             return 3;
         newMove.joker_X = stoi(tokens[5])-1;
         newMove.joker_Y = stoi(tokens[6])-1;
-        if (tokens[7] != "R" || tokens[7] != "P" || tokens[7] != "S" || tokens[7] != "B")
+        if (tokens[7] != "R]" && tokens[7] != "P]" && tokens[7] != "S]" && tokens[7] != "B]")
             return 2;
-        newMove.joker_tool = tokens[7];
+        newMove.joker_tool = tokens[7][0];
         return 0;
     }
     return 3;
