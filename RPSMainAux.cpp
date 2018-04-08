@@ -129,11 +129,14 @@ void RPSMainAuxMakeOutputFile(int reason, int param1, int param2, int winner, RP
         fout << "Bad Moves input file for player " << loser << " - line " << param2 << endl;
     }
 
-    cout << endl;
+    fout << endl;
     // printing the game board state
     for (int i=0 ; i<N ; i++){
         for (int j=0 ; j<M ; j++){
-            fout << game->board[i][j];
+            if (game->board[i][j] == "_")
+                fout << " ";
+            else
+                fout << game->board[i][j];
         }
         fout << endl;
     }
