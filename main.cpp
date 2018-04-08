@@ -1,9 +1,16 @@
 
 
-#include "RPSGame.h"
+#include "RPSMainAux.h"
 
 
 int main() {
+
+
+    return RPSMainAuxGameHandler();
+
+
+    /**
+     *
     RPSGame newGame;
     newGame.RPSGameInitFileCheck("player1.rps_board",1,newGame.player1ToolCounters);
     newGame.RPSGameInitFileCheck("player2.rps_board",2,newGame.player2ToolCounters);
@@ -58,4 +65,5 @@ int main() {
         cout << it->first<<  "\t";
 
     }
+     */
 }

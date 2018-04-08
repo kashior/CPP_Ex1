@@ -27,7 +27,7 @@ RPSGame::RPSGame() : winner(0), player1Error(""), player2Error(""), player1Point
 }
 
 
-int RPSGame::RPSGameInitFileCheck(string fileName, int player, map<string, int> &toolCounter) {
+int RPSGame::RPSGameInitFileCheck(const string fileName, int player, map<string, int> &toolCounter) {
 
     ifstream fin(fileName);
     if (fin.fail()) {

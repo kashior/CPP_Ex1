@@ -56,7 +56,7 @@ public:
  * 0  - if the file is valid
  * (1-num_of_lines_in_file) - the line there was an error
  */
-    int RPSGameInitFileCheck(string fileName, int player, map<string, int>& toolCounter);
+    int RPSGameInitFileCheck(const string fileName, int player, map<string, int>& toolCounter);
 
     bool RPSGameUpdateBoardPlayer1InitStage(const Move &initMove, const int &lineNum);
 
