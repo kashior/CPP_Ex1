@@ -547,7 +547,7 @@ bool RPSGame::RPSGameIsPositionContainsPlayers1Piece(int fromX, int fromY, int t
         (board[toX][toY] == "R" || board[toX][toY] == "P" ||
          board[toX][toY] == "S" || board[toX][toY] == "F" ||
          board[toX][toY] == "B")) {
-        cout << "Error: Illegal move in line " << lineNum << "of player 1's file" << endl;
+        cout << "Error: Illegal move in line " << lineNum << " of player 1's file" << endl;
         return true;
     }
     return false; //all good
@@ -572,7 +572,7 @@ bool RPSGame::RPSGameIsPositionContainsPlayers2Piece(int fromX, int fromY, int t
          board[fromX][fromY] != "f")
         || (board[toX][toY] == "r" || board[toX][toY] == "p" || board[toX][toY] == "s" || board[toX][toY] == "f"
             || board[toX][toY] == "b")) {
-        cout << "Error: Illegal move in line " << lineNum << "of player 2's file" << endl;
+        cout << "Error: Illegal move in line " << lineNum << " of player 2's file" << endl;
         return true;
     }
     return false; //all good
