@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <iterator>
 
 using namespace std;
 
@@ -25,7 +26,7 @@ using namespace std;
  * joker_tool - the new piece representation of the joker.
  *
  */
-struct Move{
+struct Move {
     int player;
     int fromX;
     int fromY;
@@ -94,7 +95,7 @@ int RPSParser4TokensInitLine(vector<string> tokens, Move &initMove);
  *         1/2/3 - otherwise.
  *
  */
-int RPSParserParseLineMove(const string &line,Move &newMove);
+int RPSParserParseLineMove(const string &line, Move &newMove);
 
 /**
  *
@@ -134,5 +135,4 @@ int RPSParser8TokensMoveLine(Move &newMove, vector<string> tokens);
 bool RPSParserCheckIfPositionValid(string X, string Y);
 
 
-
-#endif //OS_EX1_RPSPARER_H
+#endif //RPSPARSER_H
