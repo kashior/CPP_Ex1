@@ -40,7 +40,9 @@ int RPSParser4TokensInitLine(vector<string> tokens, Move &initMove) {
     initMove.toY = initMove.fromY = initMove.joker_Y = stoi(tokens[2]) - 1;
     if (tokens[3] != "R" && tokens[3] != "P" && tokens[3] != "S" && tokens[3] != "B")
         return 2;
-    initMove.tool = initMove.joker_tool = tokens[3];
+    initMove.tool = "J";
+    initMove.joker_tool = tokens[3];
+    initMove.isJoker=true;
     return 0; // Success
 
 }

@@ -115,10 +115,13 @@ bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(const Move &initMove, const int
         Position loc = {initMove.joker_Y, initMove.joker_X};
         player1JokerLocations.insert(loc);
         player1ToolCounters["J"]--;
-    } else
+        board[initMove.toY][initMove.toX] = initMove.joker_tool;
+    } else {
         player1ToolCounters[initMove.tool]--;
+        board[initMove.toY][initMove.toX] = initMove.tool;
+    }
 
-    board[initMove.toY][initMove.toX] = initMove.tool;
+
 
     return true;
 }
@@ -138,12 +141,17 @@ bool RPSGame::RPSGameUpdateBoardPlayer2InitStage(Move &initMove, int lineNum, ma
         return false;
     }
     if (initMove.isJoker) {
+        transform(initMove.joker_tool.begin(), initMove.joker_tool.end(), initMove.joker_tool.begin(), ::tolower);
         Position loc = {initMove.joker_Y, initMove.joker_X};
         player2JokerLocations.insert(loc);
         player2ToolCounters["j"]--;
-    } else
+        boardMap[key] = initMove.joker_tool;
+    } else {
+
         player2ToolCounters[initMove.tool]--;
-    boardMap[key] = initMove.tool;
+        boardMap[key] = initMove.tool;
+    }
+
 
     return true;
 }
@@ -348,6 +356,7 @@ int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int &lineN
     while (!EOFile1 || !EOFile2) {//while at least one of the files did not end
 
         curMove.joker_Y = -1; //reset this field, -1 is invalid position on board
+        curMove.isJoker=false;
 
         if (!EOFile1) { //player 1's file not ended
             curMove.player = 1;

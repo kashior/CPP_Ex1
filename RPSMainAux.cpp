@@ -101,8 +101,6 @@ void RPSMainAuxMakeOutputFile(int reason, int param1, int param2, int winner, RP
 
 
 void RPSMainAuxGameHandler(RPSGame &newGame) {
-
-
     int param1;
     int param2;
     int reason; // the "reason" for output file
