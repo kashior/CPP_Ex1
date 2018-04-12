@@ -122,7 +122,6 @@ bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(const Move &initMove, const int
     }
 
 
-
     return true;
 }
 
@@ -181,19 +180,10 @@ void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> &ma
 
 
 void RPSGame::RPSGameSetMoveOnBoard(Move &newMove) {
-    Position sourcePos = {newMove.fromY, newMove.fromX};
-    Position destinationPos = {newMove.toY, newMove.toX};
+
     if (board[newMove.toY][newMove.toX] == "_") { //empty position
         board[newMove.toY][newMove.toX] = newMove.tool;
-        if (newMove.isJoker) {
-            if (newMove.player == 1) {
-                player1JokerLocations.erase(sourcePos);
-                player1JokerLocations.insert(destinationPos);
-            } else {
-                player2JokerLocations.erase(sourcePos);
-                player2JokerLocations.insert(destinationPos);
-            }
-        }
+
     } else {
         RPSGameFightOnPosition(newMove);
     }
@@ -356,7 +346,7 @@ int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int &lineN
     while (!EOFile1 || !EOFile2) {//while at least one of the files did not end
 
         curMove.joker_Y = -1; //reset this field, -1 is invalid position on board
-        curMove.isJoker=false;
+        curMove.isJoker = false;
 
         if (!EOFile1) { //player 1's file not ended
             curMove.player = 1;
@@ -469,9 +459,13 @@ bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, Move &curMo
                 curMove.tool = board[curMove.fromY][curMove.fromX];
                 curMove.player = 1;
                 Position pos = {curMove.fromY, curMove.fromX};
-                if (player1JokerLocations.find(pos) != player1JokerLocations.end())
-                    curMove.isJoker = true;
                 RPSGameSetMoveOnBoard(curMove);
+                if (player1JokerLocations.find(pos) != player1JokerLocations.end()) {
+                    Position sourcePos = {curMove.fromY, curMove.fromX};
+                    Position destinationPos = {curMove.toY, curMove.toX};
+                    player1JokerLocations.erase(sourcePos);
+                    player1JokerLocations.insert(destinationPos);
+                }
             } else { //player == 2
                 if (RPSGameIsPositionContainsPlayers2Piece(lineNum, curMove)) {
                     return false;
@@ -480,9 +474,15 @@ bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, Move &curMo
                 transform(curMove.tool.begin(), curMove.tool.end(), curMove.tool.begin(), ::tolower);
                 curMove.player = 2;
                 Position pos = {curMove.fromY, curMove.fromX};
-                if (player2JokerLocations.find(pos) != player2JokerLocations.end())
-                    curMove.isJoker = true;
                 RPSGameSetMoveOnBoard(curMove);
+                if (player2JokerLocations.find(pos) != player2JokerLocations.end()) {
+
+                    Position sourcePos = {curMove.fromY, curMove.fromX};
+                    Position destinationPos = {curMove.toY, curMove.toX};
+                    player2JokerLocations.erase(sourcePos);
+                    player2JokerLocations.insert(destinationPos);
+                }
+
             }
     }
     return true;
