@@ -10,27 +10,6 @@
 #include <algorithm>
 #include "RPSParser.h"
 
-/**
- * A struct that represent a position on board
- * X - represents the column
- * Y - represents the row
- */
-struct Position {
-    int Y;
-    int X;
-
-    bool operator<(const Position &rhs) const {
-        if (X < rhs.X)
-            return true;
-        if (X > rhs.X)
-            return false;
-        return Y < rhs.Y;
-    }
-
-    bool operator==(const Position &rhs) const {
-        return Y == rhs.Y && X == rhs.X;
-    }
-};
 
 /**
  * The main game object
@@ -40,6 +19,27 @@ struct Position {
 class RPSGame {
 
 public:
+    /**
+ * A struct that represent a position on board
+ * X - represents the column
+ * Y - represents the row
+ */
+    struct Position {
+        int Y;
+        int X;
+        Position(int _X, int _Y);
+        bool operator<(const Position &rhs) const {
+            if (X < rhs.X)
+                return true;
+            if (X > rhs.X)
+                return false;
+            return Y < rhs.Y;
+        }
+
+        bool operator==(const Position &rhs) const {
+            return Y == rhs.Y && X == rhs.X;
+        }
+    };
     string board[N][M] = {};
     set<Position> player1JokerLocations;
     set<Position> player2JokerLocations;
@@ -50,6 +50,7 @@ public:
     int player2Points;
 
     RPSGame();
+
 
 /**
  * This function gets the file name and the player number, and process the initialization file of that player
