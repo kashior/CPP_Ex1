@@ -3,7 +3,7 @@
 
 
 void RPSMainAuxCheckAndUpdateReasonForWinner(RPSGame &game, int &reason) {
-    if (game.player1ToolCounters["F"] == F || game.player1ToolCounters["f"] == F)
+    if (game.player1ToolCounters["F"] == F || game.player2ToolCounters["f"] == F)
         reason = 1; // "all flags of the opponent are captured"
     else
         reason = 2; // "all moving pieces of the opponent are eaten"
