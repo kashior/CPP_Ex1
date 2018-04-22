@@ -9,6 +9,7 @@
 #include <set>
 #include <algorithm>
 #include "RPSParser.h"
+#include "RPSPiecePosition.h"
 
 
 /**
@@ -24,25 +25,25 @@ public:
  * X - represents the column
  * Y - represents the row
  */
-    struct Position {
-        int Y;
-        int X;
-        Position(int _X, int _Y);
-        bool operator<(const Position &rhs) const {
-            if (X < rhs.X)
-                return true;
-            if (X > rhs.X)
-                return false;
-            return Y < rhs.Y;
-        }
-
-        bool operator==(const Position &rhs) const {
-            return Y == rhs.Y && X == rhs.X;
-        }
-    };
+//    struct RPSPiecePosition {
+//        int Y;
+//        int X;
+//        RPSPiecePosition(int _X, int _Y);
+//        bool operator<(const RPSPiecePosition &rhs) const {
+//            if (X < rhs.X)
+//                return true;
+//            if (X > rhs.X)
+//                return false;
+//            return Y < rhs.Y;
+//        }
+//
+//        bool operator==(const RPSPiecePosition &rhs) const {
+//            return Y == rhs.Y && X == rhs.X;
+//        }
+//    };
     string board[N][M] = {};
-    set<Position> player1JokerLocations;
-    set<Position> player2JokerLocations;
+    set<RPSPiecePosition> player1JokerLocations;
+    set<RPSPiecePosition> player2JokerLocations;
     int winner;
     map<string, int> player1ToolCounters;
     map<string, int> player2ToolCounters;
@@ -69,7 +70,7 @@ public:
  * @return true - if the move can be updated successfully, false otherwise
  */
 
-    bool RPSGameUpdateBoardPlayer1InitStage(const RPSParser::Move &initMove, const int &lineNum);
+    bool RPSGameUpdateBoardPlayer1InitStage(const RPSParser::OldMove &initMove, const int &lineNum);
 
 /**
  * Help function that updates a map of init moves for player 2's init moves
@@ -77,7 +78,7 @@ public:
  * @param lineNum - line number in file
  * @return true - if the move can be updated successfully, false otherwise
  */
-    bool RPSGameUpdateBoardPlayer2InitStage(RPSParser::Move &initMove, int lineNum, map<Position, string> &boardMap);
+    bool RPSGameUpdateBoardPlayer2InitStage(RPSParser::OldMove &initMove, int lineNum, map<RPSPiecePosition, string> &boardMap);
 
 /**
  * This function takes the map of player 2 init moves and merge it inside the board.
@@ -85,32 +86,32 @@ public:
  * This function basically starts the game
  * @param mapBoard - The init moves of player 2
  */
-    void RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> &mapBoard);
+    void RPSGameMergePlayer2BoardWithPlayer1Board(map<RPSPiecePosition, string> &mapBoard);
 
 /**
  * Simply updates the board with a new move
  * @param newMove - the move the function should update on the board
  */
-    void RPSGameSetMoveOnBoard(RPSParser::Move &newMove);
+    void RPSGameSetMoveOnBoard(RPSParser::OldMove &newMove);
 
 /**
  * Decides which tool will stay on board and which tool will "die"
  * Also updates the game object to keep the counting of soldiers updated
  * @param newMove - the move that caused the fight
  */
-    void RPSGameFightOnPosition(RPSParser::Move &newMove);
+    void RPSGameFightOnPosition(RPSParser::OldMove &newMove);
 
 /**
  * Function that removes both of the pieces from the board after fight
  * @param newMove - the move that caused the fight
  */
-    void RPSGameRemoveBothPiecesFromGame(RPSParser::Move &newMove);
+    void RPSGameRemoveBothPiecesFromGame(RPSParser::OldMove &newMove);
 
 /**
  * Function that performs the classic Rock Paper Scissors fight
  * @param newMove - the move that caused the fight
  */
-    void RPSGameRPSFight(RPSParser::Move &newMove);
+    void RPSGameRPSFight(RPSParser::OldMove &newMove);
 
 /**
  * Check if player 1 lost the game as a result of the last move performed
@@ -128,13 +129,13 @@ public:
  * Function that removes the tool that tried to defend himself from the attack
  * @param newMove - the move that caused the fight
  */
-    void RPSGameFightAttackerWins(RPSParser::Move &newMove);
+    void RPSGameFightAttackerWins(RPSParser::OldMove &newMove);
 
 /**
  * Function that removes the tool that caused the fight
  * @param newMove - the move that caused the fight
  */
-    void RPSGameFightAttackerLoses(RPSParser::Move &newMove);
+    void RPSGameFightAttackerLoses(RPSParser::OldMove &newMove);
 
 /**
  * This function treats both of the move files of the 2 players.
@@ -161,7 +162,7 @@ public:
  * @return false - if position does not contain a joker of the current player
  *         true - otherwise
  */
-    bool RPSGameCheckIfChangeJokerPieceCommandIsValid(RPSParser::Move &curMove);
+    bool RPSGameCheckIfChangeJokerPieceCommandIsValid(RPSParser::OldMove &curMove);
 
 /**
  * In case RPSGameCheckIfChangeJokerPieceCommandIsValid(Move &curMove)==false,
@@ -170,7 +171,7 @@ public:
  * @param lineNum - the current line num checked in a file
  * @param curMove - the current move in the line
  */
-    void RPSGamePrintErrorMessageBadChangeOfJokerPiece(int lineNum, const RPSParser::Move& curMove);
+    void RPSGamePrintErrorMessageBadChangeOfJokerPiece(int lineNum, const RPSParser::OldMove& curMove);
 
 /**
  * Checks for validity of the current move in the game
@@ -180,7 +181,7 @@ public:
  * @param lineNum - the current line in move file
  * @return true if the move is valid, false otherwise
  */
-    bool RPSGameCheckIfMoveIsValid(int parseResult, int player, RPSParser::Move &curMove, int lineNum);
+    bool RPSGameCheckIfMoveIsValid(int parseResult, int player, RPSParser::OldMove &curMove, int lineNum);
 
 /**
  * Checks if source position on board contains player 1's piece (capital letter), and if destination
@@ -195,7 +196,7 @@ public:
  *         position is empty or if it contains player 2's piece (valid move)
  *         true - otherwise (invalid move)
  */
-    bool RPSGameIsPositionContainsPlayers1Piece(const int &lineNum, const RPSParser::Move &curMove);
+    bool RPSGameIsPositionContainsPlayers1Piece(const int &lineNum, const RPSParser::OldMove &curMove);
 
 /**
  * Checks if source position on board contains player 2's piece (lower letter), and if destination
@@ -210,7 +211,7 @@ public:
  *         position is empty or if it contains player 1's piece (valid move)
  *         true - otherwise (invalid move)
  */
-    bool RPSGameIsPositionContainsPlayers2Piece(const int &lineNum, const RPSParser::Move &curMove);
+    bool RPSGameIsPositionContainsPlayers2Piece(const int &lineNum, const RPSParser::OldMove &curMove);
 
 };
 

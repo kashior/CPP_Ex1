@@ -36,8 +36,8 @@ int RPSGame::RPSGameInitFileCheck(const string fileName, int player, map<string,
     string lineToParse;
     int lineNum = 1;
     int parserResult;
-    RPSParser::Move initMove;
-    map<Position, string> player2BoardMap;
+    RPSParser::OldMove initMove;
+    map<RPSPiecePosition, string> player2BoardMap;
     while (true) {
         lineToParse = "";
         initMove.isJoker = false;
@@ -96,7 +96,7 @@ int RPSGame::RPSGameInitFileCheck(const string fileName, int player, map<string,
     return 0;
 }
 
-bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(const RPSParser::Move &initMove, const int &lineNum) {
+bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(const RPSParser::OldMove &initMove, const int &lineNum) {
     if (board[initMove.toY][initMove.toX] != "_") {
         cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
              " of player 1's file" << endl;
@@ -108,7 +108,7 @@ bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(const RPSParser::Move &initMove
         return false;
     }
     if (initMove.isJoker) {
-        player1JokerLocations.insert(Position(initMove.joker_X, initMove.joker_Y));
+        player1JokerLocations.insert(RPSPiecePosition(initMove.joker_X, initMove.joker_Y));
         player1ToolCounters["J"]--;
         board[initMove.toY][initMove.toX] = initMove.joker_tool;
     } else {
@@ -121,9 +121,9 @@ bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(const RPSParser::Move &initMove
 }
 
 
-bool RPSGame::RPSGameUpdateBoardPlayer2InitStage(RPSParser::Move &initMove, int lineNum, map<Position, string> &boardMap) {
+bool RPSGame::RPSGameUpdateBoardPlayer2InitStage(RPSParser::OldMove &initMove, int lineNum, map<RPSPiecePosition, string> &boardMap) {
     transform(initMove.tool.begin(), initMove.tool.end(), initMove.tool.begin(), ::tolower);
-    Position key(initMove.toX, initMove.toY);
+    RPSPiecePosition key(initMove.toX, initMove.toY);
     if (boardMap.find(key) != boardMap.end()) { //position already contain piece
         cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
              " of player 2's file" << endl;
@@ -136,7 +136,7 @@ bool RPSGame::RPSGameUpdateBoardPlayer2InitStage(RPSParser::Move &initMove, int 
     }
     if (initMove.isJoker) {
         transform(initMove.joker_tool.begin(), initMove.joker_tool.end(), initMove.joker_tool.begin(), ::tolower);
-        player2JokerLocations.insert(Position(initMove.joker_X, initMove.joker_Y));
+        player2JokerLocations.insert(RPSPiecePosition(initMove.joker_X, initMove.joker_Y));
         player2ToolCounters["j"]--;
         boardMap[key] = initMove.joker_tool;
     } else {
@@ -150,9 +150,9 @@ bool RPSGame::RPSGameUpdateBoardPlayer2InitStage(RPSParser::Move &initMove, int 
 }
 
 
-void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> &mapBoard) {
-    map<Position, string>::iterator it;
-    RPSParser::Move initMove;
+void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<RPSPiecePosition, string> &mapBoard) {
+    map<RPSPiecePosition, string>::iterator it;
+    RPSParser::OldMove initMove;
 
     for (it = mapBoard.begin(); it != mapBoard.end(); it++) {
         if (board[it->first.Y][it->first.X] == "_")
@@ -163,7 +163,7 @@ void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> &ma
             initMove.toX = initMove.fromX = it->first.X;
             initMove.player = 2;
             initMove.tool = it->second;
-            Position pos(it->first.X, it->first.Y);
+            RPSPiecePosition pos(it->first.X, it->first.Y);
             if (player2JokerLocations.find(pos) != player2JokerLocations.end()) {
                 initMove.isJoker = true;
             }
@@ -173,7 +173,7 @@ void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<Position, string> &ma
 }
 
 
-void RPSGame::RPSGameSetMoveOnBoard(RPSParser::Move &newMove) {
+void RPSGame::RPSGameSetMoveOnBoard(RPSParser::OldMove &newMove) {
 
     if (board[newMove.toY][newMove.toX] == "_") { //empty position
         board[newMove.toY][newMove.toX] = newMove.tool;
@@ -185,7 +185,7 @@ void RPSGame::RPSGameSetMoveOnBoard(RPSParser::Move &newMove) {
 }
 
 
-void RPSGame::RPSGameFightOnPosition(RPSParser::Move &newMove) {
+void RPSGame::RPSGameFightOnPosition(RPSParser::OldMove &newMove) {
     string attackerTool = newMove.tool;
     string defenderTool = board[newMove.toY][newMove.toX];
     transform(attackerTool.begin(), attackerTool.end(), attackerTool.begin(), ::toupper);
@@ -201,9 +201,9 @@ void RPSGame::RPSGameFightOnPosition(RPSParser::Move &newMove) {
 }
 
 
-void RPSGame::RPSGameRemoveBothPiecesFromGame(RPSParser::Move &newMove) {
-    Position sourcePos(newMove.fromX, newMove.fromY);
-    Position destinationPos(newMove.toX, newMove.toY);
+void RPSGame::RPSGameRemoveBothPiecesFromGame(RPSParser::OldMove &newMove) {
+    RPSPiecePosition sourcePos(newMove.fromX, newMove.fromY);
+    RPSPiecePosition destinationPos(newMove.toX, newMove.toY);
     if (newMove.player == 1) {
         if (newMove.isJoker) {
             player1JokerLocations.erase(sourcePos);
@@ -235,7 +235,7 @@ void RPSGame::RPSGameRemoveBothPiecesFromGame(RPSParser::Move &newMove) {
 }
 
 
-void RPSGame::RPSGameRPSFight(RPSParser::Move &newMove) {
+void RPSGame::RPSGameRPSFight(RPSParser::OldMove &newMove) {
     if ((board[newMove.toY][newMove.toX] == "R" || board[newMove.toY][newMove.toX] == "r") &&
         (newMove.tool == "P" || newMove.tool == "p")) {
         RPSGameFightAttackerWins(newMove);
@@ -258,8 +258,8 @@ void RPSGame::RPSGameRPSFight(RPSParser::Move &newMove) {
 
 }
 
-void RPSGame::RPSGameFightAttackerWins(RPSParser::Move &newMove) {
-    Position pos(newMove.toX, newMove.toY);
+void RPSGame::RPSGameFightAttackerWins(RPSParser::OldMove &newMove) {
+    RPSPiecePosition pos(newMove.toX, newMove.toY);
     if (newMove.player == 1) {
         if (player2JokerLocations.find(pos) != player2JokerLocations.end()) {
             player2JokerLocations.erase(player2JokerLocations.find(pos));
@@ -281,8 +281,8 @@ void RPSGame::RPSGameFightAttackerWins(RPSParser::Move &newMove) {
 }
 
 
-void RPSGame::RPSGameFightAttackerLoses(RPSParser::Move &newMove) {
-    Position pos(newMove.fromX, newMove.fromY);
+void RPSGame::RPSGameFightAttackerLoses(RPSParser::OldMove &newMove) {
+    RPSPiecePosition pos(newMove.fromX, newMove.fromY);
     if (newMove.player == 1) {
         if (newMove.isJoker) {
             player1JokerLocations.erase(player1JokerLocations.find(pos));
@@ -335,7 +335,7 @@ int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int &lineN
     }
     string lineToParse;
     int parseResult;
-    RPSParser::Move curMove;
+    RPSParser::OldMove curMove;
     while (!EOFile1 || !EOFile2) {//while at least one of the files did not end
 
         curMove.joker_Y = -1; //reset this field, -1 is invalid position on board
@@ -398,8 +398,8 @@ int RPSGame::RPSGameMoveFileCheck(string fileName1, string fileName2, int &lineN
 }
 
 
-bool RPSGame::RPSGameCheckIfChangeJokerPieceCommandIsValid(RPSParser::Move &curMove) {
-    Position pos(curMove.joker_X, curMove.joker_Y);
+bool RPSGame::RPSGameCheckIfChangeJokerPieceCommandIsValid(RPSParser::OldMove &curMove) {
+    RPSPiecePosition pos(curMove.joker_X, curMove.joker_Y);
     if (curMove.player == 1) {
         if (player1JokerLocations.find(pos) != player1JokerLocations.end()) { //there is a joker in this pos
             board[curMove.joker_Y][curMove.joker_X] = curMove.joker_tool; // change to the new piece in the board
@@ -416,13 +416,13 @@ bool RPSGame::RPSGameCheckIfChangeJokerPieceCommandIsValid(RPSParser::Move &curM
 }
 
 
-void RPSGame::RPSGamePrintErrorMessageBadChangeOfJokerPiece(int lineNum,const RPSParser::Move& curMove) {
+void RPSGame::RPSGamePrintErrorMessageBadChangeOfJokerPiece(int lineNum,const RPSParser::OldMove& curMove) {
     cout << "Error: Invalid change of joker piece in line " << lineNum << " of player "
          << curMove.player << "'s file" << endl;
 }
 
 
-bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, RPSParser::Move &curMove, int lineNum) {
+bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, RPSParser::OldMove &curMove, int lineNum) {
 
     curMove.isJoker = false; // we will check later if it a joker
 
@@ -444,8 +444,8 @@ bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, RPSParser::
             return false;
 
         default:
-            Position sourcePos(curMove.fromX, curMove.fromY);
-            Position destinationPos(curMove.toX, curMove.toY);
+            RPSPiecePosition sourcePos(curMove.fromX, curMove.fromY);
+            RPSPiecePosition destinationPos(curMove.toX, curMove.toY);
             if (player == 1) {
                 if (RPSGameIsPositionContainsPlayers1Piece(lineNum, curMove)) {
                     return false; //move is not valid
@@ -479,7 +479,7 @@ bool RPSGame::RPSGameCheckIfMoveIsValid(int parseResult, int player, RPSParser::
 }
 
 
-bool RPSGame::RPSGameIsPositionContainsPlayers1Piece(const int &lineNum, const RPSParser::Move &curMove) {
+bool RPSGame::RPSGameIsPositionContainsPlayers1Piece(const int &lineNum, const RPSParser::OldMove &curMove) {
     if ((board[curMove.fromY][curMove.fromX] != "R" && board[curMove.fromY][curMove.fromX] != "P" &&
          board[curMove.fromY][curMove.fromX] != "S" && board[curMove.fromY][curMove.fromX] != "F") ||
         (board[curMove.toY][curMove.toX] == "R" || board[curMove.toY][curMove.toX] == "P" ||
@@ -492,7 +492,7 @@ bool RPSGame::RPSGameIsPositionContainsPlayers1Piece(const int &lineNum, const R
 }
 
 
-bool RPSGame::RPSGameIsPositionContainsPlayers2Piece(const int &lineNum, const RPSParser::Move &curMove) {
+bool RPSGame::RPSGameIsPositionContainsPlayers2Piece(const int &lineNum, const RPSParser::OldMove &curMove) {
     if ((board[curMove.fromY][curMove.fromX] != "r" && board[curMove.fromY][curMove.fromX] != "p" &&
          board[curMove.fromY][curMove.fromX] != "s" && board[curMove.fromY][curMove.fromX] != "f")
         || (board[curMove.toY][curMove.toX] == "r" || board[curMove.toY][curMove.toX] == "p" ||

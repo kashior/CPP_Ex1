@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <iterator>
+#include "RPSMove.h"
 
 using namespace std;
 
@@ -29,7 +30,7 @@ using namespace std;
 class RPSParser {
 
 public:
-    struct Move {
+    struct OldMove {
         int player;
         int fromX;
         int fromY;
@@ -57,7 +58,7 @@ public:
      *         1/2/3 otherwise.
      *
      */
-    static int parseLineInit(const string &line, Move &initMove);
+    static int parseLineInit(const string &line, RPSMove &initMove);
 
 
     /**
@@ -71,7 +72,7 @@ public:
      *         1/2/3 - otherwise.
      *
      */
-    static int parseLineMove(const string &line, Move &newMove);
+    static int parseLineMove(const string &line, OldMove &newMove);
 
 private:
     /**
@@ -86,7 +87,7 @@ private:
      *         3 - if the position on board is invalid.
      *
      */
-    static int parse3TokensInitLine(vector<string> tokens, Move &initMove);
+    static int parse3TokensInitLine(vector<string> tokens, RPSMove &initMove);
 
     /**
      *
@@ -100,7 +101,7 @@ private:
      *         3 - if the position on board is invalid.
      *
      */
-    static int parse4TokensInitLine(vector<string> tokens, Move &initMove);
+    static int parse4TokensInitLine(vector<string> tokens, RPSMove &initMove);
 
 
     /**
@@ -113,7 +114,7 @@ private:
      *         3 - on fail (the coordinates are invalid).
      *
      */
-    static int parse4TokensMoveLine(Move &newMove, vector<string> tokens);
+    static int parse4TokensMoveLine(OldMove &newMove, vector<string> tokens);
 
     /**
      *
@@ -127,7 +128,7 @@ private:
      *         2 - if <NEW_REP> is not a valid piece
      *         3 - if the position on board is invalid
      */
-    static int parse8TokensMoveLine(Move &newMove, vector<string> tokens);
+    static int parse8TokensMoveLine(OldMove &newMove, vector<string> tokens);
 
     /**
      *

@@ -1,9 +1,10 @@
 
 
 #include "RPSParser.h"
+#include "RPSMove.h"
 
 
-int RPSParser::parseLineInit(const string &line, Move &initMove) {
+int RPSParser::parseLineInit(const string &line, RPSMove &initMove) {
 
     istringstream iss(line);
     vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
@@ -12,35 +13,37 @@ int RPSParser::parseLineInit(const string &line, Move &initMove) {
     }
     if (tokens.size() == 3)
         return parse3TokensInitLine(tokens, initMove);
-    initMove.isJoker = true;
+    initMove.setJoker();
     return parse4TokensInitLine(tokens, initMove);
 }
 
 
-int RPSParser::parse3TokensInitLine(vector<string> tokens, Move &initMove) {
+int RPSParser::parse3TokensInitLine(vector<string> tokens, RPSMove &initMove) {
     if (tokens[0] != "R" && tokens[0] != "P" && tokens[0] != "S" && tokens[0] != "F" &&
         tokens[0] != "B")
         return 2;
 
-    initMove.tool = tokens[0];
+    initMove.setPiece(tokens[0][0]);
 
     if (!checkIfPositionValid(tokens[1], tokens[2]))
         return 3;
-    initMove.toX = initMove.fromX = stoi(tokens[1]) - 1;
-    initMove.toY = initMove.fromY = stoi(tokens[2]) - 1;
+    int x=stoi(tokens[1])-1;
+    int y =stoi(tokens[2])-1);
+    initMove.setFrom(x,y);
+    initMove.setTo(x,y);
     return 0; // Success
 }
 
 
-int RPSParser::parse4TokensInitLine(vector<string> tokens, Move &initMove) {
+int RPSParser::parse4TokensInitLine(vector<string> tokens, RPSMove &initMove) {
     if (tokens[0] != "J") return 1; //invalid line
     if (!checkIfPositionValid(tokens[1], tokens[2]))
         return 3;
-    initMove.toX = initMove.fromX = initMove.joker_X = stoi(tokens[1]) - 1;
-    initMove.toY = initMove.fromY = initMove.joker_Y = stoi(tokens[2]) - 1;
+//    initMove.toX = initMove.fromX = initMove.joker_X = stoi(tokens[1]) - 1;
+//    initMove.toY = initMove.fromY = initMove.joker_Y = stoi(tokens[2]) - 1;
     if (tokens[3] != "R" && tokens[3] != "P" && tokens[3] != "S" && tokens[3] != "B")
         return 2;
-    initMove.tool = "J";
+    initMove.setPiece('J');
     initMove.joker_tool = tokens[3];
     initMove.isJoker=true;
     return 0; // Success
@@ -48,7 +51,7 @@ int RPSParser::parse4TokensInitLine(vector<string> tokens, Move &initMove) {
 }
 
 
-int RPSParser::parseLineMove(const string &line, Move &newMove) {
+int RPSParser::parseLineMove(const string &line, OldMove &newMove) {
     istringstream iss(line);
     vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
     if (tokens.size() != 8 && tokens.size() != 4)
@@ -59,7 +62,7 @@ int RPSParser::parseLineMove(const string &line, Move &newMove) {
 }
 
 
-int RPSParser::parse4TokensMoveLine(Move &newMove, vector<string> tokens) {
+int RPSParser::parse4TokensMoveLine(OldMove &newMove, vector<string> tokens) {
     if (checkIfPositionValid(tokens[0], tokens[1]) && checkIfPositionValid(tokens[2], tokens[3])) {
         newMove.fromX = stoi(tokens[0]) - 1;
         newMove.fromY = stoi(tokens[1]) - 1;
@@ -71,7 +74,7 @@ int RPSParser::parse4TokensMoveLine(Move &newMove, vector<string> tokens) {
 }
 
 
-int RPSParser::parse8TokensMoveLine(Move &newMove, vector<string> tokens) {
+int RPSParser::parse8TokensMoveLine(OldMove &newMove, vector<string> tokens) {
     if (checkIfPositionValid(tokens[0], tokens[1]) && checkIfPositionValid(tokens[2], tokens[3])) {
         newMove.fromX = stoi(tokens[0]) - 1;
         newMove.fromY = stoi(tokens[1]) - 1;

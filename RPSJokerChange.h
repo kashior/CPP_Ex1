@@ -1,0 +1,21 @@
+
+
+#ifndef EX1_RPSJOKERCHANGE_H
+#define EX1_RPSJOKERCHANGE_H
+
+
+#include "JokerChange.h"
+
+class RPSJokerChange: public JokerChange  {
+    char _jokerRep;
+    Point _jokerPosition;
+public:
+    RPSJokerChange(char jokerRep, Point jokerPosition);
+    virtual const Point & getJokerChangePosition() const;
+    virtual char getJokerNewRep() const;
+    int getPlayer()const;
+
+};
+
+
+#endif //EX1_RPSJOKERCHANGE_H
