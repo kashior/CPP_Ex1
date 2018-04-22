@@ -5,7 +5,7 @@
 
 
 #include "Move.h"
-#include "JokerChange.h"
+#include "RPSJokerChange.h"
 #include "RPSPoint.h"
 
 class RPSMove : public Move{
@@ -13,8 +13,8 @@ class RPSMove : public Move{
     RPSPoint _from;
     RPSPoint _to;
     char _piece;
-    bool isJoker; // true iff it's a joker in init stage
-//    JokerChange joker;
+    RPSJokerChange _joker;
+
 public:
     RPSMove(Point from, Point to, char piece, int player);
     virtual const Point& getFrom()const;
@@ -24,7 +24,7 @@ public:
     void setPiece(char piece);
     void setFrom(int x, int y);
     void setTo(int x, int y);
-    void setJoker();
+    void setJoker(char rep, RPSPoint* pos);
 
 
 };

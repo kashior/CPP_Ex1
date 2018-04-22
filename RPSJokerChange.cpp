@@ -4,11 +4,15 @@
 
 #include "RPSJokerChange.h"
 
-RPSJokerChange::RPSJokerChange(char jokerRep, Point jokerPosition): _jokerRep(jokerRep), _jokerPosition(jokerPosition) {}
+RPSJokerChange::RPSJokerChange(Point jokerPosition, char jokerRep='#'): _jokerRep(jokerRep), _jokerPosition(jokerPosition) {}
 
 const Point &RPSJokerChange::getJokerChangePosition() const { return _jokerPosition ;}
 
 char RPSJokerChange::getJokerNewRep() const {return _jokerRep;}
 
-int RPSJokerChange::getPlayer() const {return }
+void setJokerChangePosition(RPSPoint pos) {_jokerPosition = pos;}
+
+void setJokerNewRep(char piece) {_jokerRep = piece;}
+
+//int RPSJokerChange::getPlayer() const {return }
 

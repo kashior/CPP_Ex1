@@ -6,6 +6,8 @@
 #include <sstream>
 #include <iterator>
 #include "RPSMove.h"
+#include "RPSPiecePosition.h"
+#include "RPSPoint.h"
 
 using namespace std;
 
@@ -50,7 +52,7 @@ public:
      * tokens in the line, if yes- sends the array of tokens to other function and returns its return value.
      *
      * @param line - the line to parse
-     * @param initMove
+     * @param initPos
      * @param Y
      * @param tool
      * @param isJoker
@@ -58,7 +60,7 @@ public:
      *         1/2/3 otherwise.
      *
      */
-    static int parseLineInit(const string &line, RPSMove &initMove);
+    static int parseLineInit(const string &line, RPSPiecePosition &initPos);
 
 
     /**
@@ -72,14 +74,14 @@ public:
      *         1/2/3 - otherwise.
      *
      */
-    static int parseLineMove(const string &line, OldMove &newMove);
+    static int parseLineMove(const string &line, RPSMove &newMove);
 
 private:
     /**
      *
      * Checks if the tokes array of size 3 represents and initiation line of the format "<PIECE_CHAR> <X> <Y>". If yes -
      * it updates the parameters given to the function by reference.
-     * @param initMove - x coordinate on board.
+     * @param initPos - x coordinate on board.
      * @param Y - y coordinate on board.
      * @param tool - the tool to place om board.
      * @return 0 - if all tokens are valid
@@ -87,13 +89,13 @@ private:
      *         3 - if the position on board is invalid.
      *
      */
-    static int parse3TokensInitLine(vector<string> tokens, RPSMove &initMove);
+    static int parse3TokensInitLine(vector<string> tokens, RPSPiecePosition &initPos);
 
     /**
      *
      * Checks if the tokes array of size 4 represents an initiation line of the format "J <X> <Y> <PIECE_CHAR>". If yes -
      * it updates the parameters given to the function by reference.
-     * @param initMove - x coordinate on board.
+     * @param initPos - x coordinate on board.
      * @param Y - y coordinate on board.
      * @param tool - the tool to place om board.
      * @return 0 - if all tokens are valid
@@ -101,7 +103,7 @@ private:
      *         3 - if the position on board is invalid.
      *
      */
-    static int parse4TokensInitLine(vector<string> tokens, RPSMove &initMove);
+    static int parse4TokensInitLine(vector<string> tokens, RPSPiecePosition &initPos);
 
 
     /**
@@ -114,7 +116,7 @@ private:
      *         3 - on fail (the coordinates are invalid).
      *
      */
-    static int parse4TokensMoveLine(OldMove &newMove, vector<string> tokens);
+    static int parse4TokensMoveLine(RPSMove &newMove, vector<string> tokens);
 
     /**
      *
@@ -128,7 +130,7 @@ private:
      *         2 - if <NEW_REP> is not a valid piece
      *         3 - if the position on board is invalid
      */
-    static int parse8TokensMoveLine(OldMove &newMove, vector<string> tokens);
+    static int parse8TokensMoveLine(RPSMove &newMove, vector<string> tokens);
 
     /**
      *

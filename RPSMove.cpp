@@ -20,5 +20,8 @@ const char &RPSMove::getPiece() const {return _piece;}
 
 void RPSMove::setPiece(char piece) { _piece=piece; }
 
-void RPSMove::setJoker() {isJoker=true;}
+void RPSMove::setJoker(char rep, RPSPoint* pos) {
+    _joker.setJokerChangePosition(*pos);
+    _joker.setJokerNewRep(rep);
+}
 

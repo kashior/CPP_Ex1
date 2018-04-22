@@ -10,10 +10,15 @@ class RPSJokerChange: public JokerChange  {
     char _jokerRep;
     Point _jokerPosition;
 public:
-    RPSJokerChange(char jokerRep, Point jokerPosition);
+    RPSJokerChange( Point jokerPosition, char jokerRep);
     virtual const Point & getJokerChangePosition() const;
     virtual char getJokerNewRep() const;
-    int getPlayer()const;
+
+    void setJokerChangePosition(RPSPoint pos);
+
+    void setJokerNewRep(char piece);
+
+    //int getPlayer()const;
 
 };
 
