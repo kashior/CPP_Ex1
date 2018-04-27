@@ -23,7 +23,6 @@ public:
     virtual ~RPSJokerChange() {}
 
     //int getPlayer()const;
-
 };
 
 

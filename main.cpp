@@ -3,7 +3,7 @@
 
 
 int main() {
-    RPSGame newGame;
-    RPSMainAuxGameHandler(newGame);
+//    RPSGame newGame;
+//    RPSMainAuxGameHandler(newGame);
     return 0;
 }

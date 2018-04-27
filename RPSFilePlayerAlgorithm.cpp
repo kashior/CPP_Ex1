@@ -10,7 +10,7 @@ using namespace std;
 RPSFilePlayerAlgorithm::RPSFilePlayerAlgorithm(int player, string dir)
         : RPSPlayerAlgorithm(player), _directory(dir), moveFileLineCounter(0) {}
 
-void RPSFilePlayerAlgorithm::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) {
+void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<PiecePosition>> &vectorToFill) {
     string c = player == 1 ? "1" : "2";
 
     string fileName = _directory + "player" + c + ".rps_board";
@@ -23,7 +23,7 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, std::vector<unique_
     string lineToParse;
     int lineNum = 1;
     int parserResult;
-    unique_ptr<PiecePosition> initPos = make_unique<RPSPiecePosition>();
+    unique_ptr<RPSPiecePosition> initPos = make_unique<RPSPiecePosition>();
     while (true) {
         lineToParse = "";
         getline(fin, lineToParse);
@@ -53,15 +53,16 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, std::vector<unique_
                 vectorToFill.clear();
                 return;
             default:
-                vectorToFill.push_back(initPos);
+                vectorToFill.push_back(move(initPos));
                 playerToolCounters[initPos->getPiece()]--;
                 if (initPos->getJokerRep() != '#')
-                    playerJokers.push_back(initPos->getPosition());
+                    playerJokers.push_back(initPos);
                 lineNum++;
         }
     }
     fin.close();
 }
+
 
 void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
     string c = _player == 1 ? "1" : "2";
@@ -110,5 +111,9 @@ virtual unique_ptr<Move> RPSFilePlayerAlgorithm::getMove() {
 }
 
 virtual unique_ptr<JokerChange> RPSFilePlayerAlgorithm::getJokerChange() {
-    return playerMoves[moveFileLineCounter]->getJoker()!= nullptr ? playerMoves[moveFileLineCounter]->getJoker() : nullptr;
+    if(playerMoves[moveFileLineCounter]->getJoker()!= nullptr){
+        unique_ptr<JokerChange> ptr=playerMoves[moveFileLineCounter]->getJoker();
+        return ptr;
+    }
+    return nullptr;
 }

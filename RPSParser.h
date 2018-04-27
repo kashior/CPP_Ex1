@@ -74,7 +74,7 @@ public:
      *         1/2/3 - otherwise.
      *
      */
-    static int parseLineMove(const string &line, unique_ptr<Move> &newMove);
+    static int parseLineMove(const string &line, unique_ptr<RPSMove> &newMove);
 
 private:
     /**

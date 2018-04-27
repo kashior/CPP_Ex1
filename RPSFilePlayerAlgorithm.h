@@ -24,7 +24,6 @@ public:
     void setMovesFromMoveFile();
     virtual ~RPSFilePlayerAlgorithm() {}
 
-
 };
 
 

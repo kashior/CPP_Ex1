@@ -24,13 +24,12 @@ public:
     virtual const Point& getTo()const;
     const int & getPlayer()const;
     const char & getPiece()const;
-    const unique_ptr<JokerChange> & getJoker()const;
+    unique_ptr<JokerChange> getJoker() const;
     void setPiece(char piece);
     void setFrom(int x, int y);
     void setTo(int x, int y);
     void setJoker(char rep, RPSPoint* pos);
-    virtual ~RPSMove() {delete _joker;delete _from;delete _to;}
-
+    virtual ~RPSMove() {}
 
 };
 

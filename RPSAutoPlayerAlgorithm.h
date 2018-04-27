@@ -7,6 +7,7 @@
 #include "RPSPlayerAlgorithm.h"
 
 class RPSAutoPlayerAlgorithm : public RPSPlayerAlgorithm{
+    RPSAutoPlayerAlgorithm(): RPSPlayerAlgorithm(_player){}
 
 
 };

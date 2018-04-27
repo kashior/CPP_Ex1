@@ -17,7 +17,6 @@ public:
     virtual int getY() const;
     void setY(int y);
     virtual ~RPSPoint() {}
-
 };
 
 

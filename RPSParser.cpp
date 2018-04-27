@@ -53,7 +53,7 @@ int RPSParser::parse4TokensInitLine(vector<string> tokens, unique_ptr<RPSPiecePo
 }
 
 
-int RPSParser::parseLineMove(const string &line, unique_ptr<Move> &newMove) {
+int RPSParser::parseLineMove(const string &line, unique_ptr<RPSMove> &newMove) {
     istringstream iss(line);
     vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
     if (tokens.size() != 8 && tokens.size() != 4)
@@ -72,7 +72,6 @@ int RPSParser::parse4TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string>
         int toY = stoi(tokens[3]) - 1;
         newMove->setFrom(fromX, fromY);
         newMove->setTo(toX, toY);
-
         return 0;
     }
     return 3;

@@ -18,6 +18,7 @@ public:
     RPSPiecePosition();
 
     virtual const Point & getPosition() const;
+
     virtual char getPiece() const;
 
     virtual char getJokerRep() const;

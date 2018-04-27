@@ -14,3 +14,4 @@ int RPSPoint::getY() const { return _y; }
 void RPSPoint::setX(int x) { _x=x; }
 
 void RPSPoint::setY(int y) { _y=y; }
+

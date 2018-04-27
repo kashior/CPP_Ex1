@@ -9,8 +9,7 @@ RPSBoard::RPSBoard() {
         for (int j = 0; j < M; j++) {
             board[i][j] = ' ';
         }
-    } //TODO check if capital letters are ok
-
+    }
 
 }
 int RPSBoard::getPlayer(const Point &pos) const {

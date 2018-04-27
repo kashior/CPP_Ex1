@@ -17,4 +17,3 @@ void RPSFightInfo::setOpponentPiece(char newPiece) {opponentPiece=newPiece;}
 
 void RPSFightInfo::setWinner(int newWinner) {playerWinner=newWinner;}
 
-

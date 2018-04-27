@@ -29,6 +29,7 @@ public:
 	virtual unique_ptr<Move> getMove() = 0;
 	virtual unique_ptr<JokerChange> getJokerChange() = 0; // nullptr if no change is requested
 	virtual ~PlayerAlgorithm() {}
+
 };
 
 #endif

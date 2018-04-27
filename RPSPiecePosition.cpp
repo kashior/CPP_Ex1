@@ -19,6 +19,7 @@ void RPSPiecePosition::setPosition(int x, int y) {
     _pos.setY(y);
 }
 
+
 void RPSPiecePosition::setPiece(char piece) { _piece = piece; }
 
 void RPSPiecePosition::setJokerRep(char jokerRep) { _jokerRep = jokerRep; }
