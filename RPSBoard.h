@@ -7,15 +7,18 @@
 #include "Board.h"
 #include "RPSPiecePosition.h"
 #include <vector>
+#include <map>
+
 using namespace std;
 
 class RPSBoard: public Board {
     char board[N][M];
-    vector<RPSPiecePosition> player1Jokers;
-    vector<RPSPiecePosition> player2Jokers;
 public:
     RPSBoard();
+
     virtual int getPlayer(const Point & pos) const;
+
+    virtual ~RPSBoard() {}
 
 
 };

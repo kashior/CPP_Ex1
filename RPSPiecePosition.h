@@ -13,19 +13,28 @@ class RPSPiecePosition: public PiecePosition {
     char _jokerRep;
 public:
 
-    RPSPiecePosition(Point pos,char piece,char jokerRep);
+    RPSPiecePosition(Point pos,char piece,char jokerRep='#');
+
+    RPSPiecePosition();
 
     virtual const Point & getPosition() const;
     virtual char getPiece() const;
+
     virtual char getJokerRep() const;
 
-    void setPosition(RPSPoint* pos) const;
-    void setPiece(char piece) const;
-    void setJokerRep(char jokerRep) const;
+    void setPosition(RPSPoint* pos) ;
+
+    void setPosition(int x, int y) ;
+
+    void setPiece(char piece);
+
+    void setJokerRep(char jokerRep);
 
     bool operator<(const RPSPiecePosition &rhs) const ;
 
     bool operator==(const RPSPiecePosition &rhs) const ;
+
+    virtual ~RPSPiecePosition() {delete _pos;}
 
 };
 

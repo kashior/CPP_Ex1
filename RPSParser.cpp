@@ -5,7 +5,7 @@
 #include "RPSPiecePosition.h"
 
 
-int RPSParser::parseLineInit(const string &line, RPSPiecePosition &initPos) {
+int RPSParser::parseLineInit(const string &line, unique_ptr<RPSPiecePosition> &initPos) {
 
     istringstream iss(line);
     vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
@@ -19,24 +19,24 @@ int RPSParser::parseLineInit(const string &line, RPSPiecePosition &initPos) {
 }
 
 
-int RPSParser::parse3TokensInitLine(vector<string> tokens, RPSPiecePosition &initPos) {
+int RPSParser::parse3TokensInitLine(vector<string> tokens, unique_ptr<RPSPiecePosition> &initPos) {
     if (tokens[0] != "R" && tokens[0] != "P" && tokens[0] != "S" && tokens[0] != "F" &&
         tokens[0] != "B")
         return 2;
 
-    initPos.setPiece(tokens[0][0]);
+    initPos->setPiece(tokens[0][0]);
 
     if (!checkIfPositionValid(tokens[1], tokens[2]))
         return 3;
     int x=stoi(tokens[1])-1;
     int y =stoi(tokens[2])-1;
-    initPos.setPosition(new RPSPoint(x,y));
+    initPos->setPosition(new RPSPoint(x,y));
 
     return 0; // Success
 }
 
 
-int RPSParser::parse4TokensInitLine(vector<string> tokens, RPSPiecePosition &initPos) {
+int RPSParser::parse4TokensInitLine(vector<string> tokens, unique_ptr<RPSPiecePosition> &initPos) {
     if (tokens[0] != "J") return 1; //invalid line
     if (!checkIfPositionValid(tokens[1], tokens[2]))
         return 3;
@@ -44,16 +44,16 @@ int RPSParser::parse4TokensInitLine(vector<string> tokens, RPSPiecePosition &ini
         return 2;
     int x=stoi(tokens[1])-1;
     int y =stoi(tokens[2])-1;
-    initPos.setPosition(new RPSPoint(x,y));
-    initPos.setPiece('J');
-    initPos.setJokerRep(tokens[3][0]);
+    initPos->setPosition(new RPSPoint(x,y));
+    initPos->setPiece('J');
+    initPos->setJokerRep(tokens[3][0]);
 
     return 0; // Success
 
 }
 
 
-int RPSParser::parseLineMove(const string &line, RPSMove &newMove) {
+int RPSParser::parseLineMove(const string &line, unique_ptr<Move> &newMove) {
     istringstream iss(line);
     vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
     if (tokens.size() != 8 && tokens.size() != 4)
@@ -64,14 +64,14 @@ int RPSParser::parseLineMove(const string &line, RPSMove &newMove) {
 }
 
 
-int RPSParser::parse4TokensMoveLine(RPSMove &newMove, vector<string> tokens) {
+int RPSParser::parse4TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string> tokens) {
     if (checkIfPositionValid(tokens[0], tokens[1]) && checkIfPositionValid(tokens[2], tokens[3])) {
         int fromX = stoi(tokens[0]) - 1;
         int fromY = stoi(tokens[1]) - 1;
         int toX = stoi(tokens[2]) - 1;
         int toY = stoi(tokens[3]) - 1;
-        newMove.setFrom(fromX, fromY);
-        newMove.setTo(toX, toY);
+        newMove->setFrom(fromX, fromY);
+        newMove->setTo(toX, toY);
 
         return 0;
     }
@@ -79,14 +79,15 @@ int RPSParser::parse4TokensMoveLine(RPSMove &newMove, vector<string> tokens) {
 }
 
 
-int RPSParser::parse8TokensMoveLine(RPSMove &newMove, vector<string> tokens) {
+int RPSParser::parse8TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string> tokens) {
+
     if (checkIfPositionValid(tokens[0], tokens[1]) && checkIfPositionValid(tokens[2], tokens[3])) {
         int fromX = stoi(tokens[0]) - 1;
         int fromY = stoi(tokens[1]) - 1;
         int toX = stoi(tokens[2]) - 1;
         int toY = stoi(tokens[3]) - 1;
-        newMove.setFrom(fromX, fromY);
-        newMove.setTo(toX, toY);
+        newMove->setFrom(fromX, fromY);
+        newMove->setTo(toX, toY);
 
         if (tokens[4] != "J:")
             return 1;
@@ -97,7 +98,7 @@ int RPSParser::parse8TokensMoveLine(RPSMove &newMove, vector<string> tokens) {
 
         if (tokens[7] != "R" && tokens[7] != "P" && tokens[7] != "S" && tokens[7] != "B")
             return 2;
-        newMove.setJoker(tokens[7][0], new RPSPoint(joker_X, joker_Y));
+        newMove->setJoker(tokens[7][0], new RPSPoint(joker_X, joker_Y));
         return 0;
     }
     return 3;
