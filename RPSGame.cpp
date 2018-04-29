@@ -18,7 +18,6 @@ RPSGame::RPSGame(bool isPlayer1Auto, bool isPlayer2Auto)  {
     movesCounter=0;
 }
 
-//RPSGame::Position::Position(int _X, int _Y) : Y(_Y), X(_X) {}
 //TODO decide on return values. case 1, player 1 wins.case 2, player 2 wins, case 3, tie, case 0 , continue
 int RPSGame::RPSGameInitFileCheck() {
 
@@ -27,9 +26,9 @@ int RPSGame::RPSGameInitFileCheck() {
     if(initPosPlayer1.empty() && initPosPlayer2.empty())
         return 3;
     else if(initPosPlayer1.empty())
-        return 1;
-    else if (initPosPlayer2.empty())
         return 2;
+    else if (initPosPlayer2.empty())
+        return 1;
     return 0;
 }
 //perform fights and merge
