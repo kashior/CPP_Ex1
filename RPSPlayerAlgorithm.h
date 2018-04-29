@@ -14,7 +14,7 @@ using namespace std;
 class RPSPlayerAlgorithm : public PlayerAlgorithm {
 public:
     int _player;
-    vector<unique_ptr<RPSPiecePosition>> playerJokers;
+    vector<unique_ptr<Point>> playerJokers;
     map<char, int> playerToolCounters;
 
     RPSPlayerAlgorithm(int player) : _player(player) {
