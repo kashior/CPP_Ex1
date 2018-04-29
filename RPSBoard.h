@@ -13,7 +13,10 @@ using namespace std;
 
 class RPSBoard: public Board {
     char board[N][M];
+
 public:
+    friend class RPSGame;
+
     RPSBoard();
 
     virtual int getPlayer(const Point & pos) const;

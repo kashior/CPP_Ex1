@@ -12,6 +12,8 @@
 #include "RPSPiecePosition.h"
 #include "Board.h"
 #include "RPSPlayerAlgorithm.h"
+#include "RPSBoard.h"
+#include "RPSFightInfo.h"
 
 
 /**
@@ -22,28 +24,7 @@
 class RPSGame {
 
 public:
-    /**
- * A struct that represent a position on board
- * X - represents the column
- * Y - represents the row
- */
-//    struct RPSPiecePosition {
-//        int Y;
-//        int X;
-//        RPSPiecePosition(int _X, int _Y);
-//        bool operator<(const RPSPiecePosition &rhs) const {
-//            if (X < rhs.X)
-//                return true;
-//            if (X > rhs.X)
-//                return false;
-//            return Y < rhs.Y;
-//        }
-//
-//        bool operator==(const RPSPiecePosition &rhs) const {
-//            return Y == rhs.Y && X == rhs.X;
-//        }
-//    };
-    unique_ptr<Board> board;
+    unique_ptr<RPSBoard> board;
     vector<unique_ptr<PiecePosition>> initPosPlayer1;
     vector<unique_ptr<PiecePosition>> initPosPlayer2;
     int movesCounter;
@@ -62,62 +43,30 @@ public:
  * (1-num_of_lines_in_file) - the line there was an error
  */
     int RPSGameInitFileCheck();
-};
-//
-///**
-// * Help function that updates the board for player 1's init moves
-// * @param initMove - the current move the function will update
-// * @param lineNum - line number in file
-// * @return true - if the move can be updated successfully, false otherwise
-// */
-//
-//    bool RPSGameUpdateBoardPlayer1InitStage(const RPSParser::OldMove &initMove, const int &lineNum);
-//
-///**
-// * Help function that updates a map of init moves for player 2's init moves
-// * @param initMove - the current move the function will update
-// * @param lineNum - line number in file
-// * @return true - if the move can be updated successfully, false otherwise
-// */
-//    bool RPSGameUpdateBoardPlayer2InitStage(RPSParser::OldMove &initMove, int lineNum, map<RPSPiecePosition, string> &boardMap);
-//
-///**
-// * This function takes the map of player 2 init moves and merge it inside the board.
-// * It also take care of "Fights" that can occur as a result of the merge.
-// * This function basically starts the game
-// * @param mapBoard - The init moves of player 2
-// */
-//    void RPSGameMergePlayer2BoardWithPlayer1Board(map<RPSPiecePosition, string> &mapBoard);
-//
-///**
-// * Simply updates the board with a new move
-// * @param newMove - the move the function should update on the board
-// */
-//    void RPSGameSetMoveOnBoard(RPSParser::OldMove &newMove);
-//
-///**
-// * Decides which tool will stay on board and which tool will "die"
-// * Also updates the game object to keep the counting of soldiers updated
-// * @param newMove - the move that caused the fight
-// */
-//    void RPSGameFightOnPosition(RPSParser::OldMove &newMove);
-//
-///**
-// * Function that removes both of the pieces from the board after fight
-// * @param newMove - the move that caused the fight
-// */
-//    void RPSGameRemoveBothPiecesFromGame(RPSParser::OldMove &newMove);
-//
-///**
-// * Function that performs the classic Rock Paper Scissors fight
-// * @param newMove - the move that caused the fight
-// */
-//    void RPSGameRPSFight(RPSParser::OldMove &newMove);
-//
-///**
-// * Check if player 1 lost the game as a result of the last move performed
-// * @return true if player 1 loses the game and false otherwise
-// */
+
+    bool UpdateBoardPlayer1InitStage(int &lineNum);
+
+    bool UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2);
+
+    void FightOnPosition(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2);
+
+/**
+ * Function that removes both of the pieces from the board after fight
+ * @param newMove - the move that caused the fight
+ */
+    void RemoveBothPiecesFromGame(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2);
+
+    void RemoveToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, RPSMove curMove, char pieceToRemove);
+/**
+ * Function that performs the classic Rock Paper Scissors fight
+ * @param newMove - the move that caused the fight
+ */
+    void RPSGameRPSFight(RPSParser::OldMove &newMove);
+
+/**
+ * Check if player 1 lost the game as a result of the last move performed
+ * @return true if player 1 loses the game and false otherwise
+ */
 //    bool RPSGameCheckIfPlayer1Lose();
 //
 ///**
@@ -125,19 +74,25 @@ public:
 // * @return true if player 2 loses the game and false otherwise
 // */
 //    bool RPSGameCheckIfPlayer2Lose();
-//
-///**
-// * Function that removes the tool that tried to defend himself from the attack
-// * @param newMove - the move that caused the fight
-// */
-//    void RPSGameFightAttackerWins(RPSParser::OldMove &newMove);
-//
-///**
-// * Function that removes the tool that caused the fight
-// * @param newMove - the move that caused the fight
-// */
-//    void RPSGameFightAttackerLoses(RPSParser::OldMove &newMove);
-//
+
+
+    void updateFightVectors(int winner, RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1,
+                            vector<unique_ptr<FightInfo>> &fights2);
+
+
+
+/**
+ * Function that removes the tool that tried to defend himself from the attack
+ * @param curMove - the move that caused the fight
+ */
+    void FightAttackerWins(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>  &fights2);
+
+/**
+ * Function that removes the tool that caused the fight
+ * @param newMove - the move that caused the fight
+ */
+    void FightAttackerLoses(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>  &fights2);
+
 ///**
 // * This function treats both of the move files of the 2 players.
 // * reads line by line when player 1 starts, checks for errors and winners and also update the game object at all times
@@ -214,6 +169,6 @@ public:
 // */
 //    bool RPSGameIsPositionContainsPlayers2Piece(const int &lineNum, const RPSParser::OldMove &curMove);
 //
-//};
+};
 
 #endif //RPSGAME_H

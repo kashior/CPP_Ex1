@@ -3,6 +3,7 @@
 #include "RPSFilePlayerAlgorithm.h"
 #include "RPSAutoPlayerAlgorithm.h"
 #include "RPSBoard.h"
+#include "RPSFightInfo.h"
 
 
 RPSGame::RPSGame(bool isPlayer1Auto, bool isPlayer2Auto)  {
@@ -31,217 +32,192 @@ int RPSGame::RPSGameInitFileCheck() {
         return 1;
     return 0;
 }
-//perform fights and merge
-// checkwinner
-//notifyOnInitialBoard player 1 + 2
-//start the game by move piece player 1 etc
-// check winner after each move
-//after 100 moves its a tie
-//bool RPSGame::RPSGameUpdateBoardPlayer1InitStage(const RPSParser::OldMove &initMove, const int &lineNum) {
-//    if (board[initMove.toY][initMove.toX] != "_") {
-//        cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
-//             " of player 1's file" << endl;
-//        return false;
-//    }
-//    if (player1ToolCounters[initMove.tool] == 0) {
-//        cout << "Error: A piece type appears in file more than it's number in line " << lineNum <<
-//             " of player 1's file" << endl;
-//        return false;
-//    }
-//    if (initMove.isJoker) {
-//        player1JokerLocations.insert(RPSPiecePosition(initMove.joker_X, initMove.joker_Y));
-//        player1ToolCounters["J"]--;
-//        board[initMove.toY][initMove.toX] = initMove.joker_tool;
-//    } else {
-//        player1ToolCounters[initMove.tool]--;
-//        board[initMove.toY][initMove.toX] = initMove.tool;
-//    }
-//
-//
-//    return true;
-//}
-//
-//
-//bool RPSGame::RPSGameUpdateBoardPlayer2InitStage(RPSParser::OldMove &initMove, int lineNum, map<RPSPiecePosition, string> &boardMap) {
-//    transform(initMove.tool.begin(), initMove.tool.end(), initMove.tool.begin(), ::tolower);
-//    RPSPiecePosition key(initMove.toX, initMove.toY);
-//    if (boardMap.find(key) != boardMap.end()) { //position already contain piece
-//        cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
-//             " of player 2's file" << endl;
-//        return false;
-//    }
-//    if (player2ToolCounters[initMove.tool] == 0) {
-//        cout << "Error: A piece type appears in file more than it's number in line " << lineNum <<
-//             " of player 2's file" << endl;
-//        return false;
-//    }
-//    if (initMove.isJoker) {
-//        transform(initMove.joker_tool.begin(), initMove.joker_tool.end(), initMove.joker_tool.begin(), ::tolower);
-//        player2JokerLocations.insert(RPSPiecePosition(initMove.joker_X, initMove.joker_Y));
-//        player2ToolCounters["j"]--;
-//        boardMap[key] = initMove.joker_tool;
-//    } else {
-//
-//        player2ToolCounters[initMove.tool]--;
-//        boardMap[key] = initMove.tool;
-//    }
-//
-//
-//    return true;
-//}
-//
-//
-//void RPSGame::RPSGameMergePlayer2BoardWithPlayer1Board(map<RPSPiecePosition, string> &mapBoard) {
-//    map<RPSPiecePosition, string>::iterator it;
-//    RPSParser::OldMove initMove;
-//
-//    for (it = mapBoard.begin(); it != mapBoard.end(); it++) {
-//        if (board[it->first.Y][it->first.X] == "_")
-//            board[it->first.Y][it->first.X] = it->second;
-//        else {
-//            initMove.isJoker = false;
-//            initMove.toY = initMove.fromY = it->first.Y;
-//            initMove.toX = initMove.fromX = it->first.X;
-//            initMove.player = 2;
-//            initMove.tool = it->second;
-//            RPSPiecePosition pos(it->first.X, it->first.Y);
-//            if (player2JokerLocations.find(pos) != player2JokerLocations.end()) {
-//                initMove.isJoker = true;
-//            }
-//            RPSGameFightOnPosition(initMove);
-//        }
-//    }
-//}
 
-//
-//void RPSGame::RPSGameSetMoveOnBoard(RPSParser::OldMove &newMove) {
-//
-//    if (board[newMove.toY][newMove.toX] == "_") { //empty position
-//        board[newMove.toY][newMove.toX] = newMove.tool;
-//
-//    } else {
-//        RPSGameFightOnPosition(newMove);
-//    }
-//    board[newMove.fromY][newMove.fromX] = "_";
-//}
-//
-//
-//void RPSGame::RPSGameFightOnPosition(RPSParser::OldMove &newMove) {
-//    string attackerTool = newMove.tool;
-//    string defenderTool = board[newMove.toY][newMove.toX];
-//    transform(attackerTool.begin(), attackerTool.end(), attackerTool.begin(), ::toupper);
-//    transform(defenderTool.begin(), defenderTool.end(), defenderTool.begin(), ::toupper);
-//    if ((attackerTool == defenderTool) || (attackerTool == "B") || (defenderTool == "B"))
-//        RPSGameRemoveBothPiecesFromGame(newMove);
-//    else if (newMove.tool == "F" || newMove.tool == "f")
-//        RPSGameFightAttackerLoses(newMove);
-//    else if (board[newMove.toY][newMove.toX] == "F" || board[newMove.toY][newMove.toX] == "f")
-//        RPSGameFightAttackerWins(newMove);
-//    else
-//        RPSGameRPSFight(newMove);
-//}
-//
-//
-//void RPSGame::RPSGameRemoveBothPiecesFromGame(RPSParser::OldMove &newMove) {
-//    RPSPiecePosition sourcePos(newMove.fromX, newMove.fromY);
-//    RPSPiecePosition destinationPos(newMove.toX, newMove.toY);
-//    if (newMove.player == 1) {
-//        if (newMove.isJoker) {
-//            player1JokerLocations.erase(sourcePos);
-//            player1ToolCounters["J"]++;
-//        } else {
-//            player1ToolCounters[newMove.tool]++;
-//        }
-//        if (player2JokerLocations.find(destinationPos) != player2JokerLocations.end()) {
-//            player2JokerLocations.erase(destinationPos);
-//            player2ToolCounters["j"]++;
-//        } else {
-//            player2ToolCounters[board[newMove.toY][newMove.toX]]++;
-//        }
-//    } else { //player 2
-//        if (newMove.isJoker) {
-//            player2JokerLocations.erase(sourcePos);
-//            player2ToolCounters["j"]++;
-//        } else {
-//            player2ToolCounters[newMove.tool]++;
-//        }
-//        if (player1JokerLocations.find(destinationPos) != player1JokerLocations.end()) {
-//            player1JokerLocations.erase(destinationPos);
-//            player1ToolCounters["J"]++;
-//        } else {
-//            player1ToolCounters[board[newMove.toY][newMove.toX]]++;
-//        }
-//    }
-//    board[newMove.toY][newMove.toX] = "_"; //update board
-//}
+bool RPSGame::UpdateBoardPlayer1InitStage(int &lineNum) {
+    int x,y;
+    for (unique_ptr<PiecePosition> pos : initPosPlayer1){
+        x = pos->getPosition().getX();
+        y = pos->getPosition().getY();
+        if (board->board[y][x] != ' ') {
+            cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
+             " of player 1's positioning" << endl;
+            return false;
+        }
+        if (player1->playerToolCounters[pos->getPiece()] == 0) {
+            cout << "Error: A piece type appears more than it's number in line " << lineNum <<
+                 " of player 1's positioning" << endl;
+            return false;
+        }
+        if (pos->getJokerRep() !=  '#') {
+            player1.playerJokers.push_back(make_unique<RPSPiecePosition>(pos->getPosition(), pos->getPiece(), pos->getJokerRep()));
+            board->board[y][x] = pos->getJokerRep();
+        }
+        else
+            board->board[y][x] = pos->getPiece();
+        player1->playerToolCounters[pos->getPiece()]--;
+        lineNum++;
+    }
+    return true;
+}
+
+bool
+RPSGame::UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>&fights2) {
+    int x,y;
+    char piece;
+    for (unique_ptr<PiecePosition> pos : initPosPlayer2){
+        x = pos->getPosition().getX();
+        y = pos->getPosition().getY();
+        piece = (char)tolower(pos->getPiece());
+        if ( (int) board->board[y][x] > 96) {
+            cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
+                 " of player 2's positioning" << endl;
+            return false;
+        }
+        if (player2->playerToolCounters[pos->getPiece()] == 0) {
+            cout << "Error: A piece type appears more than it's number in line " << lineNum <<
+                 " of player 2's positioning" << endl;
+            return false;
+        }
+        if (pos->getJokerRep() !=  '#')
+            player2->playerJokers.push_back(make_unique<RPSPoint>(pos->getPosition());
+
+        player2->playerToolCounters[pos->getPiece()]--;
+        if (board->board[y][x] == ' ')
+            board->board[y][x] = pos->getJokerRep()=='#' ? piece : (char) tolower(pos->getJokerRep());
+        else{
+            RPSMove initMove(RPSPoint(-1,-1), pos->getPosition(), piece, 2);
+            FightOnPosition(initMove, fights1, fights2);
+        }
+        lineNum++;
+    }
+    return true;
+}
 //
 //
-//void RPSGame::RPSGameRPSFight(RPSParser::OldMove &newMove) {
-//    if ((board[newMove.toY][newMove.toX] == "R" || board[newMove.toY][newMove.toX] == "r") &&
-//        (newMove.tool == "P" || newMove.tool == "p")) {
-//        RPSGameFightAttackerWins(newMove);
-//    } else if ((board[newMove.toY][newMove.toX] == "P" || board[newMove.toY][newMove.toX] == "p") &&
-//               (newMove.tool == "R" || newMove.tool == "r")) {
-//        RPSGameFightAttackerLoses(newMove);
-//    } else if ((board[newMove.toY][newMove.toX] == "R" || board[newMove.toY][newMove.toX] == "r") &&
-//               (newMove.tool == "S" || newMove.tool == "s")) {
-//        RPSGameFightAttackerLoses(newMove);
-//    } else if ((board[newMove.toY][newMove.toX] == "S" || board[newMove.toY][newMove.toX] == "s") &&
-//               (newMove.tool == "R" || newMove.tool == "r")) {
-//        RPSGameFightAttackerWins(newMove);
-//    } else if ((board[newMove.toY][newMove.toX] == "P" || board[newMove.toY][newMove.toX] == "p") &&
-//               (newMove.tool == "S" || newMove.tool == "s")) {
-//        RPSGameFightAttackerWins(newMove);
-//    } else if ((board[newMove.toY][newMove.toX] == "S" || board[newMove.toY][newMove.toX] == "s") &&
-//               (newMove.tool == "P" || newMove.tool == "p")) {
-//        RPSGameFightAttackerLoses(newMove);
-//    }
 //
-//}
-//
-//void RPSGame::RPSGameFightAttackerWins(RPSParser::OldMove &newMove) {
-//    RPSPiecePosition pos(newMove.toX, newMove.toY);
-//    if (newMove.player == 1) {
-//        if (player2JokerLocations.find(pos) != player2JokerLocations.end()) {
-//            player2JokerLocations.erase(player2JokerLocations.find(pos));
-//            player2ToolCounters["j"]++;
-//        } else {
-//            player2ToolCounters[board[newMove.toY][newMove.toX]]++;
-//        }
-//    } else {
-//        if (player1JokerLocations.find(pos) != player1JokerLocations.end()) {
-//            player1JokerLocations.erase(player1JokerLocations.find(pos));
-//            player1ToolCounters["J"]++;
-//        } else {
-//            player1ToolCounters[board[newMove.toY][newMove.toX]]++;
-//        }
-//    }
-//    if (newMove.player == 2)
-//        transform(newMove.tool.begin(), newMove.tool.end(), newMove.tool.begin(), ::tolower);
-//    board[newMove.toY][newMove.toX] = newMove.tool;
-//}
-//
-//
-//void RPSGame::RPSGameFightAttackerLoses(RPSParser::OldMove &newMove) {
-//    RPSPiecePosition pos(newMove.fromX, newMove.fromY);
-//    if (newMove.player == 1) {
-//        if (newMove.isJoker) {
-//            player1JokerLocations.erase(player1JokerLocations.find(pos));
-//            player1ToolCounters["J"]++;
-//        } else {
-//            player1ToolCounters[newMove.tool]++;
-//        }
-//    } else { //player 2
-//        if (newMove.isJoker) {
-//            player2JokerLocations.erase(player2JokerLocations.find(pos));
-//            player1ToolCounters["j"]++;
-//        } else {
-//            transform(newMove.tool.begin(), newMove.tool.end(), newMove.tool.begin(), ::tolower);
-//            player2ToolCounters[newMove.tool]++;
-//        }
-//    }
-//}
-//
+
+void RPSGame::FightOnPosition(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2) {
+    char attackerTool = curMove.getPlayer() == 1 ? curMove.getPiece(): (char)tolower(curMove.getPiece());
+    char defenderTool = board->board[curMove.getTo().getY()][curMove.getTo().getX()];
+    if ((attackerTool == defenderTool) || (attackerTool == 'B') || (defenderTool == 'B') ||
+            (attackerTool == 'b') || (defenderTool == 'b') )
+        RemoveBothPiecesFromGame(curMove, fights1, fights2);
+    else if (curMove.getPiece() == 'f' ) //possible only in init stage
+        RPSGameFightAttackerLoses(newMove);
+    else if (defenderTool == 'F' || defenderTool == 'f')
+        FightAttackerWins(newMove, <#initializer#>, <#initializer#>);
+    else
+        RPSGameRPSFight(newMove);
+}
+
+// remove both playertoolscounter and joker locations if there is , update board
+void
+RPSGame::RemoveBothPiecesFromGame(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2) {
+
+    char attackedPiece = (char) toupper(board->board[curMove.getTo().getY()][curMove.getTo().getX()]);
+    char attackerPiece = (char) toupper(curMove.getPiece());
+
+    if (curMove.getPlayer() == 1) {
+        RemoveToolsFromVectors(player1, curMove,  attackerPiece);
+        RemoveToolsFromVectors(player2, curMove,  attackedPiece);
+    } else {
+        RemoveToolsFromVectors(player2, curMove,  attackerPiece);
+        RemoveToolsFromVectors(player1, curMove,  attackedPiece);
+    }
+
+    updateFightVectors(0, curMove, fights1, fights2);
+
+    board->board[curMove.getTo().getY()][curMove.getTo().getX()] = ' ';
+    if (curMove.getFrom().getX() != -1) //not in init stage, need to change 'from' position on board to ' '
+        board->board[curMove.getFrom().getY()][curMove.getFrom().getX()] = ' ';
+}
+
+
+
+
+void RPSGame::RPSGameRPSFight(RPSParser::OldMove &newMove) {
+    if ((board[newMove.toY][newMove.toX] == "R" || board[newMove.toY][newMove.toX] == "r") &&
+        (newMove.tool == "P" || newMove.tool == "p")) {
+        FightAttackerWins(newMove, <#initializer#>, <#initializer#>);
+    } else if ((board[newMove.toY][newMove.toX] == "P" || board[newMove.toY][newMove.toX] == "p") &&
+               (newMove.tool == "R" || newMove.tool == "r")) {
+        RPSGameFightAttackerLoses(newMove);
+    } else if ((board[newMove.toY][newMove.toX] == "R" || board[newMove.toY][newMove.toX] == "r") &&
+               (newMove.tool == "S" || newMove.tool == "s")) {
+        RPSGameFightAttackerLoses(newMove);
+    } else if ((board[newMove.toY][newMove.toX] == "S" || board[newMove.toY][newMove.toX] == "s") &&
+               (newMove.tool == "R" || newMove.tool == "r")) {
+        FightAttackerWins(newMove, <#initializer#>, <#initializer#>);
+    } else if ((board[newMove.toY][newMove.toX] == "P" || board[newMove.toY][newMove.toX] == "p") &&
+               (newMove.tool == "S" || newMove.tool == "s")) {
+        FightAttackerWins(newMove, <#initializer#>, <#initializer#>);
+    } else if ((board[newMove.toY][newMove.toX] == "S" || board[newMove.toY][newMove.toX] == "s") &&
+               (newMove.tool == "P" || newMove.tool == "p")) {
+        RPSGameFightAttackerLoses(newMove);
+    }
+
+}
+
+void RPSGame::FightAttackerWins(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>  &fights2) {
+    char attackedPiece= (char) toupper(board->board[curMove.getTo().getY()][curMove.getTo().getX()]);
+    if (curMove.getPlayer() == 1)
+        RemoveToolsFromVectors(player2, curMove, attackedPiece);
+    else
+        RemoveToolsFromVectors(player1, curMove, attackedPiece);
+    updateFightVectors(curMove.getPlayer(), curMove, fights1, fights2);
+    board->board[curMove.getTo().getY()][curMove.getTo().getY()] = curMove.getPiece();
+    if (curMove.getFrom().getX() != -1) //not init stage
+        board->board[curMove.getFrom().getY()][curMove.getFrom().getX()] = ' ';
+}
+
+
+void RPSGame::FightAttackerLoses(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>  &fights2) {
+    char attackedPiece= (char) toupper(curMove.getPiece());
+    if (curMove.getPlayer() == 1)
+        RemoveToolsFromVectors(player1, curMove, attackedPiece);
+    else
+        RemoveToolsFromVectors(player2, curMove, attackedPiece);
+    updateFightVectors(curMove.getPlayer()==1 ? 2 : 1 , curMove, fights1, fights2);
+    if (curMove.getFrom().getX() != -1) //not init stage
+        board->board[curMove.getFrom().getY()][curMove.getFrom().getX()] = ' ';
+}
+
+void RPSGame::RemoveToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, RPSMove curMove, char pieceToRemove) {
+
+    auto it=find_if(player->playerJokers.begin(), player->playerJokers.end(),
+                    [&](unique_ptr<Point>& obj){return obj->getX()==curMove.getTo().getX()
+                                                       && obj->getY()==curMove.getTo().getY();});
+    if (it != player->playerJokers.end()){
+        player->playerToolCounters['J']++;
+        player->playerJokers.erase(it);
+    }
+    else{
+        player->playerToolCounters[pieceToRemove]++;
+    }
+
+}
+
+void RPSGame::updateFightVectors(int winner, RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1,
+                                 vector<unique_ptr<FightInfo>> &fights2) {
+    unique_ptr<FightInfo> fight1;
+    unique_ptr<FightInfo> fight2;
+    char attackedPiece= (char) toupper(board->board[curMove.getTo().getY()][curMove.getTo().getX()]);
+    char attackerPiece = (char) toupper(curMove.getPiece());
+
+    if (curMove.getPlayer() == 1){
+        fight1 = make_unique<RPSFightInfo>(winner, attackedPiece, curMove.getTo());
+        fight2 = make_unique<RPSFightInfo>(winner, attackerPiece, curMove.getTo());
+    }
+    else{
+        fight1 = make_unique<RPSFightInfo>(winner, attackerPiece, curMove.getTo());
+        fight2 = make_unique<RPSFightInfo>(winner, attackedPiece, curMove.getTo());
+    }
+    fights1.push_back(fight1);
+    fights2.push_back(fight2);
+}
+
+
+
 //
 //bool RPSGame::RPSGameCheckIfPlayer1Lose() {
 //    if (player1ToolCounters["F"] == F)
