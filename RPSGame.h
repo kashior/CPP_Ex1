@@ -28,10 +28,12 @@ public:
     vector<unique_ptr<PiecePosition>> initPosPlayer1;
     vector<unique_ptr<PiecePosition>> initPosPlayer2;
     int movesCounter;
-    unique_ptr<RPSPlayerAlgorithm> player1;
-    unique_ptr<RPSPlayerAlgorithm> player2;
+    //unique_ptr<RPSPlayerAlgorithm> player1;
+    //unique_ptr<RPSPlayerAlgorithm> player2;
 
-    RPSGame(bool isPlayer1Auto, bool isPlayer2Auto);
+    friend class RPSManager;
+
+    RPSGame();
 
 
 /** NEED TO CORRECT DOC
@@ -42,7 +44,7 @@ public:
  * 0  - if the file is valid
  * (1-num_of_lines_in_file) - the line there was an error
  */
-    int RPSGameInitFileCheck();
+    bool RPSGameInitFileCheck(unique_ptr<PlayerAlgorithm> & playerAlg, int playerNum);
 
     bool UpdateBoardPlayer1InitStage(int &lineNum);
 

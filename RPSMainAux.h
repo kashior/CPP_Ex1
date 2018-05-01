@@ -45,8 +45,7 @@
 //void RPSMainAuxUpdateLoserAndBadLine(int winner, int &loser, int param1, int param2, int &badLine);
 ///**
 // * Writes the output file "rps.output"
-// *
-// * @param reason
+ // * @param reason
 // * @param param1
 // * @param param2
 // * @param winner

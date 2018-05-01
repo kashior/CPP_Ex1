@@ -6,32 +6,34 @@
 #include "RPSFightInfo.h"
 
 
-RPSGame::RPSGame(bool isPlayer1Auto, bool isPlayer2Auto)  {
-    if(!isPlayer1Auto)
-        player1= make_unique<RPSFilePlayerAlgorithm>(1,"/");
-    else
-        player1=make_unique<RPSAutoPlayerAlgorithm>(1,"/");
-    if(!isPlayer2Auto)
-        player2= make_unique<RPSFilePlayerAlgorithm>(2,"/");
-    else
-        player2=make_unique<RPSAutoPlayerAlgorithm>(2,"/");
+RPSGame::RPSGame()  {
+//    if(!isPlayer1Auto)
+//        player1= make_unique<RPSFilePlayerAlgorithm>(1,"/");
+//    else
+//        player1=make_unique<RPSAutoPlayerAlgorithm>(1,"/");
+//    if(!isPlayer2Auto)
+//        player2= make_unique<RPSFilePlayerAlgorithm>(2,"/");
+//    else
+//        player2=make_unique<RPSAutoPlayerAlgorithm>(2,"/");
     board=make_unique<RPSBoard>();
     movesCounter=0;
 }
 
-//TODO decide on return values. case 1, player 1 wins.case 2, player 2 wins, case 3, tie, case 0 , continue
-int RPSGame::RPSGameInitFileCheck() {
 
-    player1->getInitialPositions(1,initPosPlayer1);
-    player2->getInitialPositions(2,initPosPlayer2);
-    if(initPosPlayer1.empty() && initPosPlayer2.empty())
-        return 3;
-    else if(initPosPlayer1.empty())
-        return 2;
-    else if (initPosPlayer2.empty())
-        return 1;
-    return 0;
+bool RPSGame::RPSGameInitFileCheck(unique_ptr<PlayerAlgorithm> & playerAlg, int playerNum) {
+    if (playerNum == 1){
+        playerAlg->getInitialPositions(1,initPosPlayer1);
+        if (initPosPlayer1.empty()) //empty file
+            return false;
+    }
+    else{
+        playerAlg->getInitialPositions(2,initPosPlayer2);
+        if(initPosPlayer2.empty())
+            return false;
+    }
+    return true;
 }
+
 
 bool RPSGame::UpdateBoardPlayer1InitStage(int &lineNum) {
     int x,y;
