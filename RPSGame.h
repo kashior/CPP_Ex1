@@ -25,43 +25,42 @@ class RPSGame {
 public:
 
     unique_ptr<RPSBoard> board; ///////TO DO: check why '<Board>' doesn't work?!?!
-    vector<unique_ptr<PiecePosition>> initPosPlayer1;
-    vector<unique_ptr<PiecePosition>> initPosPlayer2;
+
     int movesCounter;
 
-    friend class RPSManager;
+
 
     RPSGame();
 
+    friend class RPSManager;
 
-/** NEED TO CORRECT DOC
- * This function gets the file name and the player number, and process the initialization file of that player
- * @param filename
- * @return
- * -1 - if the file cannot be opened
- * 0  - if the file is valid
- * (1-num_of_lines_in_file) - the line there was an error
- */
-    bool RPSGameInitFileCheck(unique_ptr<PlayerAlgorithm> & playerAlg, int playerNum);
 
-    bool UpdateBoardPlayer1InitStage(int &lineNum);
+    bool UpdateBoardPlayer1InitStage(int &lineNum, vector<unique_ptr<PiecePosition>> & playersPositioning,
+                                     unique_ptr<RPSPlayerAlgorithm> &playerAlg);
 
-    bool UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2);
+    bool UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<PiecePosition>> &playersPositioning,
+                                         unique_ptr<RPSPlayerAlgorithm> &player1Alg,
+                                         unique_ptr<RPSPlayerAlgorithm> &player2Alg,
+                                         vector<unique_ptr<FightInfo>> &fights);
 
-    void FightOnPosition(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2);
+    void fightOuter(RPSMove & curMove, vector<unique_ptr<FightInfo>> &fights,
+                             unique_ptr<RPSPlayerAlgorithm> &player1Alg, unique_ptr<RPSPlayerAlgorithm> &player2Alg);
 
 /**
  * Function that removes both of the pieces from the board after fight
  * @param newMove - the move that caused the fight
  */
-    void RemoveBothPiecesFromGame(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2);
+    void removeBothPiecesFromGame(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights,
+                                  unique_ptr<RPSPlayerAlgorithm> &player1,
+                                  unique_ptr<RPSPlayerAlgorithm> &player2);
 
-    void RemoveToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, RPSMove curMove, char pieceToRemove);
+    void removeToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, RPSMove curMove, char pieceToRemove);
 /**
  * Function that performs the classic Rock Paper Scissors fight
  * @param newMove - the move that caused the fight
  */
-    void RPSGameRPSFight(RPSParser::OldMove &newMove);
+    void fightInner(RPSMove & curMove, vector<unique_ptr<FightInfo>> &fights, unique_ptr<RPSPlayerAlgorithm> &player1,
+                         unique_ptr<RPSPlayerAlgorithm> &player2);
 
 /**
  * Check if player 1 lost the game as a result of the last move performed
@@ -76,8 +75,7 @@ public:
 //    bool RPSGameCheckIfPlayer2Lose();
 
 
-    void updateFightVectors(int winner, RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1,
-                            vector<unique_ptr<FightInfo>> &fights2);
+    void updateFightVectors(int winner, RPSMove curMove, vector<unique_ptr<FightInfo>> &fights);
 
 
 
@@ -85,13 +83,15 @@ public:
  * Function that removes the tool that tried to defend himself from the attack
  * @param curMove - the move that caused the fight
  */
-    void FightAttackerWins(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>  &fights2);
+    void fightAttackerWins(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights,
+                           unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2);
 
 /**
  * Function that removes the tool that caused the fight
  * @param newMove - the move that caused the fight
  */
-    void FightAttackerLoses(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>  &fights2);
+    void fightAttackerLoses(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights,
+                            unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2);
 
 ///**
 // * This function treats both of the move files of the 2 players.

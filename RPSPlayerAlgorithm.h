@@ -15,20 +15,16 @@ class RPSPlayerAlgorithm : public PlayerAlgorithm {
 
 public:
 
+
     int _player;
     vector<unique_ptr<Point>> playerJokers;
     map<char, int> playerToolCounters;
 
-    RPSPlayerAlgorithm(int player) : _player(player) {
-        playerToolCounters['R'] = R;
-        playerToolCounters['P'] = P;
-        playerToolCounters['S'] = S;
-        playerToolCounters['B'] = B;
-        playerToolCounters['J'] = J;
-        playerToolCounters['F'] = F;
-    }
+
+    RPSPlayerAlgorithm(int player);
 
     friend class RPSManager;
+    friend class RPSGame;
 
     virtual void getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) = 0;
 
@@ -41,6 +37,8 @@ public:
     virtual unique_ptr<Move> getMove() = 0;
 
     virtual unique_ptr<JokerChange> getJokerChange() = 0; // nullptr if no change is requested
+
+    void addJokerPositionToVector(unique_ptr<PiecePosition> & pos);
 
     virtual ~RPSPlayerAlgorithm() {}
 };

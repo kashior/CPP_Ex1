@@ -8,6 +8,7 @@
 
 class RPSPoint: public Point {
     int _x, _y;
+
 public:
     RPSPoint(int x, int y);
     RPSPoint();

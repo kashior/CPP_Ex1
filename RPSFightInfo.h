@@ -8,20 +8,24 @@
 
 class RPSFightInfo : public FightInfo {
     int playerWinner;
-    char opponentPiece;
+    char player1Piece;
+    char player2Piece;
     RPSPoint fightPosition;
+
 public:
-    RPSFightInfo(int winner, char piece, Point position);
+    RPSFightInfo(int winner, char player1Piece, char player2Piece, Point position);
 
     virtual const Point &getPosition() const;
 
-    virtual char getOpponentPiece() const;
+    virtual char getPiece(int player) const;
 
     virtual int getWinner() const;
 
     void setPosition(Point newPosition);
 
-    void setOpponentPiece(char newPiece);
+    void setPlayer1Piece(char newPiece);
+
+    void setPlayer2Piece(char newPiece);
 
     void setWinner(int newWinner);
 

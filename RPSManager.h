@@ -17,12 +17,16 @@ class RPSManager{
     unique_ptr<RPSPlayerAlgorithm> player2;
     int player1Points;
     int player2Points;
+    vector<unique_ptr<PiecePosition>> player1Positioning;
+    vector<unique_ptr<PiecePosition>> player2Positioning;
 
 public:
 
     friend class RPSGame;
 
-    RPSManager(bool isPlayer1Auto, bool isPlayer2Auto, int player1Points, int player2Points);
+    RPSManager();
+
+    bool initCheck(int playerNum);
 
     void gameHandler(bool isPlayer1Auto, bool isPlayer2Auto);
 

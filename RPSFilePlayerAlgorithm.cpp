@@ -98,8 +98,7 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
     }
 
 
-void
-RPSFilePlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {}
+void RPSFilePlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {}
 
 void RPSFilePlayerAlgorithm::notifyOnOpponentMove(const Move &move) {} // called only on opponents move
 void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}// called only if there was a fight
@@ -116,3 +115,5 @@ virtual unique_ptr<JokerChange> RPSFilePlayerAlgorithm::getJokerChange() {
     }
     return nullptr;
 }
+
+

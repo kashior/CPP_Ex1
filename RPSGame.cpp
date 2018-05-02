@@ -12,24 +12,11 @@ RPSGame::RPSGame()  {
 }
 
 
-bool RPSGame::RPSGameInitFileCheck(unique_ptr<PlayerAlgorithm> & playerAlg, int playerNum) {
-    if (playerNum == 1){
-        playerAlg->getInitialPositions(1,initPosPlayer1);
-        if (initPosPlayer1.empty()) //empty file
-            return false;
-    }
-    else{
-        playerAlg->getInitialPositions(2,initPosPlayer2);
-        if(initPosPlayer2.empty())
-            return false;
-    }
-    return true;
-}
 
-
-bool RPSGame::UpdateBoardPlayer1InitStage(int &lineNum) {
+bool RPSGame::UpdateBoardPlayer1InitStage(int &lineNum, vector<unique_ptr<PiecePosition>> & playersPositioning,
+                                          unique_ptr<RPSPlayerAlgorithm> &playerAlg) {
     int x,y;
-    for (unique_ptr<PiecePosition> pos : initPosPlayer1){
+    for (unique_ptr<PiecePosition> pos : playersPositioning){
         x = pos->getPosition().getX();
         y = pos->getPosition().getY();
         if (board->board[y][x] != ' ') {
@@ -37,50 +24,53 @@ bool RPSGame::UpdateBoardPlayer1InitStage(int &lineNum) {
              " of player 1's positioning" << endl;
             return false;
         }
-        if (player1->playerToolCounters[pos->getPiece()] == 0) {
+        if (playerAlg->playerToolCounters[pos->getPiece()] == 0) {
             cout << "Error: A piece type appears more than it's number in line " << lineNum <<
                  " of player 1's positioning" << endl;
             return false;
         }
         if (pos->getJokerRep() !=  '#') {
-            player1.playerJokers.push_back(make_unique<RPSPiecePosition>(pos->getPosition(), pos->getPiece(), pos->getJokerRep()));
+            playerAlg->addJokerPositionToVector(pos);
             board->board[y][x] = pos->getJokerRep();
         }
         else
             board->board[y][x] = pos->getPiece();
-        player1->playerToolCounters[pos->getPiece()]--;
+        playerAlg->playerToolCounters[pos->getPiece()]--;
         lineNum++;
     }
     return true;
 }
 
-bool
-RPSGame::UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>&fights2) {
+
+bool RPSGame::UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<PiecePosition>> &playersPositioning,
+                                          unique_ptr<RPSPlayerAlgorithm> &player1Alg,
+                                          unique_ptr<RPSPlayerAlgorithm> &player2Alg,
+                                          vector<unique_ptr<FightInfo>> &fights) {
     int x,y;
     char piece;
-    for (unique_ptr<PiecePosition> pos : initPosPlayer2){
+    for (unique_ptr<PiecePosition> pos : playersPositioning){
         x = pos->getPosition().getX();
         y = pos->getPosition().getY();
         piece = (char)tolower(pos->getPiece());
-        if ( (int) board->board[y][x] > 96) {
+        if ( (int) board->board[y][x] > 96) { //the position already contains player 2 tool
             cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
                  " of player 2's positioning" << endl;
             return false;
         }
-        if (player2->playerToolCounters[pos->getPiece()] == 0) {
+        if (player1Alg->playerToolCounters[pos->getPiece()] == 0) {
             cout << "Error: A piece type appears more than it's number in line " << lineNum <<
                  " of player 2's positioning" << endl;
             return false;
         }
         if (pos->getJokerRep() !=  '#')
-            player2->playerJokers.push_back(make_unique<RPSPoint>(pos->getPosition());
+            player2Alg->addJokerPositionToVector(pos);
 
-        player2->playerToolCounters[pos->getPiece()]--;
+        player2Alg->playerToolCounters[pos->getPiece()]--;
         if (board->board[y][x] == ' ')
             board->board[y][x] = pos->getJokerRep()=='#' ? piece : (char) tolower(pos->getJokerRep());
-        else{
+        else {
             RPSMove initMove(RPSPoint(-1,-1), pos->getPosition(), piece, 2);
-            FightOnPosition(initMove, fights1, fights2);
+            fightOuter(initMove, fights, player1Alg, player2Alg);
         }
         lineNum++;
     }
@@ -90,36 +80,41 @@ RPSGame::UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<FightInfo>>
 //
 //
 
-void RPSGame::FightOnPosition(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2) {
+void RPSGame::fightOuter(RPSMove & curMove, vector<unique_ptr<FightInfo>> &fights,
+                              unique_ptr<RPSPlayerAlgorithm> &player1Alg, unique_ptr<RPSPlayerAlgorithm> &player2Alg) {
+
     char attackerTool = curMove.getPlayer() == 1 ? curMove.getPiece(): (char)tolower(curMove.getPiece());
     char defenderTool = board->board[curMove.getTo().getY()][curMove.getTo().getX()];
     if ((attackerTool == defenderTool) || (attackerTool == 'B') || (defenderTool == 'B') ||
             (attackerTool == 'b') || (defenderTool == 'b') )
-        RemoveBothPiecesFromGame(curMove, fights1, fights2);
+        removeBothPiecesFromGame(curMove, fights, player1Alg, player2Alg);
     else if (curMove.getPiece() == 'f' ) //possible only in init stage
-        RPSGameFightAttackerLoses(newMove);
-    else if (defenderTool == 'F' || defenderTool == 'f')
-        FightAttackerWins(newMove, <#initializer#>, <#initializer#>);
+        fightAttackerLoses(curMove, fights, player2Alg, player2Alg);
+    else if (defenderTool == 'F')
+        fightAttackerWins(curMove, fights, player1Alg, player2Alg);
+    else if (defenderTool == 'f')
+        fightAttackerWins(curMove, fights, player1Alg, player2Alg);
     else
-        RPSGameRPSFight(newMove);
+        fightInner(curMove, fights, player1Alg, player2Alg);
 }
 
 // remove both playertoolscounter and joker locations if there is , update board
-void
-RPSGame::RemoveBothPiecesFromGame(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>> &fights2) {
+void RPSGame::removeBothPiecesFromGame(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights,
+                                       unique_ptr<RPSPlayerAlgorithm> &player1,
+                                       unique_ptr<RPSPlayerAlgorithm> &player2) {
 
     char attackedPiece = (char) toupper(board->board[curMove.getTo().getY()][curMove.getTo().getX()]);
     char attackerPiece = (char) toupper(curMove.getPiece());
 
     if (curMove.getPlayer() == 1) {
-        RemoveToolsFromVectors(player1, curMove,  attackerPiece);
-        RemoveToolsFromVectors(player2, curMove,  attackedPiece);
+        removeToolsFromVectors(player1, curMove, attackerPiece);
+        removeToolsFromVectors(player2, curMove, attackedPiece);
     } else {
-        RemoveToolsFromVectors(player2, curMove,  attackerPiece);
-        RemoveToolsFromVectors(player1, curMove,  attackedPiece);
+        removeToolsFromVectors(player2, curMove, attackerPiece);
+        removeToolsFromVectors(player1, curMove, attackedPiece);
     }
 
-    updateFightVectors(0, curMove, fights1, fights2);
+    updateFightVectors(0, curMove, fights);
 
     board->board[curMove.getTo().getY()][curMove.getTo().getX()] = ' ';
     if (curMove.getFrom().getX() != -1) //not in init stage, need to change 'from' position on board to ' '
@@ -129,54 +124,68 @@ RPSGame::RemoveBothPiecesFromGame(RPSMove curMove, vector<unique_ptr<FightInfo>>
 
 
 
-void RPSGame::RPSGameRPSFight(RPSParser::OldMove &newMove) {
-    if ((board[newMove.toY][newMove.toX] == "R" || board[newMove.toY][newMove.toX] == "r") &&
-        (newMove.tool == "P" || newMove.tool == "p")) {
-        FightAttackerWins(newMove, <#initializer#>, <#initializer#>);
-    } else if ((board[newMove.toY][newMove.toX] == "P" || board[newMove.toY][newMove.toX] == "p") &&
-               (newMove.tool == "R" || newMove.tool == "r")) {
-        RPSGameFightAttackerLoses(newMove);
-    } else if ((board[newMove.toY][newMove.toX] == "R" || board[newMove.toY][newMove.toX] == "r") &&
-               (newMove.tool == "S" || newMove.tool == "s")) {
-        RPSGameFightAttackerLoses(newMove);
-    } else if ((board[newMove.toY][newMove.toX] == "S" || board[newMove.toY][newMove.toX] == "s") &&
-               (newMove.tool == "R" || newMove.tool == "r")) {
-        FightAttackerWins(newMove, <#initializer#>, <#initializer#>);
-    } else if ((board[newMove.toY][newMove.toX] == "P" || board[newMove.toY][newMove.toX] == "p") &&
-               (newMove.tool == "S" || newMove.tool == "s")) {
-        FightAttackerWins(newMove, <#initializer#>, <#initializer#>);
-    } else if ((board[newMove.toY][newMove.toX] == "S" || board[newMove.toY][newMove.toX] == "s") &&
-               (newMove.tool == "P" || newMove.tool == "p")) {
-        RPSGameFightAttackerLoses(newMove);
-    }
+void RPSGame::fightInner(RPSMove & curMove, vector<unique_ptr<FightInfo>> &fights, unique_ptr<RPSPlayerAlgorithm> &player1,
+                              unique_ptr<RPSPlayerAlgorithm> &player2) {
+    if ((board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'R' ||
+            board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'r') &&
+        (curMove.getPiece() == 'P' || curMove.getPiece() == 'p'))
+        fightAttackerWins(curMove, fights, player1, player2);
 
+    else if ((board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'P' ||
+            board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'p') &&
+               (curMove.getPiece() == 'R' || curMove.getPiece() == 'r'))
+        fightAttackerLoses(curMove, fights, player1, player2);
+
+    else if ((board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'R' ||
+            board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'r') &&
+               (curMove.getPiece() == 'S' || curMove.getPiece() == 's'))
+        fightAttackerLoses(curMove, fights, player1, player2);
+
+    else if ((board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'S'
+              || board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 's') &&
+               (curMove.getPiece() == 'R' || curMove.getPiece() == 'r'))
+        fightAttackerWins(curMove, fights, player1, player2);
+
+    else if ((board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'P' ||
+            board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'p') &&
+               (curMove.getPiece() == 'S' || curMove.getPiece() == 's'))
+        fightAttackerWins(curMove, fights, player1, player2);
+
+    else if ((board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 'S' ||
+            board->board[curMove.getTo().getY()][curMove.getTo().getX()] == 's') &&
+               (curMove.getPiece() == 'P' || curMove.getPiece() == 'p'))
+        fightAttackerLoses(curMove, fights, player1, player2);
 }
 
-void RPSGame::FightAttackerWins(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>  &fights2) {
+
+void RPSGame::fightAttackerWins(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights,
+                                unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2) {
     char attackedPiece= (char) toupper(board->board[curMove.getTo().getY()][curMove.getTo().getX()]);
     if (curMove.getPlayer() == 1)
-        RemoveToolsFromVectors(player2, curMove, attackedPiece);
+        removeToolsFromVectors(player2, curMove, attackedPiece);
     else
-        RemoveToolsFromVectors(player1, curMove, attackedPiece);
-    updateFightVectors(curMove.getPlayer(), curMove, fights1, fights2);
+        removeToolsFromVectors(player1, curMove, attackedPiece);
+    updateFightVectors(curMove.getPlayer(), curMove, fights);
     board->board[curMove.getTo().getY()][curMove.getTo().getY()] = curMove.getPiece();
     if (curMove.getFrom().getX() != -1) //not init stage
         board->board[curMove.getFrom().getY()][curMove.getFrom().getX()] = ' ';
 }
 
 
-void RPSGame::FightAttackerLoses(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1, vector<unique_ptr<FightInfo>>  &fights2) {
+void RPSGame::fightAttackerLoses(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights,
+                                 unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2) {
     char attackedPiece= (char) toupper(curMove.getPiece());
     if (curMove.getPlayer() == 1)
-        RemoveToolsFromVectors(player1, curMove, attackedPiece);
+        removeToolsFromVectors(player1, curMove, attackedPiece);
     else
-        RemoveToolsFromVectors(player2, curMove, attackedPiece);
-    updateFightVectors(curMove.getPlayer()==1 ? 2 : 1 , curMove, fights1, fights2);
+        removeToolsFromVectors(player2, curMove, attackedPiece);
+    updateFightVectors(curMove.getPlayer() == 1 ? 2 : 1, curMove, fights);
     if (curMove.getFrom().getX() != -1) //not init stage
         board->board[curMove.getFrom().getY()][curMove.getFrom().getX()] = ' ';
 }
 
-void RPSGame::RemoveToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, RPSMove curMove, char pieceToRemove) {
+
+void RPSGame::removeToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, RPSMove curMove, char pieceToRemove) {
 
     auto it=find_if(player->playerJokers.begin(), player->playerJokers.end(),
                     [&](unique_ptr<Point>& obj){return obj->getX()==curMove.getTo().getX()
@@ -191,23 +200,19 @@ void RPSGame::RemoveToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, RPS
 
 }
 
-void RPSGame::updateFightVectors(int winner, RPSMove curMove, vector<unique_ptr<FightInfo>> &fights1,
-                                 vector<unique_ptr<FightInfo>> &fights2) {
-    unique_ptr<FightInfo> fight1;
-    unique_ptr<FightInfo> fight2;
+void RPSGame::updateFightVectors(int winner, RPSMove curMove, vector<unique_ptr<FightInfo>> &fights) {
+
+    unique_ptr<FightInfo> fight;
+
     char attackedPiece= (char) toupper(board->board[curMove.getTo().getY()][curMove.getTo().getX()]);
     char attackerPiece = (char) toupper(curMove.getPiece());
 
-    if (curMove.getPlayer() == 1){
-        fight1 = make_unique<RPSFightInfo>(winner, attackedPiece, curMove.getTo());
-        fight2 = make_unique<RPSFightInfo>(winner, attackerPiece, curMove.getTo());
-    }
-    else{
-        fight1 = make_unique<RPSFightInfo>(winner, attackerPiece, curMove.getTo());
-        fight2 = make_unique<RPSFightInfo>(winner, attackedPiece, curMove.getTo());
-    }
-    fights1.push_back(fight1);
-    fights2.push_back(fight2);
+    if (curMove.getPlayer() == 1)
+        fight = make_unique<RPSFightInfo>(winner, attackerPiece, attackedPiece, curMove.getTo());
+    else
+        fight = make_unique<RPSFightInfo>(winner, attackedPiece, attackerPiece, curMove.getTo());
+
+    fights.push_back(fight);
 }
 
 

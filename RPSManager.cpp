@@ -5,26 +5,44 @@
 #include "RPSManager.h"
 
 
-RPSManager::RPSManager(bool isPlayer1Auto, bool isPlayer2Auto, int player1Points, int player2Points) {
-    if(!isPlayer1Auto)
-        player1= make_unique<RPSFilePlayerAlgorithm>(1,"/");
-    else
-        player1=make_unique<RPSAutoPlayerAlgorithm>(1,"/");
-    if(!isPlayer2Auto)
-        player2= make_unique<RPSFilePlayerAlgorithm>(2,"/");
-    else
-        player2=make_unique<RPSAutoPlayerAlgorithm>(2,"/");
-
+RPSManager::RPSManager(){
     curGame = make_unique<RPSGame>();
-
     player1Points = 0;
     player2Points = 0;
 }
 
 
+bool RPSManager::initCheck(int playerNum){
+    if (playerNum == 1){
+        player1->getInitialPositions(1, player1Positioning);
+        if (player1Positioning.empty()) //empty file
+            return false;
+    } else {
+        player2->getInitialPositions(2, player2Positioning);
+        if(player2Positioning.empty())
+            return false;
+    }
+    return true;
+}
+
 
 void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
-    bool file1Good, file2Good;
+
+    bool file1OK = true;
+    bool file2OK = true;
+
+    if(!isPlayer1Auto)
+        player1 = make_unique<RPSFilePlayerAlgorithm>(1,"/");
+    else
+        player1=make_unique<RPSAutoPlayerAlgorithm>(1,"/");
+    file1OK = initCheck(1);
+
+    if(!isPlayer2Auto)
+        player2= make_unique<RPSFilePlayerAlgorithm>(2,"/");
+    else
+        player2=make_unique<RPSAutoPlayerAlgorithm>(2,"/");
+    file2OK = initCheck(2);
+
     int reason; // the "reason" for output file
     // 1=all flags of the opponent are captures
     // 2=All moving PIECEs of the opponent are eaten
@@ -33,30 +51,36 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
     // 5=bad moves input file for some player
     int winner; // 0=tie, 1=player1 wins, 2=player2 wins
 
-    // checking the board game input files
-    if (!isPlayer1Auto)
-        file1Good = curGame->RPSGameInitFileCheck(player1, 1);
-    if (!isPlayer2Auto)
-        file2Good = curGame->RPSGameInitFileCheck(player2, 2);
-
-    if (!file1Good || !file2Good) { //at least one of the positioning input files is bad
-        updateWinner(file1Good, file2Good, winner);
-        makeOutputFile(4, file1Good, file2Good, winner);
+    //want to check if input file/s is/are valid
+    if (!file1OK || !file2OK){ //at least one of the positioning input files is bad
+        updateWinner(file1OK, file2OK, winner);
+        makeOutputFile(4, file1OK, file2OK, winner);
         return;
     }
 
+    //now we will update the game board with the positions vectors
+    int lineNum1 = 1; //for player1 input file (if exists)
+    int lineNum2 = 1; //for player2 input file (if exists)
+    file1OK = curGame->UpdateBoardPlayer1InitStage(lineNum1, player1Positioning, player1);
+    vector<unique_ptr<FightInfo>> fights;
+    file2OK = curGame->UpdateBoardPlayer2InitStage(lineNum1, player2Positioning, player1, player2, fights);
+
+
+
+
+
     // input file/s are valid, now before setting the moves we want to check if maybe there is already a winner...
     if (curGame.RPSGameCheckIfPlayer1Lose() || curGame.RPSGameCheckIfPlayer2Lose()) {// someone wins or both wins
-        RPSMainAuxFinalCheckOfGameBoard(winner, reason, newGame);
-        makeOutputFile(reason, 0, 0, winner);
+        finalCheckOfGameBoard(winner, reason);
+        makeOutputFile(reason, true, true, winner);
         return;
     }
 
     // now lets read moves files
-    param1 = newGame.RPSGameMoveFileCheck("player1.rps_moves", "player2.rps_moves", param2);
+    param1 = curGame.RPSGameMoveFileCheck("player1.rps_moves", "player2.rps_moves", param2);
     if (param1 == -1) {// tie, both moves files don't exist
         winner = 0;
-        RPSMainAuxMakeOutputFile(3, 0, 0, winner, newGame);
+        makeOutputFile(3, true, true, winner);
     } else if (param1 == 1 || param1 == 2) { //"bad moves input file"
         if (param1 == 1)
             winner = 2;
