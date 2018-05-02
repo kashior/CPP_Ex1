@@ -76,9 +76,7 @@ bool RPSGame::UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<PieceP
     }
     return true;
 }
-//
-//
-//
+
 
 void RPSGame::fightOuter(RPSMove & curMove, vector<unique_ptr<FightInfo>> &fights,
                               unique_ptr<RPSPlayerAlgorithm> &player1Alg, unique_ptr<RPSPlayerAlgorithm> &player2Alg) {

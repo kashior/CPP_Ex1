@@ -1,6 +1,4 @@
-//
-// Created by Maria Klimkin on 01-May-18.
-//
+
 
 #include "RPSManager.h"
 
@@ -51,28 +49,31 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
     // 5=bad moves input file for some player
     int winner; // 0=tie, 1=player1 wins, 2=player2 wins
 
-    //want to check if input file/s is/are valid
-    if (!file1OK || !file2OK){ //at least one of the positioning input files is bad
-        updateWinner(file1OK, file2OK, winner);
-        makeOutputFile(4, file1OK, file2OK, winner);
-        return;
-    }
-
-    //now we will update the game board with the positions vectors
+    //now we will update the game board with the positions vectors and continue checking if files are valid
     int lineNum1 = 1; //for player1 input file (if exists)
     int lineNum2 = 1; //for player2 input file (if exists)
     file1OK = curGame->UpdateBoardPlayer1InitStage(lineNum1, player1Positioning, player1);
     vector<unique_ptr<FightInfo>> fights;
-    file2OK = curGame->UpdateBoardPlayer2InitStage(lineNum1, player2Positioning, player1, player2, fights);
+    file2OK = curGame->UpdateBoardPlayer2InitStage(lineNum2, player2Positioning, player1, player2, fights);
+
+    //want to check if input file/s is/are valid
+    if (!file1OK || !file2OK){ //at least one of the positioning input files is bad
+        updateWinner(file1OK, file2OK, winner);
+        makeOutputFile(4, file1OK, file2OK, winner, lineNum1, lineNum2);
+        return;
+    }
 
 
+    //######################################################
+    //done until this point
+    //######################################################
 
 
 
     // input file/s are valid, now before setting the moves we want to check if maybe there is already a winner...
     if (curGame.RPSGameCheckIfPlayer1Lose() || curGame.RPSGameCheckIfPlayer2Lose()) {// someone wins or both wins
         finalCheckOfGameBoard(winner, reason);
-        makeOutputFile(reason, true, true, winner);
+        makeOutputFile(reason, true, true, winner, 0, 0);
         return;
     }
 
@@ -80,7 +81,7 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
     param1 = curGame.RPSGameMoveFileCheck("player1.rps_moves", "player2.rps_moves", param2);
     if (param1 == -1) {// tie, both moves files don't exist
         winner = 0;
-        makeOutputFile(3, true, true, winner);
+        makeOutputFile(3, true, true, winner, 0, 0);
     } else if (param1 == 1 || param1 == 2) { //"bad moves input file"
         if (param1 == 1)
             winner = 2;
@@ -109,7 +110,7 @@ void RPSManager::updateWinner(bool param1, bool param2, int &winner) {
 
 
 
-void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner) {
+void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner, int lineNum1, int lineNum2) {
     ofstream fout("rps.output");
     int loser;
     int badLine;
@@ -119,10 +120,10 @@ void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner
 
     if (reason == 4) { //"bad positioning input file"
         if (!param1 && !param2) //both files are bad
-            fout << "Bad Positioning input file for both players - player 1: line " << param1 <<
-                 ", player 2: line " << param2 << endl;
+            fout << "Bad Positioning input file for both players - player 1: line " << lineNum1 <<
+                 ", player 2: line " << lineNum2 << endl;
         else {
-            updateLoserAndBadLine(winner, loser, param1, param2, badLine);
+            updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
             fout << "Bad Positioning input file for player " << loser << " - line " << badLine << endl;
         }
     } else if (reason == 1 || reason == 2) {
@@ -134,8 +135,8 @@ void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner
         fout << "A tie - both Moves input files done without a winner" << endl;
 
     else { //(reason == 5)
-        updateLoserAndBadLine(winner, loser, param1, param2, badLine);
-        fout << "Bad Moves input file for player " << loser << " - line " << param2 << endl;
+        updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
+        fout << "Bad Moves input file for player " << loser << " - line " << badLine << endl;
     }
 
     fout << endl;

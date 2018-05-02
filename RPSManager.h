@@ -32,7 +32,7 @@ public:
 
     void updateWinner(bool param1, bool param2, int &winner);
 
-    void makeOutputFile(int reason, bool param1, bool param2, int winner);
+    void makeOutputFile(int reason, bool param1, bool param2, int winner, int lineNum1, int lineNum2);
 
     void updateLoserAndBadLine(int winner, int &loser, int param1, int param2, int &badLine);
 
