@@ -10,7 +10,6 @@
 #include <algorithm>
 #include "RPSParser.h"
 #include "RPSPiecePosition.h"
-#include "Board.h"
 #include "RPSPlayerAlgorithm.h"
 #include "RPSBoard.h"
 #include "RPSFightInfo.h"
@@ -24,12 +23,11 @@
 class RPSGame {
 
 public:
-    unique_ptr<RPSBoard> board;
+
+    unique_ptr<RPSBoard> board; ///////TO DO: check why '<Board>' doesn't work?!?!
     vector<unique_ptr<PiecePosition>> initPosPlayer1;
     vector<unique_ptr<PiecePosition>> initPosPlayer2;
     int movesCounter;
-    //unique_ptr<RPSPlayerAlgorithm> player1;
-    //unique_ptr<RPSPlayerAlgorithm> player2;
 
     friend class RPSManager;
 

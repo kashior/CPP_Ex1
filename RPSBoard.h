@@ -12,14 +12,19 @@
 using namespace std;
 
 class RPSBoard: public Board {
+
     char board[N][M];
 
 public:
+
     friend class RPSGame;
+    //friend class RPSManager;
 
     RPSBoard();
 
     virtual int getPlayer(const Point & pos) const;
+
+    char getPiece(int X, int Y);
 
     virtual ~RPSBoard() {}
 

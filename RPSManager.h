@@ -13,8 +13,8 @@
 class RPSManager{
 
     unique_ptr<RPSGame> curGame;
-    unique_ptr<PlayerAlgorithm> player1;
-    unique_ptr<PlayerAlgorithm> player2;
+    unique_ptr<RPSPlayerAlgorithm> player1;
+    unique_ptr<RPSPlayerAlgorithm> player2;
     int player1Points;
     int player2Points;
 
@@ -28,6 +28,13 @@ public:
 
     void updateWinner(bool param1, bool param2, int &winner);
 
+    void makeOutputFile(int reason, bool param1, bool param2, int winner);
+
+    void updateLoserAndBadLine(int winner, int &loser, int param1, int param2, int &badLine);
+
+    void finalCheckOfGameBoard(int &winner, int &reason);
+
+    void checkAndUpdateReasonForWinner(int &reason);
 
 };
 

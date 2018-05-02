@@ -7,16 +7,8 @@
 
 
 RPSGame::RPSGame()  {
-//    if(!isPlayer1Auto)
-//        player1= make_unique<RPSFilePlayerAlgorithm>(1,"/");
-//    else
-//        player1=make_unique<RPSAutoPlayerAlgorithm>(1,"/");
-//    if(!isPlayer2Auto)
-//        player2= make_unique<RPSFilePlayerAlgorithm>(2,"/");
-//    else
-//        player2=make_unique<RPSAutoPlayerAlgorithm>(2,"/");
-    board=make_unique<RPSBoard>();
-    movesCounter=0;
+    board = make_unique<RPSBoard>();
+    movesCounter = 0;
 }
 
 

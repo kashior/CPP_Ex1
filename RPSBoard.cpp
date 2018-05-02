@@ -19,3 +19,8 @@ int RPSBoard::getPlayer(const Point &pos) const {
         return 2;
     return 1;
 }
+
+
+char RPSBoard::getPiece(int X, int Y){
+    return board[Y][X];
+}
