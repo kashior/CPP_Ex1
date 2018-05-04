@@ -13,10 +13,8 @@ using namespace std;
 
 class RPSPlayerAlgorithm : public PlayerAlgorithm {
 
-public:
-
-
     int _player;
+public:
     vector<unique_ptr<Point>> playerJokers;
     map<char, int> playerToolCounters;
 
@@ -38,7 +36,9 @@ public:
 
     virtual unique_ptr<JokerChange> getJokerChange() = 0; // nullptr if no change is requested
 
-    void addJokerPositionToVector(unique_ptr<PiecePosition> & pos);
+    void addJokerPositionToVector(unique_ptr<PiecePosition> &pos);
+
+    int getPlayer();
 
     virtual ~RPSPlayerAlgorithm() {}
 };

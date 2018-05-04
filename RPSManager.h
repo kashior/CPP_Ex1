@@ -1,6 +1,4 @@
-//
-// Created by Maria Klimkin on 01-May-18.
-//
+
 
 #ifndef EX1_RPSMANAGER_H
 #define EX1_RPSMANAGER_H
@@ -13,8 +11,6 @@
 class RPSManager{
 
     unique_ptr<RPSGame> curGame;
-    unique_ptr<RPSPlayerAlgorithm> player1;
-    unique_ptr<RPSPlayerAlgorithm> player2;
     int player1Points;
     int player2Points;
     vector<unique_ptr<PiecePosition>> player1Positioning;
@@ -36,11 +32,16 @@ public:
 
     void updateLoserAndBadLine(int winner, int &loser, int param1, int param2, int &badLine);
 
-    void finalCheckOfGameBoard(int &winner, int &reason);
+    void checkWinner(int &winner, int &reason);
 
     void checkAndUpdateReasonForWinner(int &reason);
 
+    bool parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args);
+
+    bool moveIsValid(unique_ptr<Move> &curMove, int player);
+
 };
+
 
 
 

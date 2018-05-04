@@ -12,6 +12,8 @@ RPSMove::RPSMove(Point from, Point to, char piece, int player): _from(from),_to(
 RPSMove::RPSMove(){
     _piece='\0';
     _joker->setJokerNewRep('\0');
+    RPSPoint x(-1,-1);
+    _from=x;
 }
 
 const Point &RPSMove::getFrom() const {return _from;}

@@ -1,6 +1,4 @@
-//
-// Created by Maria Klimkin on 02-May-18.
-//
+
 
 #include "RPSAutoPlayerAlgorithm.h"
 
@@ -16,7 +14,8 @@ RPSPlayerAlgorithm::RPSPlayerAlgorithm(int player) : _player(player) {
     playerToolCounters['F'] = F;
 }
 
+RPSPlayerAlgorithm::getPlayer(){return _player;}
 
-void RPSPlayerAlgorithm::addJokerPositionToVector(unique_ptr<PiecePosition> & pos){
+void RPSPlayerAlgorithm::addJokerPositionToVector(unique_ptr<PiecePosition> &pos) {
     playerJokers.push_back(make_unique<RPSPoint>(pos->getPosition()));
 }

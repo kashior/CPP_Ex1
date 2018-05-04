@@ -8,7 +8,9 @@
 using namespace std;
 
 RPSFilePlayerAlgorithm::RPSFilePlayerAlgorithm(int player, string dir)
-        : RPSPlayerAlgorithm(player), _directory(dir), moveFileLineCounter(0) {}
+        : RPSPlayerAlgorithm(player), _directory(dir), moveFileLineCounter(0) {
+    setMovesFromMoveFile();
+}
 
 void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<PiecePosition>> &vectorToFill) {
     string c = player == 1 ? "1" : "2";
@@ -65,18 +67,18 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
 
 
 void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
-    string c = _player == 1 ? "1" : "2";
+    string c = getPlayer() == 1 ? "1" : "2";
     string lineToParse;
     string fileName = _directory + "player" + c + ".rps_moves";
     ifstream fin(fileName);
     if (fin.fail()) {
-        cout << "Error: There's no such file or directory, Player " << _player << "'s file is not exist" << endl;
+        cout << "Error: There's no such file or directory, Player " << getPlayer() << "'s file is not exist" << endl;
         playerMoves.clear();
         return;
     }
     unique_ptr<RPSMove> curMove = make_unique<RPSMove>();
     bool firstRow = true;
-    int parseResult;
+//    int parseResult;
     while (true) {
         lineToParse = "";
         getline(fin, lineToParse);
@@ -89,9 +91,9 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
             break;
         }
         firstRow = false;
-        parseResult = RPSParser::parseLineMove(lineToParse, curMove);
-        if(parseResult!=0)
-            break;
+        RPSParser::parseLineMove(lineToParse, curMove);//parseResult=
+//        if(parseResult!=0)
+//            break;
         playerMoves.push_back(curMove);
         }
     fin.close();
@@ -105,7 +107,9 @@ void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}// 
 
 
 virtual unique_ptr<Move> RPSFilePlayerAlgorithm::getMove() {
-    return move(playerMoves[moveFileLineCounter]);
+    if(playerMoves.size()>moveFileLineCounter)
+        return make_unique<RPSMove>(playerMoves[moveFileLineCounter++]);
+    return make_unique<RPSMove>();
 }
 
 virtual unique_ptr<JokerChange> RPSFilePlayerAlgorithm::getJokerChange() {
@@ -115,5 +119,7 @@ virtual unique_ptr<JokerChange> RPSFilePlayerAlgorithm::getJokerChange() {
     }
     return nullptr;
 }
+
+//void RPSFilePlayerAlgorithm::incrementMovesCounter() {moveFileLineCounter++;}
 
 

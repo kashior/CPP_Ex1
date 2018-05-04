@@ -21,6 +21,12 @@
  * Has all the functions that influence the flow of the game
  */
 class RPSGame {
+//    vector<unique_ptr<Point>> player1Jokers;
+//    vector<unique_ptr<Point>> player2Jokers;
+//    map<char, int> player1ToolCounters;
+//    map<char, int> player2ToolCounters;
+    unique_ptr<RPSPlayerAlgorithm> player1;
+    unique_ptr<RPSPlayerAlgorithm> player2;
 
 public:
 
@@ -43,30 +49,32 @@ public:
                                          unique_ptr<RPSPlayerAlgorithm> &player2Alg,
                                          vector<unique_ptr<FightInfo>> &fights);
 
-    void fightOuter(RPSMove & curMove, vector<unique_ptr<FightInfo>> &fights,
-                             unique_ptr<RPSPlayerAlgorithm> &player1Alg, unique_ptr<RPSPlayerAlgorithm> &player2Alg);
+    void fightOuter(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
+                    unique_ptr<RPSPlayerAlgorithm> &player1Alg, unique_ptr<RPSPlayerAlgorithm> &player2Alg);
 
 /**
  * Function that removes both of the pieces from the board after fight
  * @param newMove - the move that caused the fight
  */
-    void removeBothPiecesFromGame(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights,
+    void removeBothPiecesFromGame(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
                                   unique_ptr<RPSPlayerAlgorithm> &player1,
                                   unique_ptr<RPSPlayerAlgorithm> &player2);
 
-    void removeToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, RPSMove curMove, char pieceToRemove);
+    void removeToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, unique_ptr<RPSMove> &curMove,
+                                char pieceToRemove);
 /**
  * Function that performs the classic Rock Paper Scissors fight
  * @param newMove - the move that caused the fight
  */
-    void fightInner(RPSMove & curMove, vector<unique_ptr<FightInfo>> &fights, unique_ptr<RPSPlayerAlgorithm> &player1,
-                         unique_ptr<RPSPlayerAlgorithm> &player2);
+    void fightInner(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
+                    unique_ptr<RPSPlayerAlgorithm> &player1,
+                    unique_ptr<RPSPlayerAlgorithm> &player2);
 
 /**
  * Check if player 1 lost the game as a result of the last move performed
  * @return true if player 1 loses the game and false otherwise
  */
-//    bool RPSGameCheckIfPlayer1Lose();
+    bool CheckIfPlayerLose(unique_ptr<RPSPlayerAlgorithm> &player);
 //
 ///**
 // * Check if player 2 lost the game as a result of the last move performed
@@ -75,7 +83,7 @@ public:
 //    bool RPSGameCheckIfPlayer2Lose();
 
 
-    void updateFightVectors(int winner, RPSMove curMove, vector<unique_ptr<FightInfo>> &fights);
+    void updateFightVectors(int winner, unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights);
 
 
 
@@ -83,16 +91,18 @@ public:
  * Function that removes the tool that tried to defend himself from the attack
  * @param curMove - the move that caused the fight
  */
-    void fightAttackerWins(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights,
+    void fightAttackerWins(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
                            unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2);
 
 /**
  * Function that removes the tool that caused the fight
  * @param newMove - the move that caused the fight
  */
-    void fightAttackerLoses(RPSMove curMove, vector<unique_ptr<FightInfo>> &fights,
+    void fightAttackerLoses(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
                             unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2);
 
+
+    RPSMove setMoveToBoard(unique_ptr<Move> curMove);
 ///**
 // * This function treats both of the move files of the 2 players.
 // * reads line by line when player 1 starts, checks for errors and winners and also update the game object at all times

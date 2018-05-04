@@ -12,11 +12,11 @@ RPSManager::RPSManager(){
 
 bool RPSManager::initCheck(int playerNum){
     if (playerNum == 1){
-        player1->getInitialPositions(1, player1Positioning);
+        curGame->player1->getInitialPositions(1, player1Positioning);
         if (player1Positioning.empty()) //empty file
             return false;
     } else {
-        player2->getInitialPositions(2, player2Positioning);
+        curGame->player2->getInitialPositions(2, player2Positioning);
         if(player2Positioning.empty())
             return false;
     }
@@ -30,15 +30,15 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
     bool file2OK = true;
 
     if(!isPlayer1Auto)
-        player1 = make_unique<RPSFilePlayerAlgorithm>(1,"/");
+        curGame->player1 = make_unique<RPSFilePlayerAlgorithm>(1,"/");
     else
-        player1=make_unique<RPSAutoPlayerAlgorithm>(1,"/");
+        curGame->player1=make_unique<RPSAutoPlayerAlgorithm>(1,"/");
     file1OK = initCheck(1);
 
     if(!isPlayer2Auto)
-        player2= make_unique<RPSFilePlayerAlgorithm>(2,"/");
+        curGame->player2= make_unique<RPSFilePlayerAlgorithm>(2,"/");
     else
-        player2=make_unique<RPSAutoPlayerAlgorithm>(2,"/");
+        curGame->player2=make_unique<RPSAutoPlayerAlgorithm>(2,"/");
     file2OK = initCheck(2);
 
     int reason; // the "reason" for output file
@@ -47,14 +47,14 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
     // 3=A tie - both Moves input files done without a winner
     // 4=bad positioning input file for one player or both
     // 5=bad moves input file for some player
-    int winner; // 0=tie, 1=player1 wins, 2=player2 wins
+    int winner; // 0=tie, 1=player1 wins, 2=player2 wins 3= continue
 
     //now we will update the game board with the positions vectors and continue checking if files are valid
     int lineNum1 = 1; //for player1 input file (if exists)
     int lineNum2 = 1; //for player2 input file (if exists)
-    file1OK = curGame->UpdateBoardPlayer1InitStage(lineNum1, player1Positioning, player1);
+    file1OK = curGame->UpdateBoardPlayer1InitStage(lineNum1, player1Positioning, curGame->player1);
     vector<unique_ptr<FightInfo>> fights;
-    file2OK = curGame->UpdateBoardPlayer2InitStage(lineNum2, player2Positioning, player1, player2, fights);
+    file2OK = curGame->UpdateBoardPlayer2InitStage(lineNum2, player2Positioning, curGame->player1, curGame->player2, fights);
 
     //want to check if input file/s is/are valid
     if (!file1OK || !file2OK){ //at least one of the positioning input files is bad
@@ -63,35 +63,58 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
         return;
     }
 
-
-    //######################################################
-    //done until this point
-    //######################################################
-
-
-
     // input file/s are valid, now before setting the moves we want to check if maybe there is already a winner...
-    if (curGame.RPSGameCheckIfPlayer1Lose() || curGame.RPSGameCheckIfPlayer2Lose()) {// someone wins or both wins
-        finalCheckOfGameBoard(winner, reason);
+
+    checkWinner(winner, reason);
+    if(winner!=3) {
         makeOutputFile(reason, true, true, winner, 0, 0);
         return;
     }
+    bool param1, param2;
 
     // now lets read moves files
-    param1 = curGame.RPSGameMoveFileCheck("player1.rps_moves", "player2.rps_moves", param2);
-    if (param1 == -1) {// tie, both moves files don't exist
-        winner = 0;
-        makeOutputFile(3, true, true, winner, 0, 0);
-    } else if (param1 == 1 || param1 == 2) { //"bad moves input file"
-        if (param1 == 1)
-            winner = 2;
-        else
-            winner = 1;
-        RPSMainAuxMakeOutputFile(5, param1, param2, winner, newGame); // here param2 == bad line number
-    } else { //param1=0 , moves files are OK, we need to check if there is a winner
-        RPSMainAuxFinalCheckOfGameBoard(winner, reason, newGame);
-        RPSMainAuxMakeOutputFile(reason, param1, param2, winner, newGame);
+    unique_ptr<Move> curMovePtr;
+
+    while(winner==3){
+        curMovePtr=curGame->player1->getMove();
+        if(!moveIsValid(curMovePtr, 1)) {
+            param1=false;
+            winner=2;
+            reason=5;
+            break;
+        }
+//        (curMovePtr->getFrom(),curMovePtr->getTo(),curGame->board->board[curMovePtr->getFrom().getY()][curMovePtr->getFrom().getX()]);
+        RPSMove curMove=curGame->setMoveToBoard(curMovePtr);
+        lineNum1++;
+        curGame->player2->notifyOnOpponentMove();
+        checkWinner(winner, reason);
+        curMovePtr=curGame->player2->getMove();
+        if(!moveIsValid(curMovePtr, 2)) {
+            param2=false;
+            winner=1;
+            reason=5;
+            break;
+        }
+        curGame->setMoveToBoard(curMovePtr);
+        lineNum2++;
+        checkWinner(winner, reason);
     }
+    makeOutputFile(reason, param1, param2, winner, lineNum1, lineNum2);
+
+//    param1 = curGame.RPSGameMoveFileCheck("player1.rps_moves", "player2.rps_moves", param2);
+//    if (param1 == -1) {// tie, both moves files don't exist
+//        winner = 0;
+//        makeOutputFile(3, true, true, winner, 0, 0);
+//    } else if (param1 == 1 || param1 == 2) { //"bad moves input file"
+//        if (param1 == 1)
+//            winner = 2;
+//        else
+//            winner = 1;
+//        RPSMainAuxMakeOutputFile(5, param1, param2, winner, newGame); // here param2 == bad line number
+//    } else { //param1=0 , moves files are OK, we need to check if there is a winner
+//        RPSMainAuxFinalCheckOfGameBoard(winner, reason, newGame);
+//        RPSMainAuxMakeOutputFile(reason, param1, param2, winner, newGame);
+//    }
 }
 
 
@@ -163,17 +186,17 @@ void RPSManager::updateLoserAndBadLine(int winner, int &loser, int param1, int p
 }
 
 
-void RPSManager::finalCheckOfGameBoard(int &winner, int &reason) {
-    if (curGame.RPSGameCheckIfPlayer1Lose() && curGame.RPSGameCheckIfPlayer2Lose()) { // both wins
+void RPSManager::checkWinner(int &winner, int &reason) {
+    if (curGame->CheckIfPlayerLose(curGame->player1)&&curGame->CheckIfPlayerLose(curGame->player2)) { // both wins
         winner = 0;
-    } else if (curGame.RPSGameCheckIfPlayer1Lose()) { //player 2 wins
+    } else if (curGame->CheckIfPlayerLose(curGame->player1)) { //player 2 wins
         winner = 2;
         player2Points += 1;
-    } else if (curGame.RPSGameCheckIfPlayer2Lose()) {// player 1 wins
+    } else if (curGame->CheckIfPlayerLose(curGame->player2)) {// player 1 wins
         winner = 1;
         player1Points += 1;
     } else { // no one wins
-        winner = 0;
+        winner = 3;
         reason = 3; // "A tie - both moves input files done without a winner"
         return;
     }
@@ -182,8 +205,55 @@ void RPSManager::finalCheckOfGameBoard(int &winner, int &reason) {
 
 
 void RPSManager::checkAndUpdateReasonForWinner(int &reason) {
-    if (player1->playerToolCounters['F'] == F || player2->playerToolCounters['F'] == F)
+    if (curGame->player1->playerToolCounters['F'] == F || curGame->player2->playerToolCounters['F'] == F)
         reason = 1; // "all flags of the opponent are captured"
     else
         reason = 2; // "all moving pieces of the opponent are eaten"
+}
+
+bool RPSManager::parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args) {
+    string delimiter = "-";
+    string parameters[3];
+    size_t pos = 0;
+    string token;
+    int i=0;
+    while ((pos = args.find(delimiter)) != string::npos) {
+        if(i==3)
+            return false;
+        token = args.substr(0, pos);
+        args.erase(0, pos + delimiter.length());
+        parameters[i++]=token;
+    }
+    if(parameters[0]=="auto")
+        isPlayer1Auto=true;
+    else if(parameters[0]=="file")
+        isPlayer1Auto=false;
+    else
+        return false;
+    if(parameters[1]!="vs")
+        return false;
+    if(parameters[2]=="auto")
+        isPlayer2Auto=true;
+    else if(parameters[2]=="file")
+        isPlayer2Auto=false;
+    else
+        return false;
+    return true;
+}
+
+bool RPSManager::moveIsValid(unique_ptr<Move> &curMove, int player) {
+    if(curMove->getFrom().getX() == -1 || curMove->getTo() == -1)
+        return false;
+    if(curGame->board->board[curMove->getFrom().getY()][curMove->getFrom().getX()]==' ')
+        return false;
+    if(player==1){
+        if(isupper(curGame->board->board[curMove->getTo().getY()][curMove->getTo().getX()]))
+            return false;
+    }
+    if(player==2){
+        if(islower(curGame->board->board[curMove->getTo().getY()][curMove->getTo().getX()]))
+            return false;
+    }
+    return true;
+
 }
