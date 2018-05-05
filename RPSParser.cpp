@@ -53,14 +53,15 @@ int RPSParser::parse4TokensInitLine(vector<string> tokens, unique_ptr<RPSPiecePo
 }
 
 
-int RPSParser::parseLineMove(const string &line, unique_ptr<RPSMove> &newMove) {
+int
+RPSParser::parseLineMove(const string &line, unique_ptr<RPSMove> &newMove, unique_ptr<RPSJokerChange> &newJokerChange) {
     istringstream iss(line);
     vector<string> tokens((istream_iterator<string>(iss)), istream_iterator<string>());
     if (tokens.size() != 8 && tokens.size() != 4)
         return 1;
     if (tokens.size() == 4)
         return parse4TokensMoveLine(newMove, tokens);
-    return parse8TokensMoveLine(newMove, tokens);
+    return parse8TokensMoveLine(newMove, tokens, newJokerChange);
 }
 
 
@@ -78,7 +79,8 @@ int RPSParser::parse4TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string>
 }
 
 
-int RPSParser::parse8TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string> tokens) {
+int RPSParser::parse8TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string> tokens,
+                                   unique_ptr<RPSJokerChange> &newJokerChange) {
 
     if (checkIfPositionValid(tokens[0], tokens[1]) && checkIfPositionValid(tokens[2], tokens[3])) {
         int fromX = stoi(tokens[0]) - 1;
@@ -97,7 +99,10 @@ int RPSParser::parse8TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string>
 
         if (tokens[7] != "R" && tokens[7] != "P" && tokens[7] != "S" && tokens[7] != "B")
             return 2;
-        newMove->setJoker(tokens[7][0], new RPSPoint(joker_X, joker_Y));
+        newJokerChange->setJokerNewRep(tokens[7][0]);
+        newJokerChange->setJokerChangePosition(RPSPoint(joker_X,joker_Y));
+
+//        newMove->setJoker(tokens[7][0], new RPSPoint(joker_X, joker_Y));
         return 0;
     }
     return 3;

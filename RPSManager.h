@@ -15,6 +15,10 @@ class RPSManager{
     int player2Points;
     vector<unique_ptr<PiecePosition>> player1Positioning;
     vector<unique_ptr<PiecePosition>> player2Positioning;
+//    RPSBoard board_temp;
+//    vector<unique_ptr<FightInfo>> fights_temp;
+//    unique_ptr<PlayerAlgorithm> player1_temp;
+//    unique_ptr<PlayerAlgorithm> player2_temp;
 
 public:
 
@@ -40,11 +44,11 @@ public:
 
     bool checkIfMoveIsValid(unique_ptr<Move> &curMove, int player);
 
-    bool checkIfMoveIsValidBoardwise(unique_ptr<RPSMove> &curMove, int player);
+    bool checkIfMoveIsValidBoardwise(unique_ptr<Move> &curMove, int player);
 
-    bool checkIfJokerChangeIsValid(unique_ptr<RPSMove> &curMove, int player);
+//    bool checkIfJokerChangeIsValid(unique_ptr<RPSMove> &curMove, int player);
 
-    void checkIfMoveIsNull(unique_ptr<RPSMove> & curMove, bool & moreMoves);
+//    void checkIfMoveIsNull(unique_ptr<Move> &curMove, bool &moreMoves);
 
 };
 

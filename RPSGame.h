@@ -102,7 +102,7 @@ public:
                             unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2);
 
 
-    RPSMove setMoveToBoard(unique_ptr<Move> curMove);
+    RPSMove setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightInfo &curFight);
 ///**
 // * This function treats both of the move files of the 2 players.
 // * reads line by line when player 1 starts, checks for errors and winners and also update the game object at all times

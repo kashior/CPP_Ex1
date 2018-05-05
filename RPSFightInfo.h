@@ -15,6 +15,8 @@ class RPSFightInfo : public FightInfo {
 public:
     RPSFightInfo(int winner, char player1Piece, char player2Piece, Point position);
 
+    RPSFightInfo();
+
     virtual const Point &getPosition() const;
 
     virtual char getPiece(int player) const;

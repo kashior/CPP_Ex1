@@ -77,6 +77,7 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
         return;
     }
     unique_ptr<RPSMove> curMove = make_unique<RPSMove>();
+    unique_ptr<RPSJokerChange> curJokerChange=make_unique<RPSJokerChange>();
     bool firstRow = true;
     int parseResult;
     while (true) {
@@ -91,12 +92,12 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
             break;
         }
         firstRow = false;
-        parseResult = RPSParser::parseLineMove(lineToParse, curMove);
+        parseResult = RPSParser::parseLineMove(lineToParse, curMove, curJokerChange);
         if (parseResult!=0){ //the move is invalid
-            playerMoves.push_back(curMove);
+            playerMoves.push_back(make_pair(curMove,curJokerChange));
             break; //no need to check more moves after invalid move
         }
-        playerMoves.push_back(curMove);
+        playerMoves.push_back(make_pair(curMove,curJokerChange));
     }
     fin.close();
 }
@@ -111,14 +112,13 @@ void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}// 
 
 virtual unique_ptr<Move> RPSFilePlayerAlgorithm::getMove() {
     if(playerMoves.size()>moveFileLineCounter)
-        return make_unique<RPSMove>(playerMoves[moveFileLineCounter++]);
+        return move(playerMoves[moveFileLineCounter++].first);
     return make_unique<RPSMove>();
 }
 
 virtual unique_ptr<JokerChange> RPSFilePlayerAlgorithm::getJokerChange() {
-    if(playerMoves[moveFileLineCounter]->getJoker()!= nullptr){
-        unique_ptr<JokerChange> ptr=playerMoves[moveFileLineCounter]->getJoker();
-        return ptr;
+    if(playerMoves[moveFileLineCounter-1].second->getJokerNewRep()!= '#'){
+        return move(playerMoves[moveFileLineCounter-1].second);
     }
     return nullptr;
 }

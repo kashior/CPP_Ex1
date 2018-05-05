@@ -74,7 +74,8 @@ public:
      *         1/2/3 - otherwise.
      *
      */
-    static int parseLineMove(const string &line, unique_ptr<RPSMove> &newMove);
+    static int
+    parseLineMove(const string &line, unique_ptr<RPSMove> &newMove, unique_ptr<RPSJokerChange> &newJokerChange);
 
 private:
     /**
@@ -130,7 +131,8 @@ private:
      *         2 - if <NEW_REP> is not a valid piece
      *         3 - if the position on board is invalid
      */
-    static int parse8TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string> tokens);
+    static int parse8TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string> tokens,
+                                    unique_ptr<RPSJokerChange> &newJokerChange);
 
     /**
      *

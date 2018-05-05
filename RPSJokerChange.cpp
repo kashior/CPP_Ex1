@@ -3,7 +3,7 @@
 
 RPSJokerChange::RPSJokerChange(Point jokerPosition, char jokerRep='#'): _jokerRep(jokerRep), _jokerPosition(jokerPosition) {}
 
-RPSJokerChange::RPSJokerChange(){}
+RPSJokerChange::RPSJokerChange():  _jokerRep('#'), _jokerPosition(RPSPoint(-1,-1)){}
 const Point &RPSJokerChange::getJokerChangePosition() const { return _jokerPosition ;}
 
 char RPSJokerChange::getJokerNewRep() const {return _jokerRep;}
