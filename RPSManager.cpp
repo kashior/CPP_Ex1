@@ -70,14 +70,29 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
         makeOutputFile(reason, true, true, winner, 0, 0);
         return;
     }
-    bool param1, param2;
 
-    // now lets read moves files
+    // lets notify on initial positions to the players algorithms
+    curGame->player1->notifyOnInitialBoard(curGame->board, fights);
+    curGame->player2->notifyOnInitialBoard(curGame->board, fights);
+
+
+    // now lets read moves files (if there are)
+    bool moreMoves1 = true;  // set to "true" if there are still moves in players 1/2 moves file, set to "false" if
+                                // there are no more moves in the file.
+                                // if it is auto-player the value will allways be "true"
+    bool moreMoves2 = true;
+
+    bool param1, param2;
+    
     unique_ptr<Move> curMovePtr;
 
-    while(winner==3){
-        curMovePtr=curGame->player1->getMove();
-        if(!moveIsValid(curMovePtr, 1)) {
+    while( (winner == 3) && (moreMoves1 || moreMoves2) && (curGame->movesCounter < 100) ){
+
+        curMovePtr = curGame->player1->getMove();
+
+        checkIfMoveIsNull(curMovePtr, moreMoves1);
+
+        if(!checkIfMoveIsValid(curMovePtr, 1)) {
             param1=false;
             winner=2;
             reason=5;
@@ -89,7 +104,7 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
         curGame->player2->notifyOnOpponentMove();
         checkWinner(winner, reason);
         curMovePtr=curGame->player2->getMove();
-        if(!moveIsValid(curMovePtr, 2)) {
+        if(!checkIfMoveIsValid(curMovePtr, 2)) {
             param2=false;
             winner=1;
             reason=5;
@@ -116,6 +131,9 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
 //        RPSMainAuxMakeOutputFile(reason, param1, param2, winner, newGame);
 //    }
 }
+
+
+
 
 
 void RPSManager::updateWinner(bool param1, bool param2, int &winner) {
@@ -241,19 +259,58 @@ bool RPSManager::parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string
     return true;
 }
 
-bool RPSManager::moveIsValid(unique_ptr<Move> &curMove, int player) {
-    if(curMove->getFrom().getX() == -1 || curMove->getTo() == -1)
+bool RPSManager::checkIfMoveIsValid(unique_ptr<Move> &curMove, int player) {
+    if(curMove->getFrom().getX() == -1 || curMove->getTo().getY() == -1)
         return false;
-    if(curGame->board->board[curMove->getFrom().getY()][curMove->getFrom().getX()]==' ')
+
+    return checkIfMoveIsValidBoardwise(curMove, player);
+
+
+}
+
+bool RPSManager::checkIfMoveIsValidBoardwise(unique_ptr<RPSMove> &curMove, int player) {
+    if (curGame->board->board[curMove->getFrom().getY()][curMove->getFrom().getX()]==' ')
         return false;
-    if(player==1){
+    if (player==1){
         if(isupper(curGame->board->board[curMove->getTo().getY()][curMove->getTo().getX()]))
             return false;
+        if (curGame->board->board[curMove->getFrom().getY()][curMove->getFrom().getX()] == 'F'
+            || curGame->board->board[curMove->getFrom().getY()][curMove->getFrom().getX()] == 'B')
+            return false; //can't move un-moving pieces
     }
-    if(player==2){
+    if (player==2){
         if(islower(curGame->board->board[curMove->getTo().getY()][curMove->getTo().getX()]))
+            return false;
+        if (curGame->board->board[curMove->getFrom().getY()][curMove->getFrom().getX()] == 'f'
+            || curGame->board->board[curMove->getFrom().getY()][curMove->getFrom().getX()] == 'b')
+            return false; //can't move un-moving pieces
+    }
+    if (curMove->getJoker()->getJokerNewRep() != '\0') //if there is a joker change in this move
+        return checkIfJokerChangeIsValid(curMove, player);
+
+    return true; //all good
+}
+
+
+
+bool RPSManager::checkIfJokerChangeIsValid(unique_ptr<RPSMove> &curMove, int player) {
+    if (player == 1) {
+        if (find(curGame->player1->playerJokers.begin(), curGame->player1->playerJokers.end(),
+                 curMove->getJoker()->getJokerChangePosition()) != curGame->player1->playerJokers.end())
+            //if there is no joker in this position on the board
+            return false;
+    } else {
+        if (find(curGame->player2->playerJokers.begin(), curGame->player2->playerJokers.end(),
+                 curMove->getJoker()->getJokerChangePosition()) != curGame->player2->playerJokers.end())
+            //if there is no joker in this position on the board
             return false;
     }
     return true;
+}
 
+
+void RPSManager::checkIfMoveIsNull(unique_ptr<RPSMove> &curMove, bool &moreMoves) {
+    if (curMove->getPiece() == '\0'){ //the move is empty, meaning there are no more moves in the moves file
+        moreMoves = false;
+    }
 }

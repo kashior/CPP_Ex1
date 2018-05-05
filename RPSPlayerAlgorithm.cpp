@@ -14,7 +14,7 @@ RPSPlayerAlgorithm::RPSPlayerAlgorithm(int player) : _player(player) {
     playerToolCounters['F'] = F;
 }
 
-RPSPlayerAlgorithm::getPlayer(){return _player;}
+int RPSPlayerAlgorithm::getPlayer(){return _player;}
 
 void RPSPlayerAlgorithm::addJokerPositionToVector(unique_ptr<PiecePosition> &pos) {
     playerJokers.push_back(make_unique<RPSPoint>(pos->getPosition()));

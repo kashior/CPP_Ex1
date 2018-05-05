@@ -18,7 +18,7 @@ class RPSBoard: public Board {
 public:
 
     friend class RPSGame;
-    //friend class RPSManager;
+    friend class RPSManager;
 
     RPSBoard();
 

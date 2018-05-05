@@ -30,7 +30,7 @@ class RPSGame {
 
 public:
 
-    unique_ptr<RPSBoard> board; ///////TO DO: check why '<Board>' doesn't work?!?!
+    RPSBoard board;
 
     int movesCounter;
 

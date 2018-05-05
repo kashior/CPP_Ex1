@@ -10,7 +10,9 @@
 class RPSJokerChange: public JokerChange  {
     char _jokerRep;
     Point _jokerPosition;
+
 public:
+
     RPSJokerChange( Point jokerPosition, char jokerRep);
     RPSJokerChange();
     virtual const Point & getJokerChangePosition() const;

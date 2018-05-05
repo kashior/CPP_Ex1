@@ -78,7 +78,7 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
     }
     unique_ptr<RPSMove> curMove = make_unique<RPSMove>();
     bool firstRow = true;
-//    int parseResult;
+    int parseResult;
     while (true) {
         lineToParse = "";
         getline(fin, lineToParse);
@@ -91,18 +91,21 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
             break;
         }
         firstRow = false;
-        RPSParser::parseLineMove(lineToParse, curMove);//parseResult=
-//        if(parseResult!=0)
-//            break;
-        playerMoves.push_back(curMove);
+        parseResult = RPSParser::parseLineMove(lineToParse, curMove);
+        if (parseResult!=0){ //the move is invalid
+            playerMoves.push_back(curMove);
+            break; //no need to check more moves after invalid move
         }
-    fin.close();
+        playerMoves.push_back(curMove);
     }
+    fin.close();
+}
 
 
 void RPSFilePlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {}
 
 void RPSFilePlayerAlgorithm::notifyOnOpponentMove(const Move &move) {} // called only on opponents move
+
 void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}// called only if there was a fight
 
 
