@@ -83,7 +83,7 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
     bool moreMoves2 = true;
 
     bool param1, param2;
-    
+
     unique_ptr<Move> curMovePtr;
 
     while( (winner == 3) && (moreMoves1 || moreMoves2) && (curGame->movesCounter < 100) ){
@@ -184,7 +184,7 @@ void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner
     // printing the game board state
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
-            fout << curGame->board->getPiece(i, j);
+            fout << curGame->board.getPiece(i,j);
         }
         fout << endl;
     }
