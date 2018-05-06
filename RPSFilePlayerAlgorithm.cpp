@@ -55,10 +55,10 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
                 vectorToFill.clear();
                 return;
             default:
-                vectorToFill.push_back(move(initPos));
                 playerToolCounters[initPos->getPiece()]--;
                 if (initPos->getJokerRep() != '#')
                     playerJokers.push_back(make_unique<RPSPoint>(initPos->getPosition()));
+                vectorToFill.push_back(move(initPos));
                 lineNum++;
         }
     }
@@ -94,10 +94,10 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
         firstRow = false;
         parseResult = RPSParser::parseLineMove(lineToParse, curMove, curJokerChange);
         if (parseResult!=0){ //the move is invalid
-            playerMoves.push_back(make_pair(curMove,curJokerChange));
+            playerMoves.emplace_back(curMove,curJokerChange);
             break; //no need to check more moves after invalid move
         }
-        playerMoves.push_back(make_pair(curMove,curJokerChange));
+        playerMoves.emplace_back(curMove,curJokerChange);
     }
     fin.close();
 }

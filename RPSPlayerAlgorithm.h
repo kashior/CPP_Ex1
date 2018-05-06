@@ -15,7 +15,7 @@ class RPSPlayerAlgorithm : public PlayerAlgorithm {
 
     int _player;
 public:
-    vector<unique_ptr<Point>> playerJokers;
+    vector<unique_ptr<RPSPoint>> playerJokers;
     map<char, int> playerToolCounters;
 
 

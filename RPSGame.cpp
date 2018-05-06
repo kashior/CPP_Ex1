@@ -224,10 +224,22 @@ bool RPSGame::CheckIfPlayerLose(unique_ptr<RPSPlayerAlgorithm> &player) {
     return player->playerToolCounters['R'] == R && player->playerToolCounters['P'] == P
            && player->playerToolCounters['S'] == S && player->playerToolCounters['J'] == J;
 }
-// TODO: need to use getJokerChange and getFightResult of playerAlgorithm
 RPSMove RPSGame::setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightInfo &curFight) {
-    //TODO: implement
-    return RPSMove();
+    unique_ptr<RPSMove> resultMove=make_unique<RPSMove>(curMove->getFrom(),curMove->getTo(),
+                        board.board[curMove->getFrom().getY()][curMove->getFrom().getX()],player);
+    char fromPiece = board.board[curMove->getFrom().getY()][curMove->getFrom().getX()];
+    char toPiece = board.board[curMove->getTo().getY()][curMove->getTo().getX()];
+    if(toPiece!=' ') { //fight!
+        vector<unique_ptr<FightInfo>> fights;
+        curFight.setPlayer1Piece(isupper(fromPiece) == 0 ? toPiece : fromPiece);
+        curFight.setPlayer2Piece(isupper(fromPiece) == 0 ? fromPiece : toPiece);
+        curFight.setPosition(curMove->getTo());
+        fightOuter(resultMove, fights, player1, player2);
+        curFight.setWinner(fights.at(0)->getWinner());
+    } else
+        board.board[curMove->getTo().getY()][curMove->getTo().getX()]=fromPiece;
+
+    return RPSMove(resultMove->getFrom(),resultMove->getTo(),resultMove->getPiece(),resultMove->getPlayer());
 }
 
 //bool RPSGame::RPSGameCheckIfPlayer2Lose() {
