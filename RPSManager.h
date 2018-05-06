@@ -38,7 +38,7 @@ public:
 
     bool parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args);
 
-    bool checkIfMoveIsValid(unique_ptr<Move> &curMove, int player);
+    bool checkIfMoveIsValid(unique_ptr<Move> &curMove, int player, bool &moreMoves);
 
     bool checkIfMoveIsValidBoardwise(unique_ptr<Move> &curMove, int player);
 

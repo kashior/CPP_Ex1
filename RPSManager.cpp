@@ -85,6 +85,11 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
     // now lets read moves files (if there are)
 
     bool param1 = true, param2 = true;
+    bool moreMoves1 = true, moreMoves2 = true; //Set to "true" if there are more moves in the moves files of
+                                                // of player 1 and 2. Set to "false" ones there are no more
+                                                // moves in the file. For auto players the value is always
+                                                // "true".
+
 
     unique_ptr<Move> curMovePtr;
     unique_ptr<JokerChange> curJokerChangePtr;
@@ -92,12 +97,16 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
     RPSMove curMove;
     RPSFightInfo curFight;
 
-    while ((winner == 3) && (curGame->movesCounter < 100)) {
-// player 1's turn
+    while ((winner == 3) && (curGame->movesCounter < 100) && (moreMoves1 == true || moreMoves2 == true)) {
+
+        if (moreMoves1){
+
+        // player 1's turn
+
         curMovePtr = curGame->player1->getMove(); // get the move from player algorithm
         curJokerChangePtr = curGame->player1->getJokerChange(); // in case there was joker change, get it
 
-        if (!checkIfMoveIsValid(curMovePtr, 1)) {
+        if (!checkIfMoveIsValid(curMovePtr, 1, moreMoves1)) {
             param1 = false;
             winner = 2;
             reason = 5;
@@ -125,12 +134,17 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
         curGame->player2->notifyOnOpponentMove(curMove);
         curGame->player2->notifyFightResult(curFight);
         curGame->movesCounter++;
+        }
+
+        curGame->printBoardToScreen();
+
+        if (moreMoves2){
 
 //player 2's turn
         curMovePtr = curGame->player2->getMove(); // get the move from player algorithm
         curJokerChangePtr = curGame->player2->getJokerChange(); // in case there was joker change, get it
 
-        if (!checkIfMoveIsValid(curMovePtr, 2)) {
+        if (!checkIfMoveIsValid(curMovePtr, 2, moreMoves2)) {
             param2 = false;
             winner = 1;
             reason = 5;
@@ -158,6 +172,8 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
         curGame->player1->notifyOnOpponentMove(curMove);
         curGame->player1->notifyFightResult(curFight);
         curGame->movesCounter++;
+        }
+        curGame->printBoardToScreen();
     }
     makeOutputFile(reason, param1, param2, winner, lineNum1, lineNum2);
 }
@@ -283,10 +299,11 @@ bool RPSManager::parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string
     return true;
 }
 
-bool RPSManager::checkIfMoveIsValid(unique_ptr<Move> &curMove, int player) {
-    if (curMove->getFrom().getX() == -1)
-        return false;
-
+bool RPSManager::checkIfMoveIsValid(unique_ptr<Move> &curMove, int player, bool &moreMoves) {
+    if (curMove->getFrom().getX() == -1){
+        moreMoves = false;
+        return true;
+    }
     return checkIfMoveIsValidBoardwise(curMove, player);
 
 

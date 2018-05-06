@@ -242,6 +242,15 @@ RPSMove RPSGame::setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightIn
     return RPSMove(resultMove->getFrom(),resultMove->getTo(),resultMove->getPiece(),resultMove->getPlayer());
 }
 
+
+void RPSGame::printBoardToScreen() {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            cout << board.getPiece(i, j);
+        }
+        cout << endl;
+    }
+}
 //bool RPSGame::RPSGameCheckIfPlayer2Lose() {
 //    if (player2ToolCounters["f"] == F)
 //        return true;
