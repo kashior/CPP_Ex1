@@ -10,6 +10,7 @@ RPSManager::RPSManager() {
 }
 
 
+
 bool RPSManager::initCheck(int playerNum) {
     if (playerNum == 1) {
         curGame->player1->getInitialPositions(1, player1Positioning);
@@ -24,6 +25,12 @@ bool RPSManager::initCheck(int playerNum) {
 }
 
 
+/**
+ * The "main manager" of the game. Handles the all flow of the game.
+ *
+ * @param isPlayer1Auto - true if player 1 is auto-algorithm, false if it is file-algorythm.
+ * @param isPlayer2Auto - true if player 2 is auto-algorithm, false if it is file-algorythm.
+ */
 void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
 
     bool file1OK;
@@ -32,13 +39,13 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
     if (!isPlayer1Auto)
         curGame->player1 = make_unique<RPSFilePlayerAlgorithm>(1, "/");
     else
-        curGame->player1 = make_unique<RPSAutoPlayerAlgorithm>(1, "/");
+        curGame->player1 = make_unique<RPSFilePlayerAlgorithm>(1, "/");
     file1OK = initCheck(1);
 
     if (!isPlayer2Auto)
         curGame->player2 = make_unique<RPSFilePlayerAlgorithm>(2, "/");
     else
-        curGame->player2 = make_unique<RPSAutoPlayerAlgorithm>(2, "/");
+        curGame->player2 = make_unique<RPSFilePlayerAlgorithm>(2, "/");
     file2OK = initCheck(2);
 
     int reason; // the "reason" for output file
@@ -179,6 +186,16 @@ void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
 }
 
 
+
+/**
+ * Updates the winner of the game according to the parameters sent to it.
+ *
+ * @param param1 - true if player 1 is the winner, false otherwise
+ * @param param2 - true if player 2 is the winner, false otherwise
+ * @param winner - will be set by the function to 1 if player 1 is the winner, 2 if player 2 is the winner or set to 0
+ * if its a tie.
+ *
+ */
 void RPSManager::updateWinner(bool param1, bool param2, int &winner) {
     if (!param1 && !param2)
         winner = 0; //tie
@@ -190,6 +207,7 @@ void RPSManager::updateWinner(bool param1, bool param2, int &winner) {
         player1Points += 1;
     }
 }
+
 
 
 void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner, int lineNum1, int lineNum2) {
@@ -269,8 +287,10 @@ void RPSManager::checkAndUpdateReasonForWinner(int &reason) {
         reason = 2; // "all moving pieces of the opponent are eaten"
 }
 
+
 bool RPSManager::parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args) {
     string delimiter = "-";
+    args+="-";
     string parameters[3];
     size_t pos = 0;
     string token;
@@ -298,6 +318,7 @@ bool RPSManager::parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string
         return false;
     return true;
 }
+
 
 bool RPSManager::checkIfMoveIsValid(unique_ptr<Move> &curMove, int player, bool &moreMoves) {
     if (curMove->getFrom().getX() == -1){
