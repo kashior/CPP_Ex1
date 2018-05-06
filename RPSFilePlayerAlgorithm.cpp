@@ -95,11 +95,15 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
         firstRow = false;
         parseResult = RPSParser::parseLineMove(lineToParse, curMove, curJokerChange);
         if (parseResult!=0){ //the move is invalid
+            curMove->setFrom(-2,-2); // this is a flag for the game manager to know its
+                                     // an invalid move.
             playerMoves.push_back(make_pair(move(curMove),move(curJokerChange)));
             break; //no need to check more moves after invalid move
         }
         playerMoves.push_back(make_pair(move(curMove),move(curJokerChange)));
     }
+    curMove->setFrom(-1,-1); // this is a flag for the manager to know that the moves file ended
+    playerMoves.push_back(make_pair(move(curMove), move(curJokerChange)));
     fin.close();
 }
 
