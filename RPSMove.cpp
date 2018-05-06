@@ -5,13 +5,10 @@
 #include "RPSMove.h"
 
 RPSMove::RPSMove(Point from, Point to, char piece, int player): _from(from),_to(to),_piece(piece),_player(player) {
-    _joker->setJokerNewRep('\0');
-
 }
 
 RPSMove::RPSMove(){
     _piece='\0';
-    _joker->setJokerNewRep('\0');
     RPSPoint x(-1,-1);
     _from=x;
 }
@@ -28,17 +25,7 @@ const int &RPSMove::getPlayer() const {return _player;}
 
 const char &RPSMove::getPiece() const {return _piece;}
 
- unique_ptr<JokerChange> RPSMove::getJoker() const {
-    if(_joker->getJokerNewRep()=='\0')
-        return nullptr;
-    return move(_joker);
-}
 
 void RPSMove::setPiece(char piece) { _piece=piece; }
 
-void RPSMove::setJoker(char rep, RPSPoint* pos) {
-
-    _joker->setJokerChangePosition(*pos);
-    _joker->setJokerNewRep(rep);
-}
 

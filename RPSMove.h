@@ -15,7 +15,6 @@ class RPSMove : public Move{
     RPSPoint _from;
     RPSPoint _to;
     char _piece;
-    unique_ptr<RPSJokerChange> _joker;
 
 public:
     RPSMove(Point from, Point to, char piece, int player);
@@ -24,11 +23,9 @@ public:
     virtual const Point& getTo()const;
     const int & getPlayer()const;
     const char & getPiece()const;
-    unique_ptr<JokerChange> getJoker() const;
     void setPiece(char piece);
     void setFrom(int x, int y);
     void setTo(int x, int y);
-    void setJoker(char rep, RPSPoint* pos);
     virtual ~RPSMove() {}
 
 };
