@@ -1,6 +1,6 @@
 
 
-#include "RPSAutoPlayerAlgorithm.h"
+#include "RPSPlayerAlgorithm.h"
 
 
 using namespace std;

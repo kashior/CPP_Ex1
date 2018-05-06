@@ -9,8 +9,12 @@ RPSMove::RPSMove( RPSPoint &from,  RPSPoint &to, char piece, int player): _from(
 
 RPSMove::RPSMove(){
     _piece='\0';
-    RPSPoint x(-1,-1);
-    _from=x;
+    _from.setX(-1);
+    _from.setY(-1);
+    _to.setX(-1);
+    _to.setY(-1);
+    _player=0;
+
 }
 
 const Point &RPSMove::getFrom() const {return _from;}

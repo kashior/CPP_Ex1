@@ -20,7 +20,7 @@ public:
 
     friend class RPSGame;
 
-    RPSManager();
+    RPSManager(bool isPlayer1Auto, bool isPlayer2Auto);
 
 /**
   * Gets the initial positioning of a player, puts the positions in a
@@ -39,7 +39,7 @@ public:
  * @param isPlayer1Auto - true if player 1 is auto-algorithm, false if it is file-algorythm.
  * @param isPlayer2Auto - true if player 2 is auto-algorithm, false if it is file-algorythm.
  */
-    void gameHandler(bool isPlayer1Auto, bool isPlayer2Auto);
+    void gameHandler();
 
 
 /**
@@ -109,7 +109,7 @@ public:
  * @return - true if the command line is valid, false otherwise.
  *
  */
-    bool parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args);
+
 
     bool checkIfMoveIsValid(unique_ptr<Move> &curMove, int player, bool &moreMoves);
 

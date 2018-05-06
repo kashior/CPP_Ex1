@@ -121,5 +121,36 @@ bool RPSParser::checkIfPositionValid(string X, string Y) {
     catch (out_of_range) { return false; }
 }
 
+bool RPSParser::parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args) {
+    string delimiter = "-";
+    args+="-";
+    string parameters[3];
+    size_t pos = 0;
+    string token;
+    int i = 0;
+    while ((pos = args.find(delimiter)) != string::npos) {
+        if (i == 3)
+            return false;
+        token = args.substr(0, pos);
+        args.erase(0, pos + delimiter.length());
+        parameters[i++] = token;
+    }
+    if (parameters[0] == "auto")
+        isPlayer1Auto = true;
+    else if (parameters[0] == "file")
+        isPlayer1Auto = false;
+    else
+        return false;
+    if (parameters[1] != "vs")
+        return false;
+    if (parameters[2] == "auto")
+        isPlayer2Auto = true;
+    else if (parameters[2] == "file")
+        isPlayer2Auto = false;
+    else
+        return false;
+    return true;
+}
+
 
 

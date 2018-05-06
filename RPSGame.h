@@ -36,7 +36,7 @@ public:
 
 
 
-    RPSGame();
+    RPSGame(bool &isPlayer1Auto, bool &isPlayer2Auto);
 
     friend class RPSManager;
 

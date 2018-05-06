@@ -3,10 +3,11 @@
 #include "RPSManager.h"
 
 
-RPSManager::RPSManager() {
-    curGame = make_unique<RPSGame>();
+RPSManager::RPSManager(bool isPlayer1Auto, bool isPlayer2Auto) {
+    curGame = make_unique<RPSGame>(isPlayer1Auto,isPlayer2Auto);
     player1Points = 0;
     player2Points = 0;
+
 }
 
 
@@ -31,21 +32,13 @@ bool RPSManager::initCheck(int playerNum) {
  * @param isPlayer1Auto - true if player 1 is auto-algorithm, false if it is file-algorythm.
  * @param isPlayer2Auto - true if player 2 is auto-algorithm, false if it is file-algorythm.
  */
-void RPSManager::gameHandler(bool isPlayer1Auto, bool isPlayer2Auto) {
+void RPSManager::gameHandler() {
 
     bool file1OK;
     bool file2OK;
 
-    if (!isPlayer1Auto)
-        curGame->player1 = make_unique<RPSFilePlayerAlgorithm>(1, "/");
-    else
-        curGame->player1 = make_unique<RPSFilePlayerAlgorithm>(1, "/");
-    file1OK = initCheck(1);
 
-    if (!isPlayer2Auto)
-        curGame->player2 = make_unique<RPSFilePlayerAlgorithm>(2, "/");
-    else
-        curGame->player2 = make_unique<RPSFilePlayerAlgorithm>(2, "/");
+    file1OK = initCheck(1);
     file2OK = initCheck(2);
 
     int reason; // the "reason" for output file
@@ -288,40 +281,13 @@ void RPSManager::checkAndUpdateReasonForWinner(int &reason) {
 }
 
 
-bool RPSManager::parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args) {
-    string delimiter = "-";
-    args+="-";
-    string parameters[3];
-    size_t pos = 0;
-    string token;
-    int i = 0;
-    while ((pos = args.find(delimiter)) != string::npos) {
-        if (i == 3)
-            return false;
-        token = args.substr(0, pos);
-        args.erase(0, pos + delimiter.length());
-        parameters[i++] = token;
-    }
-    if (parameters[0] == "auto")
-        isPlayer1Auto = true;
-    else if (parameters[0] == "file")
-        isPlayer1Auto = false;
-    else
-        return false;
-    if (parameters[1] != "vs")
-        return false;
-    if (parameters[2] == "auto")
-        isPlayer2Auto = true;
-    else if (parameters[2] == "file")
-        isPlayer2Auto = false;
-    else
-        return false;
-    return true;
-}
+
 
 
 bool RPSManager::checkIfMoveIsValid(unique_ptr<Move> &curMove, int player, bool &moreMoves) {
-    if (curMove->getFrom().getX() == -1){
+    if (curMove->getFrom().getX() == -2)
+        return false;
+    else if (curMove->getFrom().getX() == -1){
         moreMoves = false;
         return true;
     }

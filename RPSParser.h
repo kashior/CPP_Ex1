@@ -77,6 +77,8 @@ public:
     static int
     parseLineMove(const string &line, unique_ptr<RPSMove> &newMove, unique_ptr<RPSJokerChange> &newJokerChange);
 
+    static bool parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args);
+
 private:
     /**
      *
@@ -144,6 +146,8 @@ private:
      *         false - otherwise.
      */
     static bool checkIfPositionValid(string X, string Y);
+
+
 
 
 };

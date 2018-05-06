@@ -25,7 +25,7 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
     string lineToParse;
     int lineNum = 1;
     int parserResult;
-    unique_ptr<RPSPiecePosition> initPos = make_unique<RPSPiecePosition>();
+    unique_ptr<RPSPiecePosition> initPos;
     while (true) {
         lineToParse = "";
         getline(fin, lineToParse);
@@ -37,6 +37,7 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
             }
             break;
         }
+        initPos = make_unique<RPSPiecePosition>();
         parserResult = RPSParser::parseLineInit(lineToParse, initPos);
         switch (parserResult) {
             case 1:
@@ -55,7 +56,7 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
                 vectorToFill.clear();
                 return;
             default:
-                playerToolCounters[initPos->getPiece()]--;
+//                playerToolCounters[initPos->getPiece()]--;
                 if (initPos->getJokerRep() != '#')
                     playerJokers.push_back(make_unique<RPSPoint>(initPos->getPosition().getX(),
                                                                  initPos->getPosition().getY()));
@@ -77,11 +78,12 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
         playerMoves.clear();
         return;
     }
-    unique_ptr<RPSMove> curMove = make_unique<RPSMove>();
-    unique_ptr<RPSJokerChange> curJokerChange=make_unique<RPSJokerChange>();
+    unique_ptr<RPSMove> curMove;
+    unique_ptr<RPSJokerChange> curJokerChange;
     bool firstRow = true;
     int parseResult;
     while (true) {
+
         lineToParse = "";
         getline(fin, lineToParse);
         if (lineToParse.empty()) {
@@ -93,6 +95,8 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
             break;
         }
         firstRow = false;
+        curMove = make_unique<RPSMove>();
+        curJokerChange=make_unique<RPSJokerChange>();
         parseResult = RPSParser::parseLineMove(lineToParse, curMove, curJokerChange);
         if (parseResult!=0){ //the move is invalid
             curMove->setFrom(-2,-2); // this is a flag for the game manager to know its
@@ -102,8 +106,8 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
         }
         playerMoves.push_back(make_pair(move(curMove),move(curJokerChange)));
     }
-    curMove->setFrom(-1,-1); // this is a flag for the manager to know that the moves file ended
-    playerMoves.push_back(make_pair(move(curMove), move(curJokerChange)));
+    // "From(-1,-1)" this is a flag for the manager to know that the moves file ended
+//    playerMoves.push_back(make_pair(move(curMove), move(curJokerChange)));
     fin.close();
 }
 

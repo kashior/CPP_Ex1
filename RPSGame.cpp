@@ -6,9 +6,17 @@
 #include "RPSFightInfo.h"
 
 
-RPSGame::RPSGame()  {
-//    board = make_unique<RPSBoard>();
+RPSGame::RPSGame(bool &isPlayer1Auto, bool &isPlayer2Auto) {
     movesCounter = 0;
+    if (!isPlayer1Auto)
+        player1 = make_unique<RPSFilePlayerAlgorithm>(1, "/");
+    else
+        player1 = make_unique<RPSFilePlayerAlgorithm>(1, "/");
+
+    if (!isPlayer2Auto)
+        player2 = make_unique<RPSFilePlayerAlgorithm>(2, "/");
+    else
+        player2 = make_unique<RPSFilePlayerAlgorithm>(2, "/");
 }
 
 
@@ -17,6 +25,7 @@ bool RPSGame::UpdateBoardPlayer1InitStage(int &lineNum, vector<unique_ptr<PieceP
                                           unique_ptr<RPSPlayerAlgorithm> &playerAlg) {
     int x,y;
     for (unique_ptr<PiecePosition> &pos : playersPositioning){
+        char piece=pos->getPiece();
         x = pos->getPosition().getX();
         y = pos->getPosition().getY();
         if (board.board[y][x] != ' ') {
@@ -24,7 +33,7 @@ bool RPSGame::UpdateBoardPlayer1InitStage(int &lineNum, vector<unique_ptr<PieceP
              " of player 1's positioning" << endl;
             return false;
         }
-        if (playerAlg->playerToolCounters[pos->getPiece()] == 0) {
+        if (playerAlg->playerToolCounters[piece] == 0) {
             cout << "Error: A piece type appears more than it's number in line " << lineNum <<
                  " of player 1's positioning" << endl;
             return false;

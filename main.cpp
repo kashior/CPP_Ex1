@@ -1,5 +1,5 @@
 
-#include "RPSMainAux.h"
+#include "RPSParser.h"
 #include "RPSManager.h"
 
 
@@ -8,10 +8,12 @@ int main(int argc, char* argv[]) {
         printf("Error: not enough arguments for the game. Exiting\n");
         exit(0);
     }
-    RPSManager gameManager;
+//    RPSFilePlayerAlgorithm * a=new RPSFilePlayerAlgorithm(1,"/");
     bool isPlayer1Auto, isPlayer2Auto;
-    if(gameManager.parseArguments(isPlayer1Auto, isPlayer2Auto, argv[1]))
-        gameManager.gameHandler(isPlayer1Auto,isPlayer2Auto);
+    if(RPSParser::parseArguments(isPlayer1Auto,isPlayer2Auto,argv[1])){
+        RPSManager gameManager(isPlayer1Auto, isPlayer2Auto);
+        gameManager.gameHandler();
+    }
     else{
         printf("Error: Invalid argument for game option. Exiting...\n");
         exit(0);

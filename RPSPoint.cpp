@@ -3,7 +3,10 @@
 #include "RPSPoint.h"
 
 RPSPoint::RPSPoint(int x, int y): _x(x),_y(y) {}
-RPSPoint::RPSPoint() {}
+RPSPoint::RPSPoint() {
+    _x=-1;
+    _y=-1;
+}
 
 //RPSPoint::RPSPoint(RPSPoint& pos): _x(pos.getX()), _y(pos.getY()) {}
 
