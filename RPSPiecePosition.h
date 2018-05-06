@@ -11,9 +11,10 @@ class RPSPiecePosition: public PiecePosition {
     RPSPoint _pos;
     char _piece;
     char _jokerRep;
+
 public:
 
-    RPSPiecePosition(Point pos,char piece,char jokerRep='#');
+    RPSPiecePosition(RPSPoint pos, char piece, char jokerRep = '#');
 
     RPSPiecePosition();
 

@@ -1,8 +1,8 @@
 
 #include "RPSPiecePosition.h"
 
-RPSPiecePosition::RPSPiecePosition(Point pos, char piece, char jokerRep) : _pos(pos.getX(), pos.getY()), _piece(piece),
-                                                                           _jokerRep(jokerRep) {}
+RPSPiecePosition::RPSPiecePosition(RPSPoint pos, char piece, char jokerRep) : _pos(pos.getX(), pos.getY()), _piece(piece),
+                                                                              _jokerRep(jokerRep) {}
 
 RPSPiecePosition::RPSPiecePosition() {}
 

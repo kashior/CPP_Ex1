@@ -81,6 +81,7 @@ void RPSManager::gameHandler() {
     curGame->player1->notifyOnInitialBoard(curGame->board, fights);
     curGame->player2->notifyOnInitialBoard(curGame->board, fights);
 
+    curGame->printBoardToScreen();
 
     // now lets read moves files (if there are)
 
