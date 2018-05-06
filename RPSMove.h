@@ -17,7 +17,7 @@ class RPSMove : public Move{
     char _piece;
 
 public:
-    RPSMove(Point from, Point to, char piece, int player);
+    RPSMove(RPSPoint &from,RPSPoint &to, char piece, int player);
     RPSMove();
     virtual const Point& getFrom()const;
     virtual const Point& getTo()const;

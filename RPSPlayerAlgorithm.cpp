@@ -17,5 +17,5 @@ RPSPlayerAlgorithm::RPSPlayerAlgorithm(int player) : _player(player) {
 int RPSPlayerAlgorithm::getPlayer(){return _player;}
 
 void RPSPlayerAlgorithm::addJokerPositionToVector(unique_ptr<PiecePosition> &pos) {
-    playerJokers.push_back(make_unique<RPSPoint>(pos->getPosition()));
+    playerJokers.push_back(make_unique<RPSPoint>(pos->getPosition().getX(),pos->getPosition().getY()));
 }

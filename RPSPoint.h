@@ -12,10 +12,13 @@ class RPSPoint: public Point {
 public:
     RPSPoint(int x, int y);
     RPSPoint();
-    RPSPoint(Point pos);
+
+//    RPSPoint(RPSPoint& pos);
+
     virtual int getX() const;
     void setX(int x);
-    virtual int getY() const;
+
+    virtual int getY() const ;
     void setY(int y);
     virtual ~RPSPoint() {}
 };

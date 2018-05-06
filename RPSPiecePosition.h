@@ -25,7 +25,7 @@ public:
 
     void setPosition(RPSPoint* pos) ;
 
-    void setPosition(int x, int y) ;
+//    void setPosition(int x, int y) ;
 
     void setPiece(char piece);
 
@@ -35,7 +35,7 @@ public:
 
     bool operator==(const RPSPiecePosition &rhs) const ;
 
-    virtual ~RPSPiecePosition() {delete _pos;}
+    virtual ~RPSPiecePosition() {}
 
 };
 

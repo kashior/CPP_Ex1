@@ -100,7 +100,8 @@ int RPSParser::parse8TokensMoveLine(unique_ptr<RPSMove> &newMove, vector<string>
         if (tokens[7] != "R" && tokens[7] != "P" && tokens[7] != "S" && tokens[7] != "B")
             return 2;
         newJokerChange->setJokerNewRep(tokens[7][0]);
-        newJokerChange->setJokerChangePosition(RPSPoint(joker_X,joker_Y));
+        RPSPoint jokerPoint(joker_X,joker_Y);
+        newJokerChange->setJokerChangePosition(jokerPoint);
 
 //        newMove->setJoker(tokens[7][0], new RPSPoint(joker_X, joker_Y));
         return 0;

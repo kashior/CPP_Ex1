@@ -4,7 +4,7 @@
 
 #include "RPSMove.h"
 
-RPSMove::RPSMove(Point from, Point to, char piece, int player): _from(from),_to(to),_piece(piece),_player(player) {
+RPSMove::RPSMove( RPSPoint &from,  RPSPoint &to, char piece, int player): _from(from), _to(to), _piece(piece), _player(player) {
 }
 
 RPSMove::RPSMove(){

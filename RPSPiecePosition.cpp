@@ -14,10 +14,10 @@ char RPSPiecePosition::getJokerRep() const { return _jokerRep; }
 
 void RPSPiecePosition::setPosition(RPSPoint *pos) { _pos = *pos; }
 
-void RPSPiecePosition::setPosition(int x, int y) {
-    _pos.setX(x);
-    _pos.setY(y);
-}
+//void RPSPiecePosition::setPosition(int x, int y) {
+//    _pos.setX(x);
+//    _pos.setY(y);
+//}
 
 
 void RPSPiecePosition::setPiece(char piece) { _piece = piece; }

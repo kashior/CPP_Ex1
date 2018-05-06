@@ -15,7 +15,7 @@ RPSFilePlayerAlgorithm::RPSFilePlayerAlgorithm(int player, string dir)
 void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<PiecePosition>> &vectorToFill) {
     string c = player == 1 ? "1" : "2";
 
-    string fileName = _directory + "player" + c + ".rps_board";
+    string fileName =  "player" + c + ".rps_board";
     ifstream fin(fileName);
     if (fin.fail()) {
         cout << "Error: There's no such file or directory, Player " << player << "'s file is not exist" << endl;
@@ -57,7 +57,8 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
             default:
                 playerToolCounters[initPos->getPiece()]--;
                 if (initPos->getJokerRep() != '#')
-                    playerJokers.push_back(make_unique<RPSPoint>(initPos->getPosition()));
+                    playerJokers.push_back(make_unique<RPSPoint>(initPos->getPosition().getX(),
+                                                                 initPos->getPosition().getY()));
                 vectorToFill.push_back(move(initPos));
                 lineNum++;
         }
@@ -69,7 +70,7 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
 void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
     string c = getPlayer() == 1 ? "1" : "2";
     string lineToParse;
-    string fileName = _directory + "player" + c + ".rps_moves";
+    string fileName =  "player" + c + ".rps_moves";
     ifstream fin(fileName);
     if (fin.fail()) {
         cout << "Error: There's no such file or directory, Player " << getPlayer() << "'s file is not exist" << endl;
@@ -94,10 +95,10 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
         firstRow = false;
         parseResult = RPSParser::parseLineMove(lineToParse, curMove, curJokerChange);
         if (parseResult!=0){ //the move is invalid
-            playerMoves.emplace_back(curMove,curJokerChange);
+            playerMoves.push_back(make_pair(move(curMove),move(curJokerChange)));
             break; //no need to check more moves after invalid move
         }
-        playerMoves.emplace_back(curMove,curJokerChange);
+        playerMoves.push_back(make_pair(move(curMove),move(curJokerChange)));
     }
     fin.close();
 }
@@ -110,13 +111,13 @@ void RPSFilePlayerAlgorithm::notifyOnOpponentMove(const Move &move) {} // called
 void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}// called only if there was a fight
 
 
-virtual unique_ptr<Move> RPSFilePlayerAlgorithm::getMove() {
+ unique_ptr<Move> RPSFilePlayerAlgorithm::getMove() {
     if(playerMoves.size()>moveFileLineCounter)
         return move(playerMoves[moveFileLineCounter++].first);
     return make_unique<RPSMove>();
 }
 
-virtual unique_ptr<JokerChange> RPSFilePlayerAlgorithm::getJokerChange() {
+ unique_ptr<JokerChange> RPSFilePlayerAlgorithm::getJokerChange() {
     if(playerMoves[moveFileLineCounter-1].second->getJokerNewRep()!= '#'){
         return move(playerMoves[moveFileLineCounter-1].second);
     }

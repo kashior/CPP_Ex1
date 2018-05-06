@@ -5,7 +5,7 @@
 RPSPoint::RPSPoint(int x, int y): _x(x),_y(y) {}
 RPSPoint::RPSPoint() {}
 
-RPSPoint::RPSPoint(Point pos):_x(pos.getX()), _y(pos.getY()) {}
+//RPSPoint::RPSPoint(RPSPoint& pos): _x(pos.getX()), _y(pos.getY()) {}
 
 int RPSPoint::getX() const { return _x; }
 
