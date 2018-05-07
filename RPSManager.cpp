@@ -60,9 +60,17 @@ void RPSManager::gameHandler() {
         return;
     }
     file1OK = curGame->UpdateBoardPlayer1InitStage(lineNum1, player1Positioning, curGame->player1);
+
+    ///////////////
+    curGame->printBoardToScreen();
+    ///////////////
     vector<unique_ptr<FightInfo>> fights;
     file2OK = curGame->UpdateBoardPlayer2InitStage(lineNum2, player2Positioning, curGame->player1, curGame->player2,
                                                    fights);
+
+    ////////////////
+    curGame->printBoardToScreen();
+    /////////////////
 
     if (!file1OK || !file2OK) { //at least one of the positioning input files is bad
         updateWinner(file1OK, file2OK, winner);
@@ -80,8 +88,6 @@ void RPSManager::gameHandler() {
     // lets notify on initial positions to the players algorithms
     curGame->player1->notifyOnInitialBoard(curGame->board, fights);
     curGame->player2->notifyOnInitialBoard(curGame->board, fights);
-
-    curGame->printBoardToScreen();
 
     // now lets read moves files (if there are)
 
@@ -134,10 +140,11 @@ void RPSManager::gameHandler() {
         lineNum1++;
         curGame->player2->notifyOnOpponentMove(curMove);
         curGame->player2->notifyFightResult(curFight);
-        curGame->movesCounter++;
+        ++curGame->movesCounter;
         }
-
+        ////////////////////////////
         curGame->printBoardToScreen();
+        /////////////////////////////
 
         if (moreMoves2){
 
@@ -172,9 +179,11 @@ void RPSManager::gameHandler() {
         lineNum2++;
         curGame->player1->notifyOnOpponentMove(curMove);
         curGame->player1->notifyFightResult(curFight);
-        curGame->movesCounter++;
+        ++curGame->movesCounter;
         }
+        //////////////////////////////
         curGame->printBoardToScreen();
+        //////////////////////////////
     }
     makeOutputFile(reason, param1, param2, winner, lineNum1, lineNum2);
 }

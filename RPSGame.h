@@ -104,6 +104,8 @@ public:
 
     RPSMove setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightInfo &curFight);
 
+    void changeJokerPosition(unique_ptr<RPSPlayerAlgorithm> &playerAlg, unique_ptr<Move> &curMove);
+
     void printBoardToScreen();
 ///**
 // * This function treats both of the move files of the 2 players.

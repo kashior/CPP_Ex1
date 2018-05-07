@@ -57,9 +57,9 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
                 return;
             default:
 //                playerToolCounters[initPos->getPiece()]--;
-                if (initPos->getJokerRep() != '#')
-                    playerJokers.push_back(make_unique<RPSPoint>(initPos->getPosition().getX(),
-                                                                 initPos->getPosition().getY()));
+//                if (initPos->getJokerRep() != '#')
+//                    playerJokers.push_back(make_unique<RPSPoint>(initPos->getPosition().getX(),
+//                                                                 initPos->getPosition().getY()));
                 vectorToFill.push_back(move(initPos));
                 lineNum++;
         }

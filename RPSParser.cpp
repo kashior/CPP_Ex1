@@ -32,6 +32,8 @@ int RPSParser::parse3TokensInitLine(vector<string> tokens, unique_ptr<RPSPiecePo
     int y =stoi(tokens[2])-1;
     initPos->setPosition(new RPSPoint(x,y));
 
+    initPos->setJokerRep('#'); //no joker change
+
     return 0; // Success
 }
 

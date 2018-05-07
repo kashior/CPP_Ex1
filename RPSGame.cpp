@@ -236,12 +236,17 @@ bool RPSGame::CheckIfPlayerLose(unique_ptr<RPSPlayerAlgorithm> &player) {
     return player->playerToolCounters['R'] == R && player->playerToolCounters['P'] == P
            && player->playerToolCounters['S'] == S && player->playerToolCounters['J'] == J;
 }
+
+
+
 RPSMove RPSGame::setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightInfo &curFight) {
+
     char fromPiece = board.board[curMove->getFrom().getY()][curMove->getFrom().getX()];
     char toPiece = board.board[curMove->getTo().getY()][curMove->getTo().getX()];
     RPSPoint fromPoint(curMove->getFrom().getX(),curMove->getFrom().getY());
     RPSPoint toPoint(curMove->getTo().getX(),curMove->getTo().getY());
     unique_ptr<RPSMove> resultMove=make_unique<RPSMove>(fromPoint, toPoint, board.board[fromPoint.getY()][fromPoint.getX()],player);
+
     if(toPiece!=' ') { //fight!
         vector<unique_ptr<FightInfo>> fights;
         curFight.setPlayer1Piece(isupper(fromPiece) == 0 ? toPiece : fromPiece);
@@ -249,14 +254,43 @@ RPSMove RPSGame::setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightIn
         curFight.setPosition(RPSPoint(curMove->getTo().getX(),curMove->getTo().getY()));
         fightOuter(resultMove, fights, player1, player2);
         curFight.setWinner(fights.at(0)->getWinner());
-    } else
-        board.board[curMove->getTo().getY()][curMove->getTo().getX()]=fromPiece;
+        if (player == 1 && fights.at(0)->getWinner() == 1) //attacker wins maybe it was a joker
+            changeJokerPosition(player1, curMove);
+        else if (player == 2 && fights.at(0)->getWinner() == 2)
+            changeJokerPosition(player2, curMove);
+    }
+
+    else {
+        board.board[curMove->getTo().getY()][curMove->getTo().getX()] = fromPiece;
+        board.board[curMove->getFrom().getY()][curMove->getFrom().getX()] = ' ';
+        if (player == 1)
+            changeJokerPosition(player1, curMove);
+        else
+            changeJokerPosition(player2, curMove);
+    }
+
     RPSMove moveRes(fromPoint,toPoint,resultMove->getPiece(),resultMove->getPlayer());
     return moveRes;
 }
 
 
+
+void RPSGame::changeJokerPosition(unique_ptr<RPSPlayerAlgorithm> &playerAlg, unique_ptr<Move> &curMove) {
+    for ( auto&& point : playerAlg->playerJokers){
+        if (point->getX() == curMove->getFrom().getX() && point->getY() == curMove->getFrom().getY()){
+        // if the moved piece is a joker!
+            point->setX(curMove->getTo().getX());
+            point->setY(curMove->getTo().getY());
+            // updated the new position of the joker
+            break;
+        }
+    }
+}
+
+
 void RPSGame::printBoardToScreen() {
+    cout << "" << endl;
+    cout << "turn number " << movesCounter << " ,current board:" << endl;
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
             cout << board.getPiece(i, j);
