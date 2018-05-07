@@ -251,8 +251,8 @@ void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner
 
     fout << endl;
     // printing the game board state
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) {
+    for (int j = 0; j < N; j++) {
+        for (int i = 0; i < M; i++) {
             fout << curGame->board.getPiece(i, j);
         }
         fout << endl;

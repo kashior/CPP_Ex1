@@ -28,8 +28,8 @@ int RPSParser::parse3TokensInitLine(vector<string> tokens, unique_ptr<RPSPiecePo
 
     if (!checkIfPositionValid(tokens[1], tokens[2]))
         return 3;
-    int x=stoi(tokens[1])-1;
-    int y =stoi(tokens[2])-1;
+    int x = stoi(tokens[1])-1;
+    int y = stoi(tokens[2])-1;
     initPos->setPosition(new RPSPoint(x,y));
 
     initPos->setJokerRep('#'); //no joker change
