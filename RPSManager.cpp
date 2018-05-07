@@ -107,84 +107,91 @@ void RPSManager::gameHandler() {
     while ((winner == 3) && (curGame->movesCounter < 100) && (moreMoves1 == true || moreMoves2 == true)) {
 
         if (moreMoves1){
-
         // player 1's turn
 
-        curMovePtr = curGame->player1->getMove(); // get the move from player algorithm
-        curJokerChangePtr = curGame->player1->getJokerChange(); // in case there was joker change, get it
+            curMovePtr = curGame->player1->getMove(); // get the move from player algorithm
+            curJokerChangePtr = curGame->player1->getJokerChange(); // in case there was joker change, get it
 
-        if (!checkIfMoveIsValid(curMovePtr, 1, moreMoves1)) {
-            param1 = false;
-            winner = 2;
-            reason = 5;
-            break;
-        }
-        curMove = curGame->setMoveToBoard(move(curMovePtr), 1,
-                                          curFight);// apply move to board after it has been checked
-        curGame->player1->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
-        checkWinner(winner, reason);// first check for winner
-        if (winner != 3)
-            break;
-        if (curJokerChangePtr != nullptr) {
-            if(checkIfJokerChangeIsValid(curJokerChangePtr, 1))
-                curGame->board.board[curJokerChangePtr->getJokerChangePosition().getY()]
-                [curJokerChangePtr->getJokerChangePosition().getX()]=curJokerChangePtr->getJokerNewRep();
-            else
-            {
+            if (!checkIfMoveIsValid(curMovePtr, 1, moreMoves1)) {
                 param1 = false;
                 winner = 2;
                 reason = 5;
                 break;
             }
+
+            if (moreMoves1){ //if there are still more moves for player1 to make
+                curMove = curGame->setMoveToBoard(move(curMovePtr), 1,
+                                                  curFight);// apply move to board after it has been checked
+                curGame->player1->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
+                checkWinner(winner, reason);// first check for winner
+                if (winner != 3)
+                    break;
+                if (curJokerChangePtr != nullptr) {
+                    if(checkIfJokerChangeIsValid(curJokerChangePtr, 1))
+                        curGame->board.board[curJokerChangePtr->getJokerChangePosition().getY()]
+                        [curJokerChangePtr->getJokerChangePosition().getX()]=curJokerChangePtr->getJokerNewRep();
+                    else
+                    {
+                        param1 = false;
+                        winner = 2;
+                        reason = 5;
+                        break;
+                    }
+                }
+                lineNum1++;
+                curGame->player2->notifyOnOpponentMove(curMove);
+                curGame->player2->notifyFightResult(curFight);
+                ++curGame->movesCounter;
+
+                ////////////////////////////
+                curGame->printBoardToScreen();
+                /////////////////////////////
+            }
         }
-        lineNum1++;
-        curGame->player2->notifyOnOpponentMove(curMove);
-        curGame->player2->notifyFightResult(curFight);
-        ++curGame->movesCounter;
-        }
-        ////////////////////////////
-        curGame->printBoardToScreen();
-        /////////////////////////////
 
         if (moreMoves2){
 
 //player 2's turn
-        curMovePtr = curGame->player2->getMove(); // get the move from player algorithm
-        curJokerChangePtr = curGame->player2->getJokerChange(); // in case there was joker change, get it
+            curMovePtr = curGame->player2->getMove(); // get the move from player algorithm
+            curJokerChangePtr = curGame->player2->getJokerChange(); // in case there was joker change, get it
 
-        if (!checkIfMoveIsValid(curMovePtr, 2, moreMoves2)) {
-            param2 = false;
-            winner = 1;
-            reason = 5;
-            break;
-        }
-        curMove = curGame->setMoveToBoard(move(curMovePtr), 2,
-                                          curFight);// apply move to board after it has been checked
-        curGame->player2->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
-        checkWinner(winner, reason);// first check for winner
-        if (winner != 3)
-            break;
-        if (curJokerChangePtr != nullptr) {
-            if(checkIfJokerChangeIsValid(curJokerChangePtr, 2))
-                curGame->board.board[curJokerChangePtr->getJokerChangePosition().getY()]
-                [curJokerChangePtr->getJokerChangePosition().getX()]=curJokerChangePtr->getJokerNewRep();
-            else
-            {
+            if (!checkIfMoveIsValid(curMovePtr, 2, moreMoves2)) {
                 param2 = false;
                 winner = 1;
                 reason = 5;
                 break;
             }
+
+            if (moreMoves2){ //if there are still more moves for player2 to make
+                curMove = curGame->setMoveToBoard(move(curMovePtr), 2,
+                                                  curFight);// apply move to board after it has been checked
+                curGame->player2->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
+                checkWinner(winner, reason);// first check for winner
+                if (winner != 3)
+                    break;
+                if (curJokerChangePtr != nullptr) {
+                    if(checkIfJokerChangeIsValid(curJokerChangePtr, 2))
+                        curGame->board.board[curJokerChangePtr->getJokerChangePosition().getY()]
+                        [curJokerChangePtr->getJokerChangePosition().getX()]=curJokerChangePtr->getJokerNewRep();
+                    else {
+                        param2 = false;
+                        winner = 1;
+                        reason = 5;
+                        break;
+                    }
+                }
+                lineNum2++;
+                curGame->player1->notifyOnOpponentMove(curMove);
+                curGame->player1->notifyFightResult(curFight);
+                ++curGame->movesCounter;
+
+                //////////////////////////////
+                curGame->printBoardToScreen();
+                //////////////////////////////
+            }
         }
-        lineNum2++;
-        curGame->player1->notifyOnOpponentMove(curMove);
-        curGame->player1->notifyFightResult(curFight);
-        ++curGame->movesCounter;
-        }
-        //////////////////////////////
-        curGame->printBoardToScreen();
-        //////////////////////////////
     }
+
     makeOutputFile(reason, param1, param2, winner, lineNum1, lineNum2);
 }
 
