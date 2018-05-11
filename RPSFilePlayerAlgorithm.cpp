@@ -23,7 +23,7 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
         return;
     }
     string lineToParse;
-    int lineNum = 1;
+    lineNum=1;
     int parserResult;
     unique_ptr<RPSPiecePosition> initPos;
     while (true) {
@@ -122,6 +122,8 @@ void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}// 
 }
 
  unique_ptr<JokerChange> RPSFilePlayerAlgorithm::getJokerChange() {
+    if (playerMoves.size()==0)
+        return nullptr;
     if(playerMoves[moveFileLineCounter-1].second->getJokerNewRep()!= '#'){
         return move(playerMoves[moveFileLineCounter-1].second);
     }

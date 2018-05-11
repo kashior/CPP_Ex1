@@ -13,8 +13,10 @@ using namespace std;
 
 class RPSPlayerAlgorithm : public PlayerAlgorithm {
 
-    int _player;
 public:
+
+    int _player;
+    int lineNum=0;
     vector<unique_ptr<RPSPoint>> playerJokers;
     map<char, int> playerToolCounters;
 

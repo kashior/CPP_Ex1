@@ -14,6 +14,7 @@ class RPSFilePlayerAlgorithm: public RPSPlayerAlgorithm {
     int moveFileLineCounter;
 
 public:
+
     RPSFilePlayerAlgorithm(int player, string dir);
     virtual void getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>>& vectorToFill) ;
     virtual void notifyOnInitialBoard(const Board& b, const std::vector<unique_ptr<FightInfo>>& fights);
