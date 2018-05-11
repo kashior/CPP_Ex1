@@ -2,7 +2,17 @@
 
 #include "RPSAutoPlayerAlgorithm.h"
 
-RPSAutoPlayerAlgorithm::RPSAutoPlayerAlgorithm(int player) : RPSPlayerAlgorithm(player) {}
+RPSAutoPlayerAlgorithm::RPSAutoPlayerAlgorithm(int player) : RPSPlayerAlgorithm(player) {
+    RPSPoint pointToAdd;
+    for (int j = 0; j < N; j++) {
+        pointToAdd.setY(j);
+        for (int i = 0; i < M; i++) {
+            pointToAdd.setX(i);
+            emptyPositions.push_back(pointToAdd);
+        }
+
+    }
+}
 
 void RPSAutoPlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {
 
@@ -15,7 +25,7 @@ void RPSAutoPlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vec
             curPoint.setX(i);
 
             if (b.getPlayer(curPoint) != 0 && b.getPlayer(curPoint) != _player) {
-                emptyPositions.erase(remove(emptyPositions.begin(), emptyPositions.end(),curPoint),emptyPositions.end());
+                eraseFromVector(emptyPositions,curPoint);
                 opponentTools[curPoint] = 'O';
             }
         }
@@ -27,12 +37,11 @@ void RPSAutoPlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vec
         curPoint.setY(fight->getPosition().getY());
 
         if (fight->getWinner() == 0) {//tie
-            myTools.erase(curPoint);
+            eraseFromMap(myTools,curPoint);
             emptyPositions.push_back(curPoint);
-        }
-        else if (fight->getWinner() != _player) { //opponent won this fight
+        } else if (fight->getWinner() != _player) { //opponent won this fight
             opponentTools[curPoint] = fight->getPiece(fight->getWinner());
-            myTools.erase(curPoint);
+            eraseFromMap(myTools,curPoint);
         }
     }
 }
@@ -41,13 +50,13 @@ void RPSAutoPlayerAlgorithm::notifyOnOpponentMove(const Move &move) {
 
     RPSPoint fromPoint(move.getFrom().getX(), move.getFrom().getY());
     RPSPoint toPoint(move.getTo().getX(), move.getTo().getY());
-    char movedTool = opponentTools[fromPoint];
+    char movedTool = opponentTools.at(fromPoint);
 
-    opponentTools.erase(fromPoint);
+    eraseFromMap(opponentTools,fromPoint);
     opponentTools[toPoint] = movedTool;
 
     emptyPositions.push_back(fromPoint);
-    emptyPositions.erase(remove(emptyPositions.begin(), emptyPositions.end(),toPoint),emptyPositions.end());
+    eraseFromVector(emptyPositions,toPoint);
 
 }
 
@@ -58,50 +67,42 @@ void RPSAutoPlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {
 
 
     if (fightInfo.getWinner() == 0) {//tie
-        myTools.erase(curPoint);
-        opponentTools.erase(curPoint);
+        eraseFromMap(myTools,curPoint);
+        eraseFromMap(opponentTools,curPoint);
         emptyPositions.push_back(curPoint);
-    }
-
-    else if (fightInfo.getWinner() != _player) { //opponent won this fight
+    } else if (fightInfo.getWinner() != _player) { //opponent won this fight
         opponentTools[curPoint] = fightInfo.getPiece(fightInfo.getWinner());
-        myTools.erase(curPoint);
-    }
-
-    else
-        opponentTools.erase(curPoint);
+        eraseFromMap(myTools,curPoint);
+    } else
+        eraseFromMap(opponentTools,curPoint);
 
 }
 
 
 unique_ptr<JokerChange> RPSAutoPlayerAlgorithm::getJokerChange() {
 
-    if (playerJokers.size() == 0)
+    if (playerJokers.empty())
         return nullptr;
 
-    for ( auto&& pair : opponentTools){
+    for (auto &&pair : opponentTools) {
 
-        if (pair.second == 'R'){
+        if (pair.second == 'R') {
 
-            if (playerToolCounters['P'] == P){ //player doesn't have 'P' tool on board
+            if (playerToolCounters['P'] == P) { //player doesn't have 'P' tool on board
                 if (checkIfHasThisJokerRep('P').getX() != -1)
                     return nullptr;
                 return make_unique<RPSJokerChange>(*(playerJokers.begin()->get()), 'P');
             }
-        }
+        } else if (pair.second == 'P') {
 
-        else if (pair.second == 'P'){
-
-            if (playerToolCounters['S'] == S){
+            if (playerToolCounters['S'] == S) {
                 if (checkIfHasThisJokerRep('S').getX() != -1)
                     return nullptr;
                 return make_unique<RPSJokerChange>(*(playerJokers.begin()->get()), 'S');
             }
-        }
+        } else if (pair.second == 'S') {
 
-        else if (pair.second == 'S'){
-
-            if (playerToolCounters['R'] == R){
+            if (playerToolCounters['R'] == R) {
                 if (checkIfHasThisJokerRep('R').getX() != -1)
                     return nullptr;
                 return make_unique<RPSJokerChange>(*(playerJokers.begin()->get()), 'R');
@@ -118,17 +119,17 @@ RPSPoint RPSAutoPlayerAlgorithm::checkIfHasThisJokerRep(char c) {
 
     RPSPoint curPoint;
 
-    for (auto&& point : playerJokers){
+    for (auto &&point : playerJokers) {
 
         curPoint.setX(point->getX());
         curPoint.setY(point->getY());
 
-        if (myTools[curPoint] == c)
+        if (myTools.at(curPoint) == c)
             return curPoint;
 
     }
 
-    return RPSPoint(-1,-1);
+    return RPSPoint(-1, -1);
 }
 
 
@@ -137,56 +138,130 @@ unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
 
     RPSPoint from;
 
-    for (auto&& pair : opponentTools){
+    for (auto pair : opponentTools) {
 
-        if (pair.second == 'R'){
+        if (pair.second == 'R') {
             if (playerToolCounters['P'] < P)
-                return make_unique<RPSMove>(findKeyOfValueInmyTools('P'), pair.first, 'P', _player);
+                return make_unique<RPSMove>(findKeyOfValueInMyTools('P'), pair.first, 'P', _player);
             from = checkIfHasThisJokerRep('P');
-            if (from.getX() != -1){
+            if (from.getX() != -1) {
                 return make_unique<RPSMove>(from, pair.first, 'P', _player);
             }
 
-        }
-
-        else if (pair.second == 'P'){
+        } else if (pair.second == 'P') {
             if (playerToolCounters['S'] < S)
-                return make_unique<RPSMove>(findKeyOfValueInmyTools('S'), pair.first, 'S', _player);
+                return make_unique<RPSMove>(findKeyOfValueInMyTools('S'), pair.first, 'S', _player);
             from = checkIfHasThisJokerRep('S');
-            if (from.getX() != -1){
+            if (from.getX() != -1) {
                 return make_unique<RPSMove>(from, pair.first, 'S', _player);
             }
-        }
-
-        else if (pair.second == 'S'){
+        } else if (pair.second == 'S') {
             if (playerToolCounters['R'] < R)
-                return make_unique<RPSMove>(findKeyOfValueInmyTools('R'), pair.first, 'R', _player);
+                return make_unique<RPSMove>(findKeyOfValueInMyTools('R'), pair.first, 'R', _player);
             from = checkIfHasThisJokerRep('R');
-            if (from.getX() != -1){
+            if (from.getX() != -1) {
                 return make_unique<RPSMove>(from, pair.first, 'R', _player);
             }
         }
     }
 
-    from = RPSPoint(-1,-1);//TODO random from my tool;
-    RPSPoint to =RPSPoint(1,1) ;//TODO random from emptypositions;
+    from = getRandomPoint(myTools);
+    RPSPoint to = getRandomPoint(emptyPositions);
 
     return make_unique<RPSMove>(from, to, myTools[from], _player);
 }
 
 
-RPSPoint RPSAutoPlayerAlgorithm::findKeyOfValueInmyTools(char value) {
+RPSPoint RPSAutoPlayerAlgorithm::findKeyOfValueInMyTools(char value) {
 
-    for (auto&& pair : myTools){
+    for (auto &&pair : myTools) {
         if (pair.second == value)
             return pair.first;
     }
 
-    return RPSPoint(-1,-1);
+    return RPSPoint(-1, -1);
 }
 
 void RPSAutoPlayerAlgorithm::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) {
+    RPSPoint pushedPoint;
+    for(int i=0;i<R;i++){
+        pushedPoint=getRandomPoint(emptyPositions);
+        vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'R'));
+        eraseFromVector(emptyPositions,pushedPoint);
+    }
+    for(int i=0;i<P;i++){
+        pushedPoint=getRandomPoint(emptyPositions);
+        vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'P'));
+        eraseFromVector(emptyPositions,pushedPoint);
+    }
+    for(int i=0;i<S;i++){
+        pushedPoint=getRandomPoint(emptyPositions);
+        vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'S'));
+        eraseFromVector(emptyPositions,pushedPoint);
+    }
+    for(int i=0;i<B;i++){
+        pushedPoint=getRandomPoint(emptyPositions);
+        vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'B'));
+        eraseFromVector(emptyPositions,pushedPoint);
+    }
+    for(int i=0;i<F;i++){
+        pushedPoint=getRandomPoint(emptyPositions);
+        vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'F'));
+        eraseFromVector(emptyPositions,pushedPoint);
+    }
+    for(int i=0;i<J;i++){
+        pushedPoint=getRandomPoint(emptyPositions);
+        vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'J','R'));
+        eraseFromVector(emptyPositions,pushedPoint);
+    }
 
+
+}
+
+void RPSAutoPlayerAlgorithm::eraseFromMap(map<RPSPoint, char> &m, const RPSPoint &p) {
+
+    for(auto&& it=m.begin();it!=m.end();++it){
+        if(it->first==p)
+            m.erase(it);
+    }
+
+}
+
+void RPSAutoPlayerAlgorithm::eraseFromVector(vector<RPSPoint> &v, RPSPoint p) {
+
+    for(auto&& it=v.begin();it!=v.end();++it){
+        if(*it==p)
+            v.erase(it);
+    }
+
+}
+
+RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(vector<RPSPoint> v) {
+    if(v.empty())
+        return RPSPoint(-1,-1);
+    while (true) {
+        auto v1 = rand() % M;
+        auto v2 = rand() % N;
+        if (find(v.begin(),v.end(),RPSPoint(v1,v2))!=v.end())
+            return RPSPoint(v1,v2);
+    }
+}
+
+RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(map<RPSPoint, char> v) {
+    if(v.empty())
+        return RPSPoint(-1,-1);
+    RPSPoint p;
+    while (true) {
+        auto v1 = rand() % M;
+        auto v2 = rand() % N;
+        p.setX(v1);
+        p.setY(v2);
+
+        for(auto it=v.begin();it!=v.end();++it){
+            if(it->first==p)
+                return p;
+        }
+    }
 }
 
 

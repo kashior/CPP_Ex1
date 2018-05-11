@@ -7,6 +7,7 @@
 #include "PlayerAlgorithm.h"
 #include "RPSPiecePosition.h"
 #include <map>
+#include <algorithm>
 #include "RPSParser.h"
 
 using namespace std;

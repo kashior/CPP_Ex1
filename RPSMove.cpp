@@ -4,7 +4,11 @@
 
 #include "RPSMove.h"
 
-RPSMove::RPSMove( RPSPoint &from,  RPSPoint &to, char piece, int player): _from(from), _to(to), _piece(piece), _player(player) {
+RPSMove::RPSMove( RPSPoint from,  RPSPoint to, char piece, int player):  _piece(piece), _player(player) {
+    _from.setX(from.getX());
+    _from.setY(from.getY());
+    _to.setX(to.getX());
+    _to.setY(to.getY());
 }
 
 RPSMove::RPSMove(){

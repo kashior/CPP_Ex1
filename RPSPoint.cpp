@@ -18,3 +18,21 @@ void RPSPoint::setX(int x) { _x=x; }
 
 void RPSPoint::setY(int y) { _y=y; }
 
+RPSPoint::RPSPoint(const RPSPoint &p2) {
+    {_x = p2._x; _y = p2._y; }
+
+}
+
+bool RPSPoint::operator==(const RPSPoint &p2)const {
+    return p2._x==_x && p2._y==_y;
+}
+
+bool RPSPoint::operator<(const RPSPoint &p2)const {
+    if(*this==p2)
+        return false;
+    if(p2._x>_x)
+        return true;
+    return p2._y>_y;
+
+}
+

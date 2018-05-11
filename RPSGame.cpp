@@ -1,7 +1,7 @@
 
 #include "RPSGame.h"
-#include "RPSFilePlayerAlgorithm.h"
-#include "RPSAutoPlayerAlgorithm.h"
+//#include "RPSFilePlayerAlgorithm.h"
+//#include "RPSAutoPlayerAlgorithm.h"
 #include "RPSBoard.h"
 #include "RPSFightInfo.h"
 

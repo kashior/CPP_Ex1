@@ -12,8 +12,9 @@ class RPSPoint: public Point {
 public:
     RPSPoint(int x, int y);
     RPSPoint();
-
-//    RPSPoint(RPSPoint& pos);
+    RPSPoint(const RPSPoint &p2);
+    bool operator==(const RPSPoint& p2)const;
+    bool operator<(const RPSPoint& p2)const;
 
     virtual int getX() const;
     void setX(int x);

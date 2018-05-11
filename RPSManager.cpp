@@ -104,7 +104,7 @@ void RPSManager::gameHandler() {
     RPSMove curMove;
     RPSFightInfo curFight;
 
-    while ((winner == 3) && (curGame->movesCounter < 100) && (moreMoves1  || moreMoves2) {
+    while ((winner == 3) && (curGame->movesCounter < 100) && (moreMoves1  || moreMoves2)) {
 
         if (moreMoves1){
         // player 1's turn

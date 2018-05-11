@@ -4,8 +4,8 @@
 #define EX1_RPSMANAGER_H
 
 #include "RPSGame.h"
-#include "RPSAutoPlayerAlgorithm.h"
-#include "RPSFilePlayerAlgorithm.h"
+//#include "RPSAutoPlayerAlgorithm.h"
+//#include "RPSFilePlayerAlgorithm.h"
 
 
 class RPSManager{
