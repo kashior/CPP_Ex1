@@ -15,7 +15,7 @@ RPSBoard::RPSBoard() {
 int RPSBoard::getPlayer(const Point &pos) const {
     if(board[pos.getY()][pos.getX()]==' ')
         return 0;
-    if(islower(board[pos.getX()][pos.getY()]))
+    if(islower(board[pos.getY()][pos.getX()]))
         return 2;
     return 1;
 }

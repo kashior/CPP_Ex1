@@ -64,6 +64,8 @@ void RPSAutoPlayerAlgorithm::notifyOnOpponentMove(const Move &move) {
 void RPSAutoPlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {
 
     RPSPoint curPoint(fightInfo.getPosition().getX(), fightInfo.getPosition().getY());
+    if(curPoint.getX()==-1)
+        return;
 
 
     if (fightInfo.getWinner() == 0) {//tie
@@ -188,31 +190,37 @@ void RPSAutoPlayerAlgorithm::getInitialPositions(int player, std::vector<unique_
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'R'));
         eraseFromVector(emptyPositions,pushedPoint);
+        myTools[pushedPoint]='R';
     }
     for(int i=0;i<P;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'P'));
         eraseFromVector(emptyPositions,pushedPoint);
+        myTools[pushedPoint]='P';
     }
     for(int i=0;i<S;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'S'));
         eraseFromVector(emptyPositions,pushedPoint);
+        myTools[pushedPoint]='S';
     }
     for(int i=0;i<B;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'B'));
         eraseFromVector(emptyPositions,pushedPoint);
+        myTools[pushedPoint]='B';
     }
     for(int i=0;i<F;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'F'));
         eraseFromVector(emptyPositions,pushedPoint);
+        myTools[pushedPoint]='F';
     }
     for(int i=0;i<J;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'J','R'));
         eraseFromVector(emptyPositions,pushedPoint);
+        myTools[pushedPoint]='R';
     }
 
 
@@ -227,11 +235,13 @@ void RPSAutoPlayerAlgorithm::eraseFromMap(map<RPSPoint, char> &m, const RPSPoint
 
 }
 
-void RPSAutoPlayerAlgorithm::eraseFromVector(vector<RPSPoint> &v, RPSPoint p) {
+void RPSAutoPlayerAlgorithm::eraseFromVector(vector<RPSPoint> &v, const RPSPoint &p) {
 
     for(auto&& it=v.begin();it!=v.end();++it){
-        if(*it==p)
+        if(*it==p) {
             v.erase(it);
+            return;
+        }
     }
 
 }
