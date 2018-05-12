@@ -50,7 +50,8 @@ void RPSAutoPlayerAlgorithm::notifyOnOpponentMove(const Move &move) {
 
     RPSPoint fromPoint(move.getFrom().getX(), move.getFrom().getY());
     RPSPoint toPoint(move.getTo().getX(), move.getTo().getY());
-    char movedTool = opponentTools.at(fromPoint);
+    auto it=find(opponentTools.begin(),opponentTools.end(),fromPoint);
+    char movedTool = it->second;
 
     eraseFromMap(opponentTools,fromPoint);
     opponentTools[toPoint] = movedTool;
@@ -247,32 +248,20 @@ void RPSAutoPlayerAlgorithm::eraseFromVector(vector<RPSPoint> &v, const RPSPoint
 }
 
 RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(vector<RPSPoint> v) {
-    if(v.empty())
-        return RPSPoint(-1,-1);
-    while (true) {
-        auto v1 = rand() % M;
-        auto v2 = rand() % N;
-        if (find(v.begin(),v.end(),RPSPoint(v1,v2))!=v.end())
-            return RPSPoint(v1,v2);
-    }
+     random_shuffle(v.begin(),v.end());
+     return *(v.begin().base());
+
 }
 
-RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(map<RPSPoint, char> v) {
-    if(v.empty())
+RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(map<RPSPoint, char> m) {
+    if(m.empty())
         return RPSPoint(-1,-1);
-    RPSPoint p;
-    while (true) {
-        auto v1 = rand() % M;
-        auto v2 = rand() % N;
-        p.setX(v1);
-        p.setY(v2);
+    auto it = m.begin();
+    std::advance(it, rand() % m.size());
+    return it->first;
 
-        for(auto it=v.begin();it!=v.end();++it){
-            if(it->first==p)
-                return p;
-        }
-    }
 }
+
 
 
 

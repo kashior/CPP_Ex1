@@ -31,7 +31,7 @@ public:
     void eraseFromMap(map<RPSPoint, char> &m, const RPSPoint &p);
     void eraseFromVector(vector<RPSPoint> &v, const RPSPoint &p);
     RPSPoint getRandomPoint(vector<RPSPoint> v);
-    RPSPoint getRandomPoint(map<RPSPoint,char> v);
+    RPSPoint getRandomPoint(map<RPSPoint, char> m);
 
     virtual ~RPSAutoPlayerAlgorithm(){}
 
