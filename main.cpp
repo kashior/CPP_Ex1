@@ -1,9 +1,11 @@
 
 #include "RPSParser.h"
 #include "RPSManager.h"
+#include <ctime>
 
 
 int main(int argc, char* argv[]) {
+    srand(time(NULL));
     if (argc!=2){
         printf("Error: not enough arguments for the game. Exiting\n");
         exit(0);

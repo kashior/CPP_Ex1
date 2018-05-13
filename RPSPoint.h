@@ -16,6 +16,7 @@ public:
     bool operator==(const RPSPoint& p2)const;
     bool operator<(const RPSPoint& p2)const;
 
+
     virtual int getX() const;
     void setX(int x);
 

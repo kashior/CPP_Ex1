@@ -28,11 +28,10 @@ bool RPSPoint::operator==(const RPSPoint &p2)const {
 }
 
 bool RPSPoint::operator<(const RPSPoint &p2)const {
-    if(*this==p2)
-        return false;
-    if(p2._x>_x)
-        return true;
-    return p2._y>_y;
+    if(_x==p2._x)
+        return _y<p2._y;
+    return _x <p2._x;
 
 }
+
 

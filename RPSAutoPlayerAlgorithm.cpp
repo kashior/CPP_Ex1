@@ -169,14 +169,14 @@ unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
     }
     while(true) {
         from = getRandomPoint(myTools);
-        if(myTools[from]!='F' && myTools[from]!='B')
+        if(myTools.at(from)!='F' && myTools.at(from)!='B')
             break;
     }
     RPSPoint to = getRandomPoint(opponentTools);
-
+    myTools[to]=myTools[from];
     myTools.erase(from);
 
-    return make_unique<RPSMove>(from, to, myTools[from], _player);
+    return make_unique<RPSMove>(from, to, myTools[to], _player);
 }
 
 
