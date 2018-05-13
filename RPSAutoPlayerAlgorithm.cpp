@@ -233,8 +233,10 @@ void RPSAutoPlayerAlgorithm::getInitialPositions(int player, std::vector<unique_
 void RPSAutoPlayerAlgorithm::eraseFromMap(map<RPSPoint, char> &m, const RPSPoint &p) {
 
     for(auto&& it=m.begin();it!=m.end();++it){
-        if(it->first==p)
+        if(it->first==p) {
             m.erase(it);
+            break;
+        }
     }
 
 }
