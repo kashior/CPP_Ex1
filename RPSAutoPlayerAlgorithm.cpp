@@ -50,7 +50,7 @@ void RPSAutoPlayerAlgorithm::notifyOnOpponentMove(const Move &move) {
 
     RPSPoint fromPoint(move.getFrom().getX(), move.getFrom().getY());
     RPSPoint toPoint(move.getTo().getX(), move.getTo().getY());
-    auto it=find(opponentTools.begin(),opponentTools.end(),fromPoint);
+    auto it=opponentTools.find(fromPoint);
     char movedTool = it->second;
 
     eraseFromMap(opponentTools,fromPoint);
@@ -167,9 +167,12 @@ unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
             }
         }
     }
-
-    from = getRandomPoint(myTools);
-    RPSPoint to = getRandomPoint(emptyPositions);
+    while(true) {
+        from = getRandomPoint(myTools);
+        if(myTools[from]!='F' && myTools[from]!='B')
+            break;
+    }
+    RPSPoint to = getRandomPoint(opponentTools);
 
     return make_unique<RPSMove>(from, to, myTools[from], _player);
 }
