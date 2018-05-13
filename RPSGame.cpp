@@ -283,7 +283,7 @@ RPSMove RPSGame::setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightIn
 
 
 void RPSGame::changeJokerPosition(unique_ptr<RPSPlayerAlgorithm> &playerAlg, unique_ptr<Move> &curMove) {
-    for ( auto&& point : playerAlg->playerJokers){
+    for ( auto& point : playerAlg->playerJokers){
         if (point->getX() == curMove->getFrom().getX() && point->getY() == curMove->getFrom().getY()){
         // if the moved piece is a joker!
             point->setX(curMove->getTo().getX());

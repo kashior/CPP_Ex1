@@ -173,8 +173,15 @@ unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
             break;
     }
     RPSPoint to = getRandomPoint(opponentTools);
+//    if(auto&& it=find(playerJokers.begin(),playerJokers.end(),make_unique<RPSPoint>(from))!=playerJokers.end())
+//    {
+//        eraseFromVector(playerJokers,make_unique<RPSPoint>(from));
+//        playerJokers.push_back(make_unique<RPSPoint>(to));
+//    }
     myTools[to]=myTools[from];
     myTools.erase(from);
+    emptyPositions.push_back(from);
+    eraseFromVector(emptyPositions,to);
 
     return make_unique<RPSMove>(from, to, myTools[to], _player);
 }
@@ -192,25 +199,25 @@ RPSPoint RPSAutoPlayerAlgorithm::findKeyOfValueInMyTools(char value) {
 
 void RPSAutoPlayerAlgorithm::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) {
     RPSPoint pushedPoint;
-    for(int i=0;i<R;i++){
+    for(int i=0;i<2;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'R'));
         eraseFromVector(emptyPositions,pushedPoint);
         myTools[pushedPoint]='R';
     }
-    for(int i=0;i<P;i++){
+    for(int i=0;i<1;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'P'));
         eraseFromVector(emptyPositions,pushedPoint);
         myTools[pushedPoint]='P';
     }
-    for(int i=0;i<S;i++){
+    for(int i=0;i<1;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'S'));
         eraseFromVector(emptyPositions,pushedPoint);
         myTools[pushedPoint]='S';
     }
-    for(int i=0;i<B;i++){
+    for(int i=0;i<1;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'B'));
         eraseFromVector(emptyPositions,pushedPoint);
@@ -222,7 +229,7 @@ void RPSAutoPlayerAlgorithm::getInitialPositions(int player, std::vector<unique_
         eraseFromVector(emptyPositions,pushedPoint);
         myTools[pushedPoint]='F';
     }
-    for(int i=0;i<J;i++){
+    for(int i=0;i<1;i++){
         pushedPoint=getRandomPoint(emptyPositions);
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'J','R'));
         eraseFromVector(emptyPositions,pushedPoint);
@@ -241,8 +248,8 @@ void RPSAutoPlayerAlgorithm::eraseFromMap(map<RPSPoint, char> &m, const RPSPoint
     }
 
 }
-
-void RPSAutoPlayerAlgorithm::eraseFromVector(vector<RPSPoint> &v, const RPSPoint &p) {
+template<typename T>
+void RPSAutoPlayerAlgorithm::eraseFromVector(vector<T> &v, const T &p) {
 
     for(auto&& it=v.begin();it!=v.end();++it){
         if(*it==p) {
@@ -267,6 +274,7 @@ RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(map<RPSPoint, char> m) {
     return it->first;
 
 }
+
 
 
 
