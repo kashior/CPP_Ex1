@@ -110,6 +110,8 @@ void RPSManager::gameHandler() {
         // player 1's turn
 
             curMovePtr = curGame->player1->getMove(); // get the move from player algorithm
+            cout<<curMovePtr->getFrom().getX()<<","<<curMovePtr->getFrom().getY()<<" to "<<
+                 curMovePtr->getTo().getX()<<","<<curMovePtr->getTo().getY()<<endl;
 
             if (!checkIfMoveIsValid(curMovePtr, 1, moreMoves1)) {
                 param1 = false;
@@ -155,6 +157,8 @@ void RPSManager::gameHandler() {
 
 //player 2's turn
             curMovePtr = curGame->player2->getMove(); // get the move from player algorithm
+            cout<<curMovePtr->getFrom().getX()<<","<<curMovePtr->getFrom().getY()<<" to "<<
+                curMovePtr->getTo().getX()<<","<<curMovePtr->getTo().getY()<<endl;
 
             if (!checkIfMoveIsValid(curMovePtr, 2, moreMoves2)) {
                 param2 = false;

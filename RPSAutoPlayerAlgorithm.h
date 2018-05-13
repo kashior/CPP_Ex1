@@ -5,6 +5,7 @@
 
 
 #include "RPSPlayerAlgorithm.h"
+#include <iostream>
 
 class RPSAutoPlayerAlgorithm : public RPSPlayerAlgorithm{
 
@@ -26,12 +27,12 @@ public:
 
     virtual unique_ptr<JokerChange> getJokerChange(); // nullptr if no change is requested
 
-    RPSPoint checkIfHasThisJokerRep(char c);
+    RPSPoint checkIfHasThisJokerRep(char c)const;
 
     void eraseFromMap(map<RPSPoint, char> &m, const RPSPoint &p);
     template<typename T> void eraseFromVector(vector<T> &v, const T &p);
-    RPSPoint getRandomPoint(vector<RPSPoint> v);
-    RPSPoint getRandomPoint(map<RPSPoint, char> m);
+    RPSPoint getRandomPoint(vector<RPSPoint> v)const;
+    RPSPoint getRandomPoint(map<RPSPoint, char> m)const;
 
 
 
