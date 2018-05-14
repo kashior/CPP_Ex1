@@ -174,12 +174,17 @@ void RPSGame::fightInner(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightIn
 void RPSGame::fightAttackerWins(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
                                 unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2) {
     auto attackedPiece= (char) toupper(board.board[curMove->getTo().getY()][curMove->getTo().getX()]);
-    if (curMove->getPlayer() == 1)
+    char attackerPiece; //////////////*****
+    if (curMove->getPlayer() == 1) {
         removeToolsFromVectors(player2, curMove, attackedPiece);
-    else
+        attackerPiece = curMove->getPiece(); ///////////*****
+    }
+    else{
         removeToolsFromVectors(player1, curMove, attackedPiece);
+        attackerPiece = (char) tolower(curMove->getPiece()); ///////////****
+    }
     updateFightVectors(curMove->getPlayer(), curMove, fights);
-    board.board[curMove->getTo().getY()][curMove->getTo().getX()] = curMove->getPiece();
+    board.board[curMove->getTo().getY()][curMove->getTo().getX()] = attackerPiece;
     if (curMove->getFrom().getX() != -1) //not init stage
         board.board[curMove->getFrom().getY()][curMove->getFrom().getX()] = ' ';
 }

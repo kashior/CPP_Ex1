@@ -127,7 +127,8 @@ RPSPoint RPSAutoPlayerAlgorithm::checkIfHasThisJokerRep(char c)const {
         curPoint.setX(point->getX());
         curPoint.setY(point->getY());
 
-        if (myTools.at(curPoint) == c)
+        auto it = myTools.find(curPoint);
+        if (it->second == c)
             return curPoint;
 
     }
@@ -147,8 +148,8 @@ unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
         to=pair.first;
         if (pair.second == 'R') {
             if (playerToolCounters['P'] < P) {
-
-                resMove = make_unique<RPSMove>(findKeyOfValueInMyTools('P'), to, 'P', _player);
+                from = findKeyOfValueInMyTools('P'); ////////////////////*********
+                resMove = make_unique<RPSMove>(from, to, 'P', _player);
                 found=true;
                 break;
             }
@@ -162,7 +163,8 @@ unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
 
         } else if (pair.second == 'P') {
             if (playerToolCounters['S'] < S) {
-                resMove= make_unique<RPSMove>(findKeyOfValueInMyTools('S'), to, 'S', _player);
+                from = findKeyOfValueInMyTools('S');
+                resMove= make_unique<RPSMove>(from, to, 'S', _player);
                 found=true;
                 break;
             }
@@ -174,7 +176,8 @@ unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
             }
         } else if (pair.second == 'S') {
             if (playerToolCounters['R'] < R) {
-                resMove= make_unique<RPSMove>(findKeyOfValueInMyTools('R'), to, 'R', _player);
+                from = findKeyOfValueInMyTools('R');
+                resMove= make_unique<RPSMove>(from, to, 'R', _player);
                 found=true;
                 break;
             }
@@ -188,10 +191,22 @@ unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
     }
     if(!found) {
 
+        int cnt = 0;
+
         while (true) {
+            cnt++;
             from = getRandomPoint(myTools);
-            if (myTools.at(from) != 'F' && myTools.at(from) != 'B')
+            if (myTools.at(from) != 'F' && myTools.at(from) != 'B') //don't want to move unmoving tool
                 break;
+            if (cnt>1000){ //if we done to many iteration we will choose the first valid point in the map
+                for (auto&& pair : myTools){
+                    if (pair.second != 'F' && pair.second != 'B'){
+                        from.setX(pair.first.getX());
+                        from.setY(pair.first.getY());
+                        break;
+                    }
+                }
+            }
         }
         char piece=myTools[from];
         to = getRandomPoint(opponentTools);
@@ -216,7 +231,7 @@ RPSPoint RPSAutoPlayerAlgorithm::findKeyOfValueInMyTools(char value) {
 
     for (auto &&pair : myTools) {
         if (pair.second == value)
-            return pair.first;
+            return RPSPoint(pair.first.getX(), pair.first.getY());
     }
 
     return RPSPoint(-1, -1);
@@ -273,8 +288,8 @@ void RPSAutoPlayerAlgorithm::eraseFromMap(map<RPSPoint, char> &m, const RPSPoint
     }
 
 }
-template<typename T>
-void RPSAutoPlayerAlgorithm::eraseFromVector(vector<T> &v, const T &p) {
+
+void RPSAutoPlayerAlgorithm::eraseFromVector(vector<RPSPoint> &v, RPSPoint p) {
 
     for(auto it=v.begin();it!=v.end();++it){
         if(*it==p) {
@@ -286,8 +301,11 @@ void RPSAutoPlayerAlgorithm::eraseFromVector(vector<T> &v, const T &p) {
 }
 
 RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(vector<RPSPoint> v)const {
-     random_shuffle(v.begin(),v.end());
-     return *(v.begin().base());
+
+    random_shuffle(v.begin(),v.end());
+    return RPSPoint(v.begin()->getX(), v.begin()->getY());
+
+     //return *(v.begin().base());
 
 }
 
@@ -296,7 +314,7 @@ RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(map<RPSPoint, char> m)const {
         return RPSPoint(-1,-1);
     auto it = m.begin();
     std::advance(it, rand() % m.size());
-    return it->first;
+    return RPSPoint(it->first.getX(), it->first.getY());
 
 }
 

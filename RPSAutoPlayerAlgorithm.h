@@ -30,7 +30,7 @@ public:
     RPSPoint checkIfHasThisJokerRep(char c)const;
 
     void eraseFromMap(map<RPSPoint, char> &m, const RPSPoint &p);
-    template<typename T> void eraseFromVector(vector<T> &v, const T &p);
+    void eraseFromVector(vector<RPSPoint> &v, RPSPoint p);
     RPSPoint getRandomPoint(vector<RPSPoint> v)const;
     RPSPoint getRandomPoint(map<RPSPoint, char> m)const;
 
