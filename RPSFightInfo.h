@@ -11,9 +11,10 @@ class RPSFightInfo : public FightInfo {
     char player1Piece;
     char player2Piece;
     RPSPoint fightPosition;
+    bool isFight; //to know if there was a fight for the fights counter
 
 public:
-    RPSFightInfo(int winner, char player1Piece, char player2Piece, RPSPoint position);
+    RPSFightInfo(int winner, char player1Piece, char player2Piece, RPSPoint position, bool isFight);
 
     RPSFightInfo();
 
@@ -30,6 +31,10 @@ public:
     void setPlayer2Piece(char newPiece);
 
     void setWinner(int newWinner);
+
+    void setIsFight(bool b);
+
+    bool getIsFight();
 
     virtual ~RPSFightInfo() {}
 

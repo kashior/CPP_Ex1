@@ -36,6 +36,10 @@ void RPSManager::gameHandler() {
     bool file2OK;
 
 
+    ////////////////////////////////###########
+    int turnNum = 0;
+    //////////////////////////////#############
+
     file1OK = initCheck(1);
     file2OK = initCheck(2);
 
@@ -45,6 +49,7 @@ void RPSManager::gameHandler() {
     // 3=A tie - both Moves input files done without a winner
     // 4=bad positioning input file for one player or both
     // 5=bad moves input file for some player
+    // 6=100 moves done without a fight
     int winner; // 0=tie, 1=player1 wins, 2=player2 wins 3= continue
 
     //now we will update the game board with the positions vectors and continue checking if files are valid
@@ -62,17 +67,17 @@ void RPSManager::gameHandler() {
     file1OK = curGame->UpdateBoardPlayer1InitStage(curGame->player1->lineNum, player1Positioning, curGame->player1);
 
     ///////////////
-    curGame->printBoardToScreen();
+    curGame->printBoardToScreen(0);
     ///////////////
     vector<unique_ptr<FightInfo>> fights;
     file2OK = curGame->UpdateBoardPlayer2InitStage(curGame->player2->lineNum, player2Positioning, curGame->player1, curGame->player2,
                                                    fights);
 
     ////////////////
-    curGame->printBoardToScreen();
+    curGame->printBoardToScreen(0);
     /////////////////
 
-    if (!file1OK || !file2OK) { //at least one of the positioning input files is bad
+    if (!file1OK || !file2OK) { //at least one of the positioning input files is bad, another check of other things
         updateWinner(file1OK, file2OK, winner);
         makeOutputFile(4, file1OK, file2OK, winner, curGame->player1->lineNum, curGame->player2->lineNum);
         return;
@@ -123,6 +128,14 @@ void RPSManager::gameHandler() {
             if (moreMoves1){ //if there are still more moves for player1 to make
                 curMove = curGame->setMoveToBoard(move(curMovePtr), 1,
                                                   curFight);// apply move to board after it has been checked
+                if (curFight.getIsFight())// if there was a fight during this move
+                    curGame->movesCounter = 0;
+                else{
+                    curGame->movesCounter++;
+                    if (curGame->movesCounter >= 100)
+                        break;
+                }
+
                 curGame->player1->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
                 checkWinner(winner, reason);// first check for winner
                 if (winner != 3)
@@ -145,10 +158,9 @@ void RPSManager::gameHandler() {
                     }
                 }
 
-                ++curGame->movesCounter;
-
                 ////////////////////////////
-                curGame->printBoardToScreen();
+                turnNum++;
+                curGame->printBoardToScreen(turnNum);
                 /////////////////////////////
             }
         }
@@ -170,6 +182,13 @@ void RPSManager::gameHandler() {
             if (moreMoves2){ //if there are still more moves for player2 to make
                 curMove = curGame->setMoveToBoard(move(curMovePtr), 2,
                                                   curFight);// apply move to board after it has been checked
+                if (curFight.getIsFight())// if there was a fight during this move
+                    curGame->movesCounter = 0;
+                else{
+                    curGame->movesCounter++;
+                    if (curGame->movesCounter >= 100)
+                        break;
+                }
                 curGame->player2->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
                 checkWinner(winner, reason);// first check for winner
                 if (winner != 3)
@@ -192,15 +211,17 @@ void RPSManager::gameHandler() {
                     }
                 }
 
-                ++curGame->movesCounter;
-
                 //////////////////////////////
-                curGame->printBoardToScreen();
+                turnNum++;
+                curGame->printBoardToScreen(turnNum);
                 //////////////////////////////
             }
         }
     }
-
+    if (curGame->movesCounter == 100){
+        reason = 6;
+        winner = 0; //tie
+    }
     makeOutputFile(reason, param1, param2, winner, curGame->player1->lineNum, curGame->player2->lineNum);
 }
 
@@ -255,9 +276,12 @@ void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner
     } else if (reason == 3)
         fout << "A tie - both Moves input files done without a winner" << endl;
 
-    else { //(reason == 5)
+    else if (reason == 5) {
         updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
         fout << "Bad Moves input file for player " << loser << " - line " << badLine << endl;
+    }
+    else { //(reason == 6)
+        fout << "A tie - 100 moves have invoked without a fight" << endl;
     }
 
     fout << endl;
@@ -284,7 +308,7 @@ void RPSManager::updateLoserAndBadLine(int winner, int &loser, int param1, int p
 
 
 void RPSManager::checkWinner(int &winner, int &reason) {
-    if (curGame->CheckIfPlayerLose(curGame->player1) && curGame->CheckIfPlayerLose(curGame->player2)) { // both wins
+    if (curGame->CheckIfPlayerLose(curGame->player1) && curGame->CheckIfPlayerLose(curGame->player2)) { // both lose
         winner = 0;
     } else if (curGame->CheckIfPlayerLose(curGame->player1)) { //player 2 wins
         winner = 2;

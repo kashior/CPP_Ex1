@@ -84,7 +84,7 @@ void RPSAutoPlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {
 
 unique_ptr<JokerChange> RPSAutoPlayerAlgorithm::getJokerChange() {
 
-    if (playerJokers.empty())
+    if (playerToolCounters['J'] == J)
         return nullptr;
 
     for (auto &&pair : opponentTools) {
@@ -127,10 +127,12 @@ RPSPoint RPSAutoPlayerAlgorithm::checkIfHasThisJokerRep(char c)const {
         curPoint.setX(point->getX());
         curPoint.setY(point->getY());
 
-        auto it = myTools.find(curPoint);
-        if (it->second == c)
-            return curPoint;
-
+        ///////////////////####################################3
+        if (curPoint.getX() != -2){ //if this joker still exists
+            auto it = myTools.find(curPoint);
+            if (it->second == c)
+                return curPoint;
+        }
     }
 
     return RPSPoint(-1, -1);

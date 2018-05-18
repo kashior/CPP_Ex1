@@ -43,6 +43,8 @@ public:
 
     int getPlayer();
 
+    void updateToolCounter(char tool);
+
     virtual ~RPSPlayerAlgorithm() {}
 };
 

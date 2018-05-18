@@ -99,7 +99,7 @@ public:
 
     void changeJokerPosition(unique_ptr<RPSPlayerAlgorithm> &playerAlg, unique_ptr<Move> &curMove);
 
-    void printBoardToScreen();
+    void printBoardToScreen(int turnNum);
 };
 
 #endif //RPSGAME_H

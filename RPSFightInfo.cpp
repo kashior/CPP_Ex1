@@ -2,11 +2,11 @@
 
 #include "RPSFightInfo.h"
 
-RPSFightInfo::RPSFightInfo(int winner, char player1Piece, char player2Piece, RPSPoint position)
+RPSFightInfo::RPSFightInfo(int winner, char player1Piece, char player2Piece, RPSPoint position, bool isFight)
         : playerWinner(winner), player1Piece(player1Piece), player2Piece(player2Piece),
-          fightPosition(position) {}
+          fightPosition(position), isFight (isFight){}
 
-RPSFightInfo::RPSFightInfo(): playerWinner(0), player1Piece('\0'), player2Piece('\0')
+RPSFightInfo::RPSFightInfo(): playerWinner(0), player1Piece('\0'), player2Piece('\0'), isFight(false)
 {
     fightPosition.setX(-1);
     fightPosition.setY(-1);
@@ -29,6 +29,14 @@ void RPSFightInfo::setPlayer1Piece(char newPiece) {player1Piece = newPiece;}
 void RPSFightInfo::setPlayer2Piece(char newPiece) {player2Piece = newPiece;}
 
 void RPSFightInfo::setWinner(int newWinner) {playerWinner=newWinner;}
+
+void RPSFightInfo::setIsFight(bool b) {
+    isFight = b;
+}
+
+bool RPSFightInfo::getIsFight() {
+    return isFight;
+}
 
 
 
