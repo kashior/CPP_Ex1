@@ -66,16 +66,12 @@ void RPSManager::gameHandler() {
 
     file1OK = curGame->UpdateBoardPlayer1InitStage(curGame->player1->lineNum, player1Positioning, curGame->player1);
 
-    ///////////////
-    curGame->printBoardToScreen(0);
-    ///////////////
+
     vector<unique_ptr<FightInfo>> fights;
     file2OK = curGame->UpdateBoardPlayer2InitStage(curGame->player2->lineNum, player2Positioning, curGame->player1, curGame->player2,
                                                    fights);
 
-    ////////////////
-    curGame->printBoardToScreen(0);
-    /////////////////
+
 
     if (!file1OK || !file2OK) { //at least one of the positioning input files is bad, another check of other things
         updateWinner(file1OK, file2OK, winner);
@@ -115,8 +111,6 @@ void RPSManager::gameHandler() {
         // player 1's turn
 
             curMovePtr = curGame->player1->getMove(); // get the move from player algorithm
-            cout<<curMovePtr->getFrom().getX()<<","<<curMovePtr->getFrom().getY()<<" to "<<
-                 curMovePtr->getTo().getX()<<","<<curMovePtr->getTo().getY()<<endl;
 
             if (!checkIfMoveIsValid(curMovePtr, 1, moreMoves1)) {
                 param1 = false;
@@ -158,10 +152,7 @@ void RPSManager::gameHandler() {
                     }
                 }
 
-                ////////////////////////////
                 turnNum++;
-                curGame->printBoardToScreen(turnNum);
-                /////////////////////////////
             }
         }
 
@@ -169,8 +160,6 @@ void RPSManager::gameHandler() {
 
 //player 2's turn
             curMovePtr = curGame->player2->getMove(); // get the move from player algorithm
-            cout<<curMovePtr->getFrom().getX()<<","<<curMovePtr->getFrom().getY()<<" to "<<
-                curMovePtr->getTo().getX()<<","<<curMovePtr->getTo().getY()<<endl;
 
             if (!checkIfMoveIsValid(curMovePtr, 2, moreMoves2)) {
                 param2 = false;
@@ -211,10 +200,8 @@ void RPSManager::gameHandler() {
                     }
                 }
 
-                //////////////////////////////
                 turnNum++;
-                curGame->printBoardToScreen(turnNum);
-                //////////////////////////////
+
             }
         }
     }
@@ -373,9 +360,6 @@ bool RPSManager::checkIfMoveIsValidBoardwise(unique_ptr<Move> &curMove, int play
 
 bool RPSManager::checkIfJokerChangeIsValid(unique_ptr<JokerChange> &curChange, int player) {
     const unique_ptr<RPSPlayerAlgorithm> & curPlayer= player==1 ? curGame->player1 : curGame->player2;
-//    char jokerPiece = curChange->getJokerNewRep(); parser already do it
-//    if(jokerPiece != 'R' && jokerPiece != 'P' && jokerPiece!='S'&& jokerPiece != 'B' )
-//        return false;
 
     for (const unique_ptr<RPSPoint> &joker:curPlayer->playerJokers) {
         if (curChange->getJokerChangePosition().getX() == joker->getX() &&

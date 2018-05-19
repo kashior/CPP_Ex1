@@ -23,7 +23,6 @@ public:
     virtual unique_ptr<Move> getMove();
     virtual unique_ptr<JokerChange> getJokerChange() ; // nullptr if no change is requested
     void setMovesFromMoveFile();
-//    void incrementMovesCounter();
     virtual ~RPSFilePlayerAlgorithm() {}
 
 };

@@ -130,6 +130,5 @@ void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}// 
     return nullptr;
 }
 
-//void RPSFilePlayerAlgorithm::incrementMovesCounter() {moveFileLineCounter++;}
 
 

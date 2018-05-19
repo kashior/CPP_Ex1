@@ -1,7 +1,5 @@
 
 #include "RPSGame.h"
-//#include "RPSFilePlayerAlgorithm.h"
-//#include "RPSAutoPlayerAlgorithm.h"
 #include "RPSBoard.h"
 #include "RPSFightInfo.h"
 
@@ -24,8 +22,9 @@ RPSGame::RPSGame(bool &isPlayer1Auto, bool &isPlayer2Auto) {
 bool RPSGame::UpdateBoardPlayer1InitStage(int &lineNum, vector<unique_ptr<PiecePosition>> & playersPositioning,
                                           unique_ptr<RPSPlayerAlgorithm> &playerAlg) {
     int x,y;
+    char piece;
     for (unique_ptr<PiecePosition> &pos : playersPositioning){
-        char piece=pos->getPiece();
+        piece=pos->getPiece();
         x = pos->getPosition().getX();
         y = pos->getPosition().getY();
         if (board.board[y][x] != ' ') {
@@ -43,8 +42,8 @@ bool RPSGame::UpdateBoardPlayer1InitStage(int &lineNum, vector<unique_ptr<PieceP
             board.board[y][x] = pos->getJokerRep();
         }
         else
-            board.board[y][x] = pos->getPiece();
-        playerAlg->playerToolCounters[pos->getPiece()]--;
+            board.board[y][x] =piece;
+        playerAlg->playerToolCounters[piece]--;
         lineNum++;
     }
     return true;
@@ -57,16 +56,18 @@ bool RPSGame::UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<PieceP
                                           vector<unique_ptr<FightInfo>> &fights) {
     int x,y;
     char piece;
+    char posPiece;
     for (unique_ptr<PiecePosition>& pos : playersPositioning){
         x = pos->getPosition().getX();
         y = pos->getPosition().getY();
+        posPiece=pos->getPiece();
         piece = (char)tolower(pos->getPiece());
         if ( (int) board.board[y][x] > 96) { //the position already contains player 2 tool
             cout << "Error: Two or more pieces are positioned on the same location in line " << lineNum <<
                  " of player 2's positioning" << endl;
             return false;
         }
-        if (player2Alg->playerToolCounters[pos->getPiece()] == 0) {
+        if (player2Alg->playerToolCounters[posPiece] == 0) {
             cout << "Error: A piece type appears more than it's number in line " << lineNum <<
                  " of player 2's positioning" << endl;
             return false;
@@ -74,7 +75,7 @@ bool RPSGame::UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<PieceP
         if (pos->getJokerRep() !=  '#')
             player2Alg->addJokerPositionToVector(pos);
 
-        player2Alg->playerToolCounters[pos->getPiece()]--;
+        player2Alg->playerToolCounters[posPiece]--;
         if (board.board[y][x] == ' ')
             board.board[y][x] = pos->getJokerRep()=='#' ? piece : (char) tolower(pos->getJokerRep());
         else {
@@ -89,6 +90,8 @@ bool RPSGame::UpdateBoardPlayer2InitStage(int &lineNum, vector<unique_ptr<PieceP
     }
     return true;
 }
+
+
 
 
 void RPSGame::fightOuter(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
@@ -174,14 +177,14 @@ void RPSGame::fightInner(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightIn
 void RPSGame::fightAttackerWins(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
                                 unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2) {
     auto attackedPiece= (char) toupper(board.board[curMove->getTo().getY()][curMove->getTo().getX()]);
-    char attackerPiece; //////////////*****
+    char attackerPiece;
     if (curMove->getPlayer() == 1) {
         removeToolsFromVectors(player2, curMove, attackedPiece);
-        attackerPiece = curMove->getPiece(); ///////////*****
+        attackerPiece = curMove->getPiece();
     }
     else{
         removeToolsFromVectors(player1, curMove, attackedPiece);
-        attackerPiece = (char) tolower(curMove->getPiece()); ///////////****
+        attackerPiece = (char) tolower(curMove->getPiece());
     }
     updateFightVectors(curMove->getPlayer(), curMove, fights);
     board.board[curMove->getTo().getY()][curMove->getTo().getX()] = attackerPiece;
@@ -202,24 +205,11 @@ void RPSGame::fightAttackerLoses(unique_ptr<RPSMove> &curMove, vector<unique_ptr
         board.board[curMove->getFrom().getY()][curMove->getFrom().getX()] = ' ';
 }
 
-//////////////////////////////////////////////////////////////////
+
 void RPSGame::removeToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, unique_ptr<RPSMove> &curMove,
                                      char pieceToRemove) {
 
-//    auto it1 = find(player->playerJokers.begin(),player->playerJokers.end(),make_unique<RPSPoint>
-//            (curMove->getFrom().getX(),curMove->getFrom().getY()));
-//    auto it2 = find(player->playerJokers.begin(),player->playerJokers.end(),make_unique<RPSPoint>
-//            (curMove->getTo().getX(),curMove->getTo().getY()));
-//    if (it1 !=  player->playerJokers.end()) {
-//        player->playerToolCounters['J']++;
-//        player->playerJokers.erase(it1);
-//    }
-//    else if (it2 != player->playerJokers.end()){
-//        player->playerToolCounters['J']++;
-//        player->playerJokers.erase(it2);
-//    } else {
-//        player->playerToolCounters[pieceToRemove]++;
-//    }
+
 
     for (auto& point : player->playerJokers){
         if (point->getX()==curMove->getFrom().getX() && point->getY()==curMove->getFrom().getY()){
@@ -232,6 +222,7 @@ void RPSGame::removeToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, uni
             point->setX(-2); //this joker now is dead
             point->setY(-2);
             player->playerToolCounters['J']++;
+            return;
         }
     }
     player->playerToolCounters[pieceToRemove]++;
@@ -304,12 +295,7 @@ RPSMove RPSGame::setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightIn
 
 
 void RPSGame::changeJokerPosition(unique_ptr<RPSPlayerAlgorithm> &playerAlg, unique_ptr<Move> &curMove) {
-//    unique_ptr<RPSPoint> p=make_unique<RPSPoint>(curMove->getFrom().getX(),curMove->getFrom().getY());
-//    auto point = find(playerAlg->playerJokers.begin(),playerAlg->playerJokers.end(),p);
-//    if (point!=playerAlg->playerJokers.end()){
-//        playerAlg->playerJokers.erase(point);
-//        playerAlg->playerJokers.push_back(make_unique<RPSPoint>(curMove->getTo().getX(),curMove->getTo().getY()));
-//    }
+
     for (auto& point : playerAlg->playerJokers){
         if (point->getX()==curMove->getFrom().getX() && point->getY()==curMove->getFrom().getY()){
             point->setX(curMove->getTo().getX());
@@ -332,17 +318,6 @@ void RPSGame::printBoardToScreen(int turnNum) {
         }
         cout << endl;
     }
-
-    cout << "Tool counter of player 1:" << endl;
-    cout << "R = " << player1->playerToolCounters['R'] << endl;
-    cout << "P = " << player1->playerToolCounters['P'] << endl;
-    cout << "S = " << player1->playerToolCounters['S'] << endl;
-    cout << "J = " << player1->playerToolCounters['J'] << endl;
-    cout << "Tool counter of player 2:" << endl;
-    cout << "R = " << player2->playerToolCounters['R'] << endl;
-    cout << "P = " << player2->playerToolCounters['P'] << endl;
-    cout << "S = " << player2->playerToolCounters['S'] << endl;
-    cout << "J = " << player2->playerToolCounters['J'] << endl;
 }
 
 

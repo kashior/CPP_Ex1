@@ -17,5 +17,4 @@ void RPSJokerChange::setJokerChangePosition(RPSPoint pos) {_jokerPosition = pos;
 void RPSJokerChange::setJokerNewRep(char piece) {_jokerRep = piece;}
 
 
-//int RPSJokerChange::getPlayer() const {return }
 
