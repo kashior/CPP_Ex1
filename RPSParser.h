@@ -21,29 +21,12 @@ using namespace std;
 #define F 1
 
 /**
- * A structure that represents a move that a player wishes to make.
- * Each moves contains:
- * player - 1 or 2
- * fromX, fromY, toX, toY - from where to where move a piece.
- * joker_X, joker_y - the coordinates of the joker the player wishes to change its representation.
- * joker_tool - the new piece representation of the joker.
- *
+ * A class of static functions that meant to parse a command from a user file.
  */
 class RPSParser {
 
 public:
-    struct OldMove {
-        int player;
-        int fromX;
-        int fromY;
-        int toX;
-        int toY;
-        string tool;
-        bool isJoker;
-        int joker_X;
-        int joker_Y;
-        string joker_tool;
-    };
+
 
     /**
      *
@@ -77,6 +60,13 @@ public:
     static int
     parseLineMove(const string &line, unique_ptr<RPSMove> &newMove, unique_ptr<RPSJokerChange> &newJokerChange);
 
+/**
+ * This function decides if the arguments given in command line are OK or corrupted
+ * @param isPlayer1Auto - update this boolean to be FilePlayerAlgo or AutoPlayerAlgo of player 1
+ * @param isPlayer2Auto - pdate this boolean to be FilePlayerAlgo or AutoPlayerAlgo of player 2
+ * @param args - the line to parse
+ * @return true if the arguments are good, and updates by reference the 2 booleans
+ */
     static bool parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args);
 
 private:

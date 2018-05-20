@@ -289,8 +289,9 @@ void RPSAutoPlayerAlgorithm::eraseFromVector(vector<RPSPoint> &v, RPSPoint p) {
 
 RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(vector<RPSPoint> v)const {
 
-    random_shuffle(v.begin(),v.end());
-    return RPSPoint(v.begin()->getX(), v.begin()->getY());
+    auto it = v.begin();
+    std::advance(it, rand() % v.size());
+    return RPSPoint(it->getX(), it->getY());
 
 
 }

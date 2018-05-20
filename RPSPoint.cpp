@@ -8,8 +8,6 @@ RPSPoint::RPSPoint() {
     _y=-1;
 }
 
-//RPSPoint::RPSPoint(RPSPoint& pos): _x(pos.getX()), _y(pos.getY()) {}
-
 int RPSPoint::getX() const { return _x; }
 
 int RPSPoint::getY() const { return _y; }

@@ -1,10 +1,11 @@
 
 #include "RPSPiecePosition.h"
 
+
 RPSPiecePosition::RPSPiecePosition(RPSPoint pos, char piece, char jokerRep) : _pos(pos.getX(), pos.getY()), _piece(piece),
                                                                               _jokerRep(jokerRep) {}
-
 RPSPiecePosition::RPSPiecePosition() {}
+
 
 const Point &RPSPiecePosition::getPosition() const { return _pos; }
 
@@ -13,7 +14,6 @@ char RPSPiecePosition::getPiece() const { return _piece; }
 char RPSPiecePosition::getJokerRep() const { return _jokerRep; }
 
 void RPSPiecePosition::setPosition(RPSPoint *pos) { _pos = *pos; }
-
 
 
 void RPSPiecePosition::setPiece(char piece) { _piece = piece; }
