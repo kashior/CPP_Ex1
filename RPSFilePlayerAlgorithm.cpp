@@ -1,8 +1,6 @@
 
 
-#include <fstream>
-#include <iostream>
-#include <memory>
+
 #include "RPSFilePlayerAlgorithm.h"
 
 using namespace std;

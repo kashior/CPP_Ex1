@@ -6,6 +6,8 @@
 #include "RPSPlayerAlgorithm.h"
 #include <string>
 #include <memory>
+#include <fstream>
+#include <iostream>
 using namespace std;
 
 

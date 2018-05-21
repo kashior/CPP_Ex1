@@ -1,8 +1,6 @@
 
 
 #include "RPSParser.h"
-#include "RPSMove.h"
-#include "RPSPiecePosition.h"
 
 
 int RPSParser::parseLineInit(const string &line, unique_ptr<RPSPiecePosition> &initPos) {

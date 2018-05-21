@@ -1,7 +1,6 @@
 
 #include "RPSGame.h"
-#include "RPSBoard.h"
-#include "RPSFightInfo.h"
+
 
 
 RPSGame::RPSGame(bool &isPlayer1Auto, bool &isPlayer2Auto) {
