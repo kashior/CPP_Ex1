@@ -1,6 +1,7 @@
 
 #include "RPSJokerChange.h"
 
+
 RPSJokerChange::RPSJokerChange(RPSPoint jokerPosition, char jokerRep = '#'): _jokerRep(jokerRep), _jokerPosition(jokerPosition) {}
 
 RPSJokerChange::RPSJokerChange():  _jokerRep('#'){
@@ -8,6 +9,7 @@ RPSJokerChange::RPSJokerChange():  _jokerRep('#'){
     _jokerPosition.setY(-1);
 
 }
+
 const Point &RPSJokerChange::getJokerChangePosition() const { return _jokerPosition ;}
 
 char RPSJokerChange::getJokerNewRep() const {return _jokerRep;}

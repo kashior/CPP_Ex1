@@ -4,6 +4,7 @@
 
 #include "RPSMove.h"
 
+
 RPSMove::RPSMove( RPSPoint from,  RPSPoint to, char piece, int player):  _piece(piece), _player(player) {
     _from.setX(from.getX());
     _from.setY(from.getY());
@@ -32,7 +33,6 @@ const Point &RPSMove::getTo() const {return _to;}
 const int &RPSMove::getPlayer() const {return _player;}
 
 const char &RPSMove::getPiece() const {return _piece;}
-
 
 void RPSMove::setPiece(char piece) { _piece=piece; }
 

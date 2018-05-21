@@ -10,8 +10,9 @@ RPSBoard::RPSBoard() {
             board[i][j] = ' ';
         }
     }
-
 }
+
+
 int RPSBoard::getPlayer(const Point &pos) const {
     if(board[pos.getY()][pos.getX()]==' ')
         return 0;
