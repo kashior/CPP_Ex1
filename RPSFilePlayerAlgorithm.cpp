@@ -7,10 +7,13 @@
 
 using namespace std;
 
+
+
 RPSFilePlayerAlgorithm::RPSFilePlayerAlgorithm(int player, string dir)
         : RPSPlayerAlgorithm(player), _directory(dir), moveFileLineCounter(0) {
     setMovesFromMoveFile();
 }
+
 
 void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<PiecePosition>> &vectorToFill) {
     string c = player == 1 ? "1" : "2";
@@ -55,7 +58,7 @@ void RPSFilePlayerAlgorithm::getInitialPositions(int player, vector<unique_ptr<P
                      << player << "'s file" << endl;
                 vectorToFill.clear();
                 return;
-            default:
+            default: //this line is a valid positioning
                 vectorToFill.push_back(move(initPos));
                 lineNum++;
         }
@@ -102,17 +105,17 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
         }
         playerMoves.push_back(make_pair(move(curMove),move(curJokerChange)));
     }
-    // "From(-1,-1)" this is a flag for the manager to know that the moves file ended
-//    playerMoves.push_back(make_pair(move(curMove), move(curJokerChange)));
     fin.close();
 }
 
 
 void RPSFilePlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {}
 
-void RPSFilePlayerAlgorithm::notifyOnOpponentMove(const Move &move) {} // called only on opponents move
 
-void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}// called only if there was a fight
+void RPSFilePlayerAlgorithm::notifyOnOpponentMove(const Move &move) {}
+
+
+void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}
 
 
  unique_ptr<Move> RPSFilePlayerAlgorithm::getMove() {
@@ -120,6 +123,7 @@ void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}// 
         return move(playerMoves[moveFileLineCounter++].first);
     return make_unique<RPSMove>();
 }
+
 
  unique_ptr<JokerChange> RPSFilePlayerAlgorithm::getJokerChange() {
     if (playerMoves.size()==0)
