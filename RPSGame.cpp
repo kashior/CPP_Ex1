@@ -113,7 +113,7 @@ void RPSGame::fightOuter(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightIn
         fightInner(curMove, fights, player1Alg, player2Alg);
 }
 
-// remove both playertoolscounter and joker locations if there is , update board
+
 void RPSGame::removeBothPiecesFromGame(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
                                        unique_ptr<RPSPlayerAlgorithm> &player1,
                                        unique_ptr<RPSPlayerAlgorithm> &player2) {
@@ -305,19 +305,19 @@ void RPSGame::changeJokerPosition(unique_ptr<RPSPlayerAlgorithm> &playerAlg, uni
 
 }
 
-
-void RPSGame::printBoardToScreen(int turnNum) {
-    cout << "" << endl;
-    cout << "turn number " << turnNum << " ,current board:" << endl;
-    cout << " 0123456789" << endl;
-
-    for (int j = 0; j < N; j++) {
-        cout << j;
-        for (int i = 0; i < M; i++) {
-            cout << board.getPiece(i, j);
-        }
-        cout << endl;
-    }
-}
+// for DEBUG purposes only
+//void RPSGame::printBoardToScreen(int turnNum) {
+//    cout << "" << endl;
+//    cout << "turn number " << turnNum << " ,current board:" << endl;
+//    cout << " 0123456789" << endl;
+//
+//    for (int j = 0; j < N; j++) {
+//        cout << j;
+//        for (int i = 0; i < M; i++) {
+//            cout << board.getPiece(i, j);
+//        }
+//        cout << endl;
+//    }
+//}
 
 

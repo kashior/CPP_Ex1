@@ -4,7 +4,7 @@
 
 
 RPSManager::RPSManager(bool isPlayer1Auto, bool isPlayer2Auto) {
-    curGame = make_unique<RPSGame>(isPlayer1Auto,isPlayer2Auto);
+    curGame = make_unique<RPSGame>(isPlayer1Auto, isPlayer2Auto);
     player1Points = 0;
     player2Points = 0;
 
@@ -24,24 +24,45 @@ bool RPSManager::initCheck(int playerNum) {
 }
 
 
-/**
- * The "main manager" of the game. Handles the all flow of the game.
- *
- * @param isPlayer1Auto - true if player 1 is auto-algorithm, false if it is file-algorythm.
- * @param isPlayer2Auto - true if player 2 is auto-algorithm, false if it is file-algorythm.
- */
-void RPSManager::gameHandler() {
+bool
+RPSManager::initStage(int &reason, int &winner, vector<unique_ptr<FightInfo>> &fights) {
 
     bool file1OK;
     bool file2OK;
 
-
-    ////////////////////////////////###########
-    int turnNum = 0;
-    //////////////////////////////#############
-
     file1OK = initCheck(1);
     file2OK = initCheck(2);
+
+
+    //now we will update the game board with the positions vectors and continue checking if files are valid
+
+
+    //want to check if input file/s is/are valid
+    if (!file1OK || !file2OK) { //at least one of the positioning input files is bad
+        updateWinner(file1OK, file2OK, winner);
+        makeOutputFile(4, file1OK, file2OK, winner, curGame->player1->lineNum, curGame->player2->lineNum);
+        return false;
+    }
+    curGame->player1->lineNum = 1; //for player1 input file (if exists)
+    curGame->player2->lineNum = 1; //for player2 input file (if exists)
+
+    file1OK = curGame->UpdateBoardPlayer1InitStage(curGame->player1->lineNum, player1Positioning, curGame->player1);
+    file2OK = curGame->UpdateBoardPlayer2InitStage(curGame->player2->lineNum, player2Positioning, curGame->player1,
+                                                   curGame->player2, fights);
+
+
+    if (!file1OK || !file2OK) { //at least one of the positioning input files is bad, another check of other things
+        updateWinner(file1OK, file2OK, winner);
+        makeOutputFile(4, file1OK, file2OK, winner, curGame->player1->lineNum, curGame->player2->lineNum);
+        return false;
+    }
+    return true;
+
+
+}
+
+void RPSManager::gameHandler() {
+
 
     int reason; // the "reason" for output file
     // 1=all flags of the opponent are captures
@@ -52,32 +73,12 @@ void RPSManager::gameHandler() {
     // 6=100 moves done without a fight
     int winner; // 0=tie, 1=player1 wins, 2=player2 wins 3= continue
 
-    //now we will update the game board with the positions vectors and continue checking if files are valid
-
-
-    //want to check if input file/s is/are valid
-    if (!file1OK || !file2OK) { //at least one of the positioning input files is bad
-        updateWinner(file1OK, file2OK, winner);
-        makeOutputFile(4, file1OK, file2OK, winner, curGame->player1->lineNum, curGame->player2->lineNum);
-        return;
-    }
-    curGame->player1->lineNum = 1; //for player1 input file (if exists)
-    curGame->player2->lineNum = 1; //for player2 input file (if exists)
-
-    file1OK = curGame->UpdateBoardPlayer1InitStage(curGame->player1->lineNum, player1Positioning, curGame->player1);
-
 
     vector<unique_ptr<FightInfo>> fights;
-    file2OK = curGame->UpdateBoardPlayer2InitStage(curGame->player2->lineNum, player2Positioning, curGame->player1, curGame->player2,
-                                                   fights);
 
-
-
-    if (!file1OK || !file2OK) { //at least one of the positioning input files is bad, another check of other things
-        updateWinner(file1OK, file2OK, winner);
-        makeOutputFile(4, file1OK, file2OK, winner, curGame->player1->lineNum, curGame->player2->lineNum);
+    if (!(initStage(reason, winner, fights)))
         return;
-    }
+
     // input file/s are valid, now before setting the moves we want to check if maybe there is already a winner...
 
     checkWinner(winner, reason);
@@ -94,9 +95,9 @@ void RPSManager::gameHandler() {
 
     bool param1 = true, param2 = true;
     bool moreMoves1 = true, moreMoves2 = true; //Set to "true" if there are more moves in the moves files of
-                                                // of player 1 and 2. Set to "false" ones there are no more
-                                                // moves in the file. For auto players the value is always
-                                                // "true".
+    // of player 1 and 2. Set to "false" ones there are no more
+    // moves in the file. For auto players the value is always
+    // "true".
 
 
     unique_ptr<Move> curMovePtr;
@@ -105,10 +106,10 @@ void RPSManager::gameHandler() {
     RPSMove curMove;
     RPSFightInfo curFight;
 
-    while ((winner == 3) && (curGame->movesCounter < 100) && (moreMoves1  || moreMoves2)) {
+    while ((winner == 3) && (curGame->movesCounter < 100) && (moreMoves1 || moreMoves2)) {
 
-        if (moreMoves1){
-        // player 1's turn
+        if (moreMoves1) {
+            // player 1's turn
 
             curMovePtr = curGame->player1->getMove(); // get the move from player algorithm
 
@@ -119,12 +120,12 @@ void RPSManager::gameHandler() {
                 break;
             }
 
-            if (moreMoves1){ //if there are still more moves for player1 to make
+            if (moreMoves1) { //if there are still more moves for player1 to make
                 curMove = curGame->setMoveToBoard(move(curMovePtr), 1,
                                                   curFight);// apply move to board after it has been checked
                 if (curFight.getIsFight())// if there was a fight during this move
                     curGame->movesCounter = 0;
-                else{
+                else {
                     curGame->movesCounter++;
                     if (curGame->movesCounter >= 100)
                         break;
@@ -140,23 +141,20 @@ void RPSManager::gameHandler() {
 
                 curJokerChangePtr = curGame->player1->getJokerChange(); // in case there was joker change, get it
                 if (curJokerChangePtr != nullptr) {
-                    if(checkIfJokerChangeIsValid(curJokerChangePtr, 1))
+                    if (checkIfJokerChangeIsValid(curJokerChangePtr, 1))
                         curGame->board.board[curJokerChangePtr->getJokerChangePosition().getY()]
-                        [curJokerChangePtr->getJokerChangePosition().getX()]=curJokerChangePtr->getJokerNewRep();
-                    else
-                    {
+                        [curJokerChangePtr->getJokerChangePosition().getX()] = curJokerChangePtr->getJokerNewRep();
+                    else {
                         param1 = false;
                         winner = 2;
                         reason = 5;
                         break;
                     }
                 }
-
-                turnNum++;
             }
         }
 
-        if (moreMoves2){
+        if (moreMoves2) {
 
 //player 2's turn
             curMovePtr = curGame->player2->getMove(); // get the move from player algorithm
@@ -168,12 +166,12 @@ void RPSManager::gameHandler() {
                 break;
             }
 
-            if (moreMoves2){ //if there are still more moves for player2 to make
+            if (moreMoves2) { //if there are still more moves for player2 to make
                 curMove = curGame->setMoveToBoard(move(curMovePtr), 2,
                                                   curFight);// apply move to board after it has been checked
                 if (curFight.getIsFight())// if there was a fight during this move
                     curGame->movesCounter = 0;
-                else{
+                else {
                     curGame->movesCounter++;
                     if (curGame->movesCounter >= 100)
                         break;
@@ -188,10 +186,10 @@ void RPSManager::gameHandler() {
 
                 curJokerChangePtr = curGame->player2->getJokerChange(); // in case there was joker change, get it
                 if (curJokerChangePtr != nullptr) {
-                    auto jokerPiece= (char)tolower(curJokerChangePtr->getJokerNewRep());
-                    if(checkIfJokerChangeIsValid(curJokerChangePtr, 2))
+                    auto jokerPiece = (char) tolower(curJokerChangePtr->getJokerNewRep());
+                    if (checkIfJokerChangeIsValid(curJokerChangePtr, 2))
                         curGame->board.board[curJokerChangePtr->getJokerChangePosition().getY()]
-                        [curJokerChangePtr->getJokerChangePosition().getX()]=jokerPiece;
+                        [curJokerChangePtr->getJokerChangePosition().getX()] = jokerPiece;
                     else {
                         param2 = false;
                         winner = 1;
@@ -200,12 +198,10 @@ void RPSManager::gameHandler() {
                     }
                 }
 
-                turnNum++;
-
             }
         }
     }
-    if (curGame->movesCounter == 100){
+    if (curGame->movesCounter == 100) {
         reason = 6;
         winner = 0; //tie
     }
@@ -213,16 +209,6 @@ void RPSManager::gameHandler() {
 }
 
 
-
-/**
- * Updates the winner of the game according to the parameters sent to it.
- *
- * @param param1 - true if player 1 is the winner, false otherwise
- * @param param2 - true if player 2 is the winner, false otherwise
- * @param winner - will be set by the function to 1 if player 1 is the winner, 2 if player 2 is the winner or set to 0
- * if its a tie.
- *
- */
 void RPSManager::updateWinner(bool param1, bool param2, int &winner) {
     if (!param1 && !param2)
         winner = 0; //tie
@@ -236,13 +222,12 @@ void RPSManager::updateWinner(bool param1, bool param2, int &winner) {
 }
 
 
-
 void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner, int lineNum1, int lineNum2) {
     ofstream fout("rps.output");
     int loser;
     int badLine;
-    if(winner ==3)
-        winner=0;
+    if (winner == 3)
+        winner = 0;
 
     fout << "Winner: " << winner << endl;
     fout << "Reason: ";
@@ -266,8 +251,7 @@ void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner
     else if (reason == 5) {
         updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
         fout << "Bad Moves input file for player " << loser << " - line " << badLine << endl;
-    }
-    else { //(reason == 6)
+    } else { //(reason == 6)
         fout << "A tie - 100 moves have invoked without a fight" << endl;
     }
 
@@ -320,13 +304,10 @@ void RPSManager::checkAndUpdateReasonForWinner(int &reason) {
 }
 
 
-
-
-
 bool RPSManager::checkIfMoveIsValid(unique_ptr<Move> &curMove, int player, bool &moreMoves) {
     if (curMove->getFrom().getX() == -2)
         return false;
-    else if (curMove->getFrom().getX() == -1){
+    else if (curMove->getFrom().getX() == -1) {
         moreMoves = false;
         return true;
     }
@@ -359,7 +340,7 @@ bool RPSManager::checkIfMoveIsValidBoardwise(unique_ptr<Move> &curMove, int play
 
 
 bool RPSManager::checkIfJokerChangeIsValid(unique_ptr<JokerChange> &curChange, int player) {
-    const unique_ptr<RPSPlayerAlgorithm> & curPlayer= player==1 ? curGame->player1 : curGame->player2;
+    const unique_ptr<RPSPlayerAlgorithm> &curPlayer = player == 1 ? curGame->player1 : curGame->player2;
 
     for (const unique_ptr<RPSPoint> &joker:curPlayer->playerJokers) {
         if (curChange->getJokerChangePosition().getX() == joker->getX() &&

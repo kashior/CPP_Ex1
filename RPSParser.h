@@ -60,13 +60,17 @@ public:
     static int
     parseLineMove(const string &line, unique_ptr<RPSMove> &newMove, unique_ptr<RPSJokerChange> &newJokerChange);
 
-/**
- * This function decides if the arguments given in command line are OK or corrupted
- * @param isPlayer1Auto - update this boolean to be FilePlayerAlgo or AutoPlayerAlgo of player 1
- * @param isPlayer2Auto - pdate this boolean to be FilePlayerAlgo or AutoPlayerAlgo of player 2
- * @param args - the line to parse
- * @return true if the arguments are good, and updates by reference the 2 booleans
- */
+    /**
+     * Parses the command line, checks if it is from the form "<auto/file>-vs-<auto/file>", and if it is valid
+     * sets the matching player-algorithms.
+     *
+     * @param isPlayer1Auto - will be set to true if player1 is auto, false otherwise.
+     * @param isPlayer2Auto - will be set to true if player2 is auto, false otherwise.
+     * @param args - the string from the command line.
+     *
+     * @return - true if the command line is valid, false otherwise.
+     *
+     */
     static bool parseArguments(bool &isPlayer1Auto, bool &isPlayer2Auto, string args);
 
 private:
