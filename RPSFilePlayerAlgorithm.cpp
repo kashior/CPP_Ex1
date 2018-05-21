@@ -107,13 +107,20 @@ void RPSFilePlayerAlgorithm::setMovesFromMoveFile() {
 }
 
 
-void RPSFilePlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {}
+void RPSFilePlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {
+    b.getPlayer(RPSPoint(-1,-1));
+    fights.size();
+}
 
 
-void RPSFilePlayerAlgorithm::notifyOnOpponentMove(const Move &move) {}
+void RPSFilePlayerAlgorithm::notifyOnOpponentMove(const Move &move) {
+    move.getFrom();
+}
 
 
-void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {}
+void RPSFilePlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {
+    fightInfo.getWinner();
+}
 
 
  unique_ptr<Move> RPSFilePlayerAlgorithm::getMove() {

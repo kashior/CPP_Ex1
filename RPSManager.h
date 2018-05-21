@@ -109,7 +109,7 @@ public:
      * @param fights - the fights vector to be filled
      * @return true if there are no winners during init stage, false otherwise
      */
-    bool initStage(int &reason, int &winner, vector<unique_ptr<FightInfo>> &fights);
+    bool initStage( int &winner, vector<unique_ptr<FightInfo>> &fights);
 
     /**
      * Performs a check on this specific move validity

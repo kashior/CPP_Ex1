@@ -35,7 +35,3 @@ RPSAutoPlayerAlgorithm.o: RPSAutoPlayerAlgorithm.cpp RPSAutoPlayerAlgorithm.h RP
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 clean:
 	rm -f $(OBJS) $(EXEC)
-
-
-RPSGame.h RPSParser.h RPSManager.h RPSPoint.h RPSPlayerAlgorithm.h RPSPiecePosition.h RPSMove.h RPSJokerChange.h
- RPSFilePlayerAlgorithm.h RPSFightInfo.h RPSBoard.h RPSAutoPlayerAlgorithm.h

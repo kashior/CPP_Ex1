@@ -225,6 +225,8 @@ RPSPoint RPSAutoPlayerAlgorithm::findKeyOfValueInMyTools(char value) {
 
 
 void RPSAutoPlayerAlgorithm::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) {
+    if(player!=1 && player!=2 )
+        return;
     RPSPoint pushedPoint;
     for(int i=0;i<R;i++){
         pushedPoint=getRandomPoint(emptyPositions);

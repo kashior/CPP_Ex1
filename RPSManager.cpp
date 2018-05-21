@@ -25,7 +25,7 @@ bool RPSManager::initCheck(int playerNum) {
 
 
 bool
-RPSManager::initStage(int &reason, int &winner, vector<unique_ptr<FightInfo>> &fights) {
+RPSManager::initStage( int &winner, vector<unique_ptr<FightInfo>> &fights) {
 
     bool file1OK;
     bool file2OK;
@@ -76,7 +76,7 @@ void RPSManager::gameHandler() {
 
     vector<unique_ptr<FightInfo>> fights;
 
-    if (!(initStage(reason, winner, fights)))
+    if (!(initStage( winner, fights)))
         return;
 
     // input file/s are valid, now before setting the moves we want to check if maybe there is already a winner...

@@ -24,10 +24,10 @@ using namespace std;
  */
 
 class RPSMove : public Move{
+    char _piece;
     int _player;
     RPSPoint _from;
     RPSPoint _to;
-    char _piece;
 
 public:
 

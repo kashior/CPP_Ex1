@@ -29,7 +29,7 @@ using namespace std;
 class RPSFilePlayerAlgorithm: public RPSPlayerAlgorithm {
     string _directory;
     vector<pair<unique_ptr<RPSMove>,unique_ptr<RPSJokerChange>>> playerMoves;
-    int moveFileLineCounter;
+    unsigned int moveFileLineCounter;
 
 public:
 
