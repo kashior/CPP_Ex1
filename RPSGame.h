@@ -10,7 +10,7 @@
 #include <algorithm>
 #include "RPSParser.h"
 #include "RPSPiecePosition.h"
-#include "RPSAutoPlayerAlgorithm.h"
+#include "RSPPlayer_203022041.h"
 #include "RPSFilePlayerAlgorithm.h"
 #include "RPSBoard.h"
 #include "RPSFightInfo.h"
@@ -23,14 +23,13 @@
  */
 class RPSGame {
 
-    unique_ptr<RPSPlayerAlgorithm> player1;
-    unique_ptr<RPSPlayerAlgorithm> player2;
+
 
 public:
 
-    RPSBoard board;
 
-    int movesCounter;
+
+
 
 
     //<constructors>
@@ -92,13 +91,6 @@ public:
      */
     void removeToolsFromVectors(unique_ptr<RPSPlayerAlgorithm> &player, unique_ptr<RPSMove> &curMove,
                                 char pieceToRemove);
-    /**
-     * Function that performs the classic Rock Paper Scissors fight
-     * @param newMove - the move that caused the fight
-     */
-    void fightInner(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
-                    unique_ptr<RPSPlayerAlgorithm> &player1,
-                    unique_ptr<RPSPlayerAlgorithm> &player2);
 
     /**
      * Check if a player lost the game as a result of the last move performed
@@ -107,29 +99,11 @@ public:
     bool CheckIfPlayerLose(unique_ptr<RPSPlayerAlgorithm> &player);
 
 
-    /**
-     * this is a help functions that updates the fight vector itself
-     * @param winner - who won the fight
-     * @param curMove - the move that caused the fight
-     * @param fights - the vector that needs to be filled
-     */
-    void updateFightVectors(int winner, unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights);
 
 
 
-    /**
-     * Function that removes the tool that tried to defend himself from the attack
-     * @param curMove - the move that caused the fight
-     */
-    void fightAttackerWins(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
-                           unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2);
 
-    /**
-     * Function that removes the tool that caused the fight
-     * @param newMove - the move that caused the fight
-     */
-    void fightAttackerLoses(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights,
-                            unique_ptr<RPSPlayerAlgorithm> &player1, unique_ptr<RPSPlayerAlgorithm> &player2);
+
 
 
     /**

@@ -13,11 +13,14 @@
  */
 class RPSManager {
 
-    unique_ptr<RPSGame> curGame;
+    unique_ptr<PlayerAlgorithm> player1;
+    unique_ptr<PlayerAlgorithm> player2;
     int player1Points;
     int player2Points;
     vector<unique_ptr<PiecePosition>> player1Positioning;
     vector<unique_ptr<PiecePosition>> player2Positioning;
+    RPSBoard board;
+    int movesCounter;
 
 public:
 
@@ -27,6 +30,56 @@ public:
 
     // friend declerations
     friend class RPSGame;
+
+    /**
+     * Update the board from 2 vectors and perform fights
+     * */
+
+    void updateInitialBoard( vector<unique_ptr<FightInfo>> & fights);
+
+    /**
+     * Checks who wins? attacker tool or defender tool. update fights vector
+     */
+     void doFight(vector<unique_ptr<FightInfo>> & fights,unique_ptr<RPSMove>fightMove);
+
+     /**
+      * remove both pieces from the board and update the fights vector
+      */
+
+     void removeBothPiecesFromGame(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights);
+
+
+
+    /**
+     * this is a help functions that updates the fight vector itself
+     * @param winner - who won the fight
+     * @param curMove - the move that caused the fight
+     * @param fights - the vector that needs to be filled
+     */
+    void updateFightVectors(int winner, unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights);
+
+
+    /**
+    * Function that removes the tool that tried to defend himself from the attack
+    * @param curMove - the move that caused the fight
+    */
+    void fightAttackerWins(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights);
+
+
+    /**
+ * Function that removes the tool that caused the fight
+ * @param newMove - the move that caused the fight
+ */
+    void fightAttackerLoses(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights);
+
+
+    /**
+ * Function that performs the classic Rock Paper Scissors fight
+ * @param newMove - the move that caused the fight
+ */
+    void fightInner(unique_ptr<RPSMove> &curMove, vector<unique_ptr<FightInfo>> &fights);
+
+
 
 
     /**
@@ -43,7 +96,7 @@ public:
     /**
      * The "main manager" of the game. Handles the all flow of the game.
      */
-    void gameHandler();
+    int gameHandler();
 
 
     /**
@@ -91,7 +144,7 @@ public:
      * @param reason - according to the reason value we will know which reason to write in the output file.
      *
      */
-    void checkWinner(int &winner, int &reason);
+    int checkWinner();
 
     /**
      * In case there is a winner (or two winners) the function checks if the reason for the winning is

@@ -1,9 +1,9 @@
 
 
-#include "RPSAutoPlayerAlgorithm.h"
+#include "RSPPlayer_203022041.h"
 
 
-RPSAutoPlayerAlgorithm::RPSAutoPlayerAlgorithm(int player) : RPSPlayerAlgorithm(player) {
+RSPPlayer_203022041::RSPPlayer_203022041(int player) : _player(player) {
     RPSPoint pointToAdd;
     for (int j = 0; j < N; j++) {
         pointToAdd.setY(j);
@@ -14,8 +14,8 @@ RPSAutoPlayerAlgorithm::RPSAutoPlayerAlgorithm(int player) : RPSPlayerAlgorithm(
     }
 }
 
-
-void RPSAutoPlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {
+//done
+void RSPPlayer_203022041::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {
 
     RPSPoint curPoint;
 
@@ -26,7 +26,7 @@ void RPSAutoPlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vec
             curPoint.setX(i);
 
             if (b.getPlayer(curPoint) != 0 && b.getPlayer(curPoint) != _player) {
-                // if it's not an empty point and not occupied by one of the players tools so
+                // if it's not an empty point and not occupied by one of the player tools so
                 // it has an opponent tool
                 eraseFromVector(emptyPositions,curPoint);
                 opponentTools[curPoint] = 'O';
@@ -50,7 +50,7 @@ void RPSAutoPlayerAlgorithm::notifyOnInitialBoard(const Board &b, const std::vec
 }
 
 
-void RPSAutoPlayerAlgorithm::notifyOnOpponentMove(const Move &move) {
+void RSPPlayer_203022041::notifyOnOpponentMove(const Move &move) {
 
     RPSPoint fromPoint(move.getFrom().getX(), move.getFrom().getY());
     RPSPoint toPoint(move.getTo().getX(), move.getTo().getY());
@@ -65,7 +65,7 @@ void RPSAutoPlayerAlgorithm::notifyOnOpponentMove(const Move &move) {
 }
 
 
-void RPSAutoPlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {
+void RSPPlayer_203022041::notifyFightResult(const FightInfo &fightInfo) {
 
     RPSPoint curPoint(fightInfo.getPosition().getX(), fightInfo.getPosition().getY());
     if(curPoint.getX()==-1) //if there was no fight in the last move, there's nothing to update
@@ -83,7 +83,7 @@ void RPSAutoPlayerAlgorithm::notifyFightResult(const FightInfo &fightInfo) {
 }
 
 
-unique_ptr<JokerChange> RPSAutoPlayerAlgorithm::getJokerChange() {
+unique_ptr<JokerChange> RSPPlayer_203022041::getJokerChange() {
 
     if (playerToolCounters['J'] == J) //all the players jokers been eaten
         return nullptr;
@@ -118,7 +118,7 @@ unique_ptr<JokerChange> RPSAutoPlayerAlgorithm::getJokerChange() {
 }
 
 
-RPSPoint RPSAutoPlayerAlgorithm::checkIfHasThisJokerRep(char c)const {
+RPSPoint RSPPlayer_203022041::checkIfHasThisJokerRep(char c)const {
 
     RPSPoint curPoint;
 
@@ -140,7 +140,7 @@ RPSPoint RPSAutoPlayerAlgorithm::checkIfHasThisJokerRep(char c)const {
 }
 
 
-unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
+unique_ptr<Move> RSPPlayer_203022041::getMove() {
 
     unique_ptr<Move> resMove;
     RPSPoint from;
@@ -213,7 +213,7 @@ unique_ptr<Move> RPSAutoPlayerAlgorithm::getMove() {
 }
 
 
-RPSPoint RPSAutoPlayerAlgorithm::findKeyOfValueInMyTools(char value) {
+RPSPoint RSPPlayer_203022041::findKeyOfValueInMyTools(char value) {
 
     for (auto pair : myTools) {
         if (pair.second == value)
@@ -224,7 +224,7 @@ RPSPoint RPSAutoPlayerAlgorithm::findKeyOfValueInMyTools(char value) {
 }
 
 
-void RPSAutoPlayerAlgorithm::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) {
+void RSPPlayer_203022041::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) {
     if(player!=1 && player!=2 )
         return;
     RPSPoint pushedPoint;
@@ -263,11 +263,12 @@ void RPSAutoPlayerAlgorithm::getInitialPositions(int player, std::vector<unique_
         vectorToFill.push_back(make_unique<RPSPiecePosition>(pushedPoint,'J','R'));
         eraseFromVector(emptyPositions,pushedPoint);
         myTools[pushedPoint]='R';
+        playerJokers.push_back(make_unique<RPSPoint>(pushedPoint));
     }
 }
 
 
-void RPSAutoPlayerAlgorithm::eraseFromMap(map<RPSPoint, char> &m, const RPSPoint &p) {
+void RSPPlayer_203022041::eraseFromMap(map<RPSPoint, char> &m, const RPSPoint &p) {
     for(auto it=m.begin();it!=m.end();++it){
         if(it->first==p) {
             m.erase(it);
@@ -278,7 +279,7 @@ void RPSAutoPlayerAlgorithm::eraseFromMap(map<RPSPoint, char> &m, const RPSPoint
 }
 
 
-void RPSAutoPlayerAlgorithm::eraseFromVector(vector<RPSPoint> &v, RPSPoint p) {
+void RSPPlayer_203022041::eraseFromVector(vector<RPSPoint> &v, RPSPoint p) {
 
     for(auto it=v.begin();it!=v.end();++it){
         if(*it==p) {
@@ -290,7 +291,7 @@ void RPSAutoPlayerAlgorithm::eraseFromVector(vector<RPSPoint> &v, RPSPoint p) {
 }
 
 
-RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(vector<RPSPoint> v)const {
+RPSPoint RSPPlayer_203022041::getRandomPoint(vector<RPSPoint> v)const {
 
     auto it = v.begin();
     std::advance(it, rand() % v.size());
@@ -298,12 +299,22 @@ RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(vector<RPSPoint> v)const {
 }
 
 
-RPSPoint RPSAutoPlayerAlgorithm::getRandomPoint(map<RPSPoint, char> m)const {
+RPSPoint RSPPlayer_203022041::getRandomPoint(map<RPSPoint, char> m)const {
     if(m.empty())
         return RPSPoint(-1,-1);
     auto it = m.begin();
     std::advance(it, rand() % m.size());
     return RPSPoint(it->first.getX(), it->first.getY());
+}
+
+int RSPPlayer_203022041::getPlayer(){return _player;}
+
+void RSPPlayer_203022041::addJokerPositionToVector(unique_ptr<PiecePosition> &pos) {
+    playerJokers.push_back(make_unique<RPSPoint>(pos->getPosition().getX(),pos->getPosition().getY()));
+}
+
+void RSPPlayer_203022041::updateToolCounter(char tool) {
+    playerToolCounters[(char) toupper(tool)]++;
 }
 
 

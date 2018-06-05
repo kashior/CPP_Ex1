@@ -4,11 +4,15 @@
 #define EX1_RPSAUTOPLAYERALGORITHM_H
 
 
-#include "RPSPlayerAlgorithm.h"
 #include <iostream>
+#include "PlayerAlgorithm.h"
+#include "RPSPiecePosition.h"
+#include <map>
+#include <algorithm>
+#include "RPSParser.h"
 
 /*
- * class RPSAutoPlayerAlgorithm
+ * class RSPPlayer_203022041
  *
  * This class represents an automatic player in the game.
  * This player will do moves in the game according to the information it has about the opponents pieces
@@ -21,13 +25,19 @@
  *    tools and the kind of the tool, if known (represented by char {'O' - for unknown kind of tool, 'R', 'P', 'S'}).
  */
 
-class RPSAutoPlayerAlgorithm : public RPSPlayerAlgorithm{
+class RSPPlayer_203022041 : public PlayerAlgorithm{
 
     vector<RPSPoint> emptyPositions;
     map<RPSPoint, char> myTools;
     map<RPSPoint, char> opponentTools;
+    int _player;
+    vector<unique_ptr<RPSPoint>> playerJokers;
 
 public:
+
+    //friends decleration
+    friend class RPSManager;
+    friend class RPSGame;
 
 
 /**
@@ -36,7 +46,7 @@ public:
  * @param player - players number - 1 or 2
  *
  */
-   explicit  RPSAutoPlayerAlgorithm(int player);
+   explicit  RSPPlayer_203022041(int player);
 
 /**
  * This function is called from the game manager.
@@ -165,7 +175,25 @@ public:
  */
     RPSPoint getRandomPoint(map<RPSPoint, char> m)const;
 
-    virtual ~RPSAutoPlayerAlgorithm(){}
+
+
+    /**
+     * This function add a specific unique pointer of piece position to the player jokers vector
+     * @param pos - the position we want to add
+     */
+    void addJokerPositionToVector(unique_ptr<PiecePosition> &pos);
+    /**
+     *
+     * @return player number
+     */
+    int getPlayer();
+    /**
+     * method that we don't use right now.. it suppose to update a specific place at the tool counter map of this player
+     * @param tool
+     */
+    void updateToolCounter(char tool);
+
+    virtual ~RSPPlayer_203022041(){}
 
 };
 
