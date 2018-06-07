@@ -78,9 +78,26 @@ void RSPPlayer_203022041::notifyFightResult(const FightInfo &fightInfo) {
     } else if (fightInfo.getWinner() != _player) { //opponent won this fight
         opponentTools[curPoint] = fightInfo.getPiece(fightInfo.getWinner());
         myTools.erase(curPoint);
-    } else
+    } else {
         eraseFromMap(opponentTools,curPoint);
+        eraseFromVector(playerJokers, curPoint); //maybe a joker of the player died
+    }
+
 }
+
+
+void RSPPlayer_203022041::changeJokerPosition(unique_ptr<Move> &curMove) {
+
+    for (auto& point : playerJokers){
+        if (point->getX()==curMove->getFrom().getX() && point->getY()==curMove->getFrom().getY()){
+            point->setX(curMove->getTo().getX());
+            point->setY(curMove->getTo().getY());
+        }
+    }
+}
+
+
+
 
 
 unique_ptr<JokerChange> RSPPlayer_203022041::getJokerChange() {

@@ -10,6 +10,47 @@ RPSManager::RPSManager(bool isPlayer1Auto, bool isPlayer2Auto) {
 
 }
 
+
+
+
+RPSMove RPSManager::setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightInfo &curFight) {
+
+    char fromPiece = board.board[curMove->getFrom().getY()][curMove->getFrom().getX()];
+    char toPiece = board.board[curMove->getTo().getY()][curMove->getTo().getX()];
+    RPSPoint fromPoint(curMove->getFrom().getX(),curMove->getFrom().getY());
+    RPSPoint toPoint(curMove->getTo().getX(),curMove->getTo().getY());
+    unique_ptr<RPSMove> resultMove=
+            make_unique<RPSMove>(fromPoint, toPoint, board.board[fromPoint.getY()][fromPoint.getX()],player);
+
+    if(toPiece!=' ') { //fight!
+        curFight.setIsFight(true);
+        vector<unique_ptr<FightInfo>> fights;
+        curFight.setPlayer1Piece(isupper(fromPiece) == 0 ? toPiece : fromPiece);
+        curFight.setPlayer2Piece(isupper(fromPiece) == 0 ? fromPiece : toPiece);
+        curFight.setPosition(RPSPoint(curMove->getTo().getX(),curMove->getTo().getY()));
+        doFight(fights, resultMove);
+        curFight.setWinner(fights.at(0)->getWinner());
+//        if (player == 1 && fights.at(0)->getWinner() == 1) //attacker wins maybe it was a joker
+//            changeJokerPosition(player1, curMove);
+//        else if (player == 2 && fights.at(0)->getWinner() == 2)
+//            changeJokerPosition(player2, curMove);
+    }
+
+    else {
+        curFight.setIsFight(false);
+        board.board[curMove->getTo().getY()][curMove->getTo().getX()] = fromPiece;
+        board.board[curMove->getFrom().getY()][curMove->getFrom().getX()] = ' ';
+//        if (player == 1)
+//            changeJokerPosition(player1, curMove);
+//        else
+//            changeJokerPosition(player2, curMove);
+    }
+    RPSMove moveRes(fromPoint,toPoint,resultMove->getPiece(),resultMove->getPlayer());
+    return moveRes;
+}
+
+
+
 void RPSManager::doFight(vector<unique_ptr<FightInfo>> &fights, unique_ptr<RPSMove> fightMove) {
     char attackerTool = fightMove->getPlayer() == 1 ? fightMove->getPiece() : (char) tolower(fightMove->getPiece());
     char defenderTool = board.board[fightMove->getTo().getY()][fightMove->getTo().getX()];
@@ -116,22 +157,16 @@ void RPSManager::updateInitialBoard(vector<unique_ptr<FightInfo>> &fights) {
 
 int RPSManager::gameHandler() {
 
-
     int reason; // the "reason" for output file
     // 1=all flags of the opponent are captures
     // 2=All moving PIECEs of the opponent are eaten
-    // 3=A tie - both Moves input files done without a winner
-    // 4=bad positioning input file for one player or both
-    // 5=bad moves input file for some player
     // 6=100 moves done without a fight
-    int winner; // 0=tie, 1=player1 wins, 2=player2 wins 3= continue
-
+    int winner; // 0=tie, 1=player1 wins, 2=player2 wins, 3= continue the game
 
     vector<unique_ptr<FightInfo>> fights;
 
     player1->getInitialPositions(1, player1Positioning);
     player2->getInitialPositions(2, player2Positioning);
-
 
     updateInitialBoard(fights);
 
@@ -139,7 +174,7 @@ int RPSManager::gameHandler() {
     player1->notifyOnInitialBoard(board, fights);
     player2->notifyOnInitialBoard(board, fights);
 
-    if((winner=checkWinner())!=3)
+    if((winner=checkWinner(reason))!=3)
         return winner;
 
     unique_ptr<Move> curMovePtr;
@@ -153,99 +188,81 @@ int RPSManager::gameHandler() {
 
             curMovePtr =player1->getMove(); // get the move from player algorithm
 
-            if (!checkIfMoveIsValid(curMovePtr, 1, moreMoves1)) {
-                param1 = false;
-                winner = 2;
-                reason = 5;
-                break;
-            }
+//            if (!checkIfMoveIsValid(curMovePtr, 1, moreMoves1)) {
+//                param1 = false;
+//                winner = 2;
+//                reason = 5;
+//                break;
+//            }
 
-            if (moreMoves1) { //if there are still more moves for player1 to make
-                curMove = curGame->setMoveToBoard(move(curMovePtr), 1,
-                                                  curFight);// apply move to board after it has been checked
-                if (curFight.getIsFight())// if there was a fight during this move
-                    curGame->movesCounter = 0;
-                else {
-                    curGame->movesCounter++;
-                    if (curGame->movesCounter >= 100)
-                        break;
-                }
-
-                curGame->player1->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
-                checkWinner();
-                if (winner != 3)
+            //if (moreMoves1) { //if there are still more moves for player1 to make
+            curMove = setMoveToBoard(move(curMovePtr), 1,
+                                              curFight);// apply move to board after it has been checked
+            if (curFight.getIsFight())// if there was a fight during this move
+                movesCounter = 0;
+            else {
+                movesCounter++;
+                if (movesCounter >= 100) {
+                    winner = 0;
+                    cout << "100 moves done without a fight! It's a tie\n" << endl;
+                    reason = 6;
                     break;
-                curGame->player1->lineNum++;
-                curGame->player2->notifyOnOpponentMove(curMove);
-                curGame->player2->notifyFightResult(curFight);
-
-                curJokerChangePtr = curGame->player1->getJokerChange(); // in case there was joker change, get it
-                if (curJokerChangePtr != nullptr) {
-                    if (checkIfJokerChangeIsValid(curJokerChangePtr, 1))
-                        curGame->board.board[curJokerChangePtr->getJokerChangePosition().getY()]
-                        [curJokerChangePtr->getJokerChangePosition().getX()] = curJokerChangePtr->getJokerNewRep();
-                    else {
-                        param1 = false;
-                        winner = 2;
-                        reason = 5;
-                        break;
-                    }
                 }
             }
 
+            player1->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
+            checkWinner(reason);
+            if (winner != 3)
+                break;
 
-        if (moreMoves2) {
+            player2->notifyOnOpponentMove(curMove);
+            player2->notifyFightResult(curFight);
+
+            curJokerChangePtr = player1->getJokerChange(); // in case there was joker change, get it
+            if (curJokerChangePtr != nullptr) {
+                board.board[curJokerChangePtr->getJokerChangePosition().getY()]
+                [curJokerChangePtr->getJokerChangePosition().getX()] = curJokerChangePtr->getJokerNewRep();
+            }
 
 //player 2's turn
-            curMovePtr = curGame->player2->getMove(); // get the move from player algorithm
 
-            if (!checkIfMoveIsValid(curMovePtr, 2, moreMoves2)) {
-                param2 = false;
-                winner = 1;
-                reason = 5;
-                break;
+            curMovePtr = player2->getMove(); // get the move from player algorithm
+
+            curMove = setMoveToBoard(move(curMovePtr), 2,
+                                                  curFight);
+            if (curFight.getIsFight())// if there was a fight during this move
+                movesCounter = 0;
+            else {
+                movesCounter++;
+                if (movesCounter >= 100){
+                    winner = 0;
+                    cout << "100 moves done without a fight! It's a tie\n" << endl;
+                    reason = 6;
+                    break;
+                }
             }
 
-            if (moreMoves2) { //if there are still more moves for player2 to make
-                curMove = curGame->setMoveToBoard(move(curMovePtr), 2,
-                                                  curFight);// apply move to board after it has been checked
-                if (curFight.getIsFight())// if there was a fight during this move
-                    curGame->movesCounter = 0;
-                else {
-                    curGame->movesCounter++;
-                    if (curGame->movesCounter >= 100)
-                        break;
-                }
-                curGame->player2->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
-                checkWinner(winner, reason);// first check for winner
-                if (winner != 3)
-                    break;
-                curGame->player2->lineNum++;
-                curGame->player1->notifyOnOpponentMove(curMove);
-                curGame->player1->notifyFightResult(curFight);
+            player2->notifyFightResult(curFight);// in case there was a fight, notify player algorithm
 
-                curJokerChangePtr = curGame->player2->getJokerChange(); // in case there was joker change, get it
-                if (curJokerChangePtr != nullptr) {
-                    auto jokerPiece = (char) tolower(curJokerChangePtr->getJokerNewRep());
-                    if (checkIfJokerChangeIsValid(curJokerChangePtr, 2))
-                        curGame->board.board[curJokerChangePtr->getJokerChangePosition().getY()]
+            winner = checkWinner(reason);// first check for winner
+            if (winner != 3)
+                break;
+
+            player1->notifyOnOpponentMove(curMove);
+            player1->notifyFightResult(curFight);
+
+            curJokerChangePtr = player2->getJokerChange(); // in case there was joker change, get it
+            if (curJokerChangePtr != nullptr) {
+                auto jokerPiece = (char) tolower(curJokerChangePtr->getJokerNewRep());
+                board.board[curJokerChangePtr->getJokerChangePosition().getY()]
                         [curJokerChangePtr->getJokerChangePosition().getX()] = jokerPiece;
-                    else {
-                        param2 = false;
-                        winner = 1;
-                        reason = 5;
-                        break;
-                    }
-                }
 
             }
         }
-    }
-    if (curGame->movesCounter == 100) {
-        reason = 6;
-        winner = 0; //tie
-    }
-    makeOutputFile(reason, param1, param2, winner, curGame->player1->lineNum, curGame->player2->lineNum);
+
+    makeOutputFile(reason, winner);
+
+    return winner;
 }
 
 
@@ -262,7 +279,7 @@ void RPSManager::updateWinner(bool param1, bool param2, int &winner) {
 }
 
 
-void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner, int lineNum1, int lineNum2) {
+void RPSManager::makeOutputFile(int reason, int winner) {
     ofstream fout("rps.output");
     int loser;
     int badLine;
@@ -272,25 +289,25 @@ void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner
     fout << "Winner: " << winner << endl;
     fout << "Reason: ";
 
-    if (reason == 4) { //"bad positioning input file"
-        if (!param1 && !param2) //both files are bad
-            fout << "Bad Positioning input file for both players - player 1: line " << lineNum1 <<
-                 ", player 2: line " << lineNum2 << endl;
-        else {
-            updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
-            fout << "Bad Positioning input file for player " << loser << " - line " << badLine << endl;
-        }
-    } else if (reason == 1 || reason == 2) {
+//    if (reason == 4) { //"bad positioning input file"
+//        if (!param1 && !param2) //both files are bad
+//            fout << "Bad Positioning input file for both players - player 1: line " << lineNum1 <<
+//                 ", player 2: line " << lineNum2 << endl;
+//        else {
+//            updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
+//            fout << "Bad Positioning input file for player " << loser << " - line " << badLine << endl;
+//        }
+    if (reason == 1 || reason == 2) {
         if (reason == 1)
             fout << "All flags of the opponent are captured" << endl;
         else
             fout << "All moving PIECEs of the opponent are eaten" << endl;
-    } else if (reason == 3)
-        fout << "A tie - both Moves input files done without a winner" << endl;
-
-    else if (reason == 5) {
-        updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
-        fout << "Bad Moves input file for player " << loser << " - line " << badLine << endl;
+//    } else if (reason == 3)
+//        fout << "A tie - both Moves input files done without a winner" << endl;
+//
+//    else if (reason == 5) {
+//        updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
+//        fout << "Bad Moves input file for player " << loser << " - line " << badLine << endl;
     } else { //(reason == 6)
         fout << "A tie - 100 moves have invoked without a fight" << endl;
     }
@@ -299,7 +316,7 @@ void RPSManager::makeOutputFile(int reason, bool param1, bool param2, int winner
     // printing the game board state
     for (int j = 0; j < N; j++) {
         for (int i = 0; i < M; i++) {
-            fout << curGame->board.getPiece(i, j);
+            fout << board.getPiece(i, j);
         }
         fout << endl;
     }
@@ -318,7 +335,7 @@ void RPSManager::updateLoserAndBadLine(int winner, int &loser, int param1, int p
 }
 
 
-int RPSManager::checkWinner() {
+int RPSManager::checkWinner(int & reason) {
     int flags1 = 0, flags2 = 0;
     int moving1 = 0, moving2 = 0;
     char piece;
@@ -335,12 +352,27 @@ int RPSManager::checkWinner() {
                 flags2++;
         }
     }
-    if((flags1==0 || moving1==0)&& (flags2==0 || moving2==0))
+    if((flags1==0 || moving1==0)&& (flags2==0 || moving2==0)){
+        if (flags1==0 || flags2==0)
+            reason=1;
+        else
+            reason=2;
         return 0;
-    if(flags1==0 || moving1==0)
+    }
+    if(flags1==0 || moving1==0){
+        if (flags1==0)
+            reason=1;
+        else
+            reason=2;
         return 2;
-    if (flags2==0 || moving2==0)
+    }
+    if (flags2==0 || moving2==0){
+        if (flags2==0)
+            reason=1;
+        else
+            reason=2;
         return 1;
+    }
     return 3;
 }
 

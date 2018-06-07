@@ -31,18 +31,30 @@ public:
     // friend declerations
     friend class RPSGame;
 
+/**
+ * This functions performs the move on the board in case the move was legal. calls to fight function in case there
+ * is a fight
+ * @param curMove - the move that need to be set
+ * @param player - the player that did the move
+ * @param curFight - updated by reference in case there is a fight
+ * @return the RPSMove object with the details of the current move
+ */
+    RPSMove setMoveToBoard(unique_ptr<Move> curMove, int player, RPSFightInfo &curFight);
+
+
+
     /**
      * Update the board from 2 vectors and perform fights
      * */
-
     void updateInitialBoard( vector<unique_ptr<FightInfo>> & fights);
 
     /**
      * Checks who wins? attacker tool or defender tool. update fights vector
      */
-     void doFight(vector<unique_ptr<FightInfo>> & fights,unique_ptr<RPSMove>fightMove);
+     void doFight(vector<unique_ptr<FightInfo>> & fights, unique_ptr<RPSMove>fightMove);
 
-     /**
+
+    /**
       * remove both pieces from the board and update the fights vector
       */
 
@@ -120,7 +132,7 @@ public:
      * @param lineNum1 - the bad line in player1's files (if there is)
      * @param lineNum2 - the bad line in player2's files (if there is)
      */
-    void makeOutputFile(int reason, bool param1, bool param2, int winner, int lineNum1, int lineNum2);
+    void makeOutputFile(int reason, int winner);
 
     /**
      *
@@ -144,7 +156,7 @@ public:
      * @param reason - according to the reason value we will know which reason to write in the output file.
      *
      */
-    int checkWinner();
+    int checkWinner(int & reason);
 
     /**
      * In case there is a winner (or two winners) the function checks if the reason for the winning is
