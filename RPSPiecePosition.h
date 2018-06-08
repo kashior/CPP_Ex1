@@ -4,8 +4,8 @@
 #define EX1_POSITIONNEW_H
 
 
-#include "RPSPoint.h"
 #include "PiecePosition.h"
+#include "RPSPoint.h"
 
 /**
  * Class that inherits from PiecePosition abstract class

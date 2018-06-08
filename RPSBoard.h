@@ -3,13 +3,10 @@
 #ifndef EX1_GAMEBOARD_H
 #define EX1_GAMEBOARD_H
 
-#include "RPSParser.h"
+#include "Point.h"
 #include "Board.h"
-#include "RPSPiecePosition.h"
-#include <vector>
-#include <map>
+#include "gameDefinitions.h"
 
-using namespace std;
 
 /**
  * class RPSBoard
@@ -24,7 +21,6 @@ class RPSBoard: public Board {
 
 public:
 
-    friend class RPSGame;
     friend class RPSManager;
 
 /**
@@ -41,7 +37,7 @@ public:
  * @param pos - position on the gameboard
  * @return 0,1 or 2
  */
-    virtual int getPlayer(const Point & pos) const;
+     int getPlayer(const Point & pos) const;
 
     /**
      * Return the char representation of the tool on game board at the point (X,Y).

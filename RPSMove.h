@@ -5,10 +5,8 @@
 
 
 #include "Move.h"
-#include "RPSJokerChange.h"
 #include "RPSPoint.h"
-#include <memory>
-using namespace std;
+#include "gameDefinitions.h"
 
 /**
  * class RPSMove
