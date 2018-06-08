@@ -137,6 +137,8 @@ public:
  */
     RPSPoint checkIfHasThisJokerRep(char c);
 
+    bool checkIfPlayerJokersHasPoint(const RPSPoint &p);
+
 
 /**
  * Deletes from the vector of Template T "v" the T object "p".
@@ -146,6 +148,10 @@ public:
  *
  */ template<class T>
     void eraseFromVector(vector<T> &v, T p);
+
+
+    void eraseFromJokers(RPSPoint p, vector<unique_ptr<RPSPoint>> &v);
+//    void eraseFromJokers(unique_ptr<RPSPoint> p, vector<unique_ptr<RPSPoint>> v);
 
 /**
  * choses a random point from vector "v".

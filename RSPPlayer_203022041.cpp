@@ -84,14 +84,14 @@ void RSPPlayer_203022041::notifyOnInitialBoard(const Board &b, const std::vector
         curPoint.setY(fight->getPosition().getY());
 
         if (fight->getWinner() == 0) {//tie
-            if (checkIfHasThisJokerRep(myTools[curPoint]).getX() != -1)
-                eraseFromVector(playerJokers, move(make_unique<RPSPoint>(curPoint)));
+            if (checkIfPlayerJokersHasPoint(curPoint))
+                eraseFromJokers(curPoint,playerJokers);
             myTools.erase(curPoint);
             emptyPositions.push_back(curPoint);
         } else if (fight->getWinner() != _player) { //opponent won this fight
             opponentTools[curPoint] = (char)toupper(fight->getPiece(fight->getWinner()));
-            if (checkIfHasThisJokerRep(myTools[curPoint]).getX() != -1)
-                eraseFromVector(playerJokers, move(make_unique<RPSPoint>(curPoint)));
+            if (checkIfPlayerJokersHasPoint(curPoint))
+                eraseFromJokers(curPoint,playerJokers);
             myTools.erase(curPoint);
         }
     }
@@ -153,8 +153,9 @@ unique_ptr<Move> RSPPlayer_203022041::getMove() {
         }
     }
     if (!found) { //if we didn't find a tool of ours to win one of opponents tools
+        int i=M*N;
 
-        while (true) {
+        while (--i>0) {
             from = getRandomPoint(myTools);
             if (myTools.at(from) != 'F' && myTools.at(from) != 'B') //don't want to move unmoving tool
                 break;
@@ -165,8 +166,8 @@ unique_ptr<Move> RSPPlayer_203022041::getMove() {
     }
 
     //update vector and map
-    if (checkIfHasThisJokerRep(myTools[from]).getX() != -1) {
-        eraseFromVector(playerJokers, move(make_unique<RPSPoint>(from)));
+    if (checkIfPlayerJokersHasPoint(from)) {
+        eraseFromJokers(from,playerJokers);
         playerJokers.push_back(move(make_unique<RPSPoint>(to)));
     }
     myTools[to] = myTools[from];
@@ -186,15 +187,15 @@ void RSPPlayer_203022041::notifyFightResult(const FightInfo &fightInfo) {
     }
 
     if (fightInfo.getWinner() == 0) {//tie
-        if (checkIfHasThisJokerRep(myTools[curPoint]).getX() != -1)
-            eraseFromVector(playerJokers, move(make_unique<RPSPoint>(curPoint)));
+        if (checkIfPlayerJokersHasPoint(curPoint))
+            eraseFromJokers(curPoint,playerJokers);
         myTools.erase(curPoint);
         opponentTools.erase(curPoint);
         emptyPositions.push_back(curPoint);
     } else if (fightInfo.getWinner() != _player) { //opponent won this fight
         opponentTools[curPoint] = (char)toupper(fightInfo.getPiece(fightInfo.getWinner()));
-        if (checkIfHasThisJokerRep(myTools[curPoint]).getX() != -1)
-            eraseFromVector(playerJokers, move(make_unique<RPSPoint>(curPoint)));
+        if (checkIfPlayerJokersHasPoint(curPoint))
+            eraseFromJokers(curPoint,playerJokers);
         myTools.erase(curPoint);
     } else
         opponentTools.erase(curPoint);
@@ -309,6 +310,33 @@ RPSPoint RSPPlayer_203022041::getRandomPoint(map<RPSPoint, char> m) const {
 }
 
 int RSPPlayer_203022041::getPlayer() { return _player; }
+
+bool RSPPlayer_203022041::checkIfPlayerJokersHasPoint(const RPSPoint &p) {
+    for(auto& point:playerJokers){
+        if(p.getX()==point->getX() && p.getY()==point->getY())
+            return true;
+    }
+    return false;
+}
+
+void RSPPlayer_203022041::eraseFromJokers(RPSPoint p, vector<unique_ptr<RPSPoint>> &v) {
+    for (auto it = v.begin(); it != v.end(); ++it) {
+        if ((*it)->getX()== p.getX() && (*it)->getY()==p.getY()) {
+            playerJokers.erase(it);
+            return;
+        }
+    }
+
+}
+
+//void RSPPlayer_203022041::eraseFromJokers(unique_ptr<RPSPoint> p, vector<unique_ptr<RPSPoint>> v) {
+//    for (auto it = v.begin(); it != v.end(); ++it) {
+//        if ((*it)->getX() == p->getX() && (*it)->getY()==p->getY()) {
+//            playerJokers.erase(it);
+//            return;
+//        }
+//    }
+//}
 
 
 

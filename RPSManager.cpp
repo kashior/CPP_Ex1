@@ -5,6 +5,7 @@
 RPSManager::RPSManager() {
     player1=make_unique<RSPPlayer_203022041>(1);
     player2=make_unique<RSPPlayer_203022041>(2);
+    movesCounter=0;
     //so files
 //    player1Points = 0;
 //    player2Points = 0;
@@ -263,55 +264,55 @@ int RPSManager::gameHandler() {
         }
     }
 
-    makeOutputFile(reason, winner);
+//    makeOutputFile(reason, winner);
 
     return winner;
 }
 
-
-void RPSManager::makeOutputFile(int reason, int winner) {
-    ofstream fout("rps.output");
-    int loser;
-    int badLine;
-    if (winner == 3)
-        winner = 0;
-
-    fout << "Winner: " << winner << endl;
-    fout << "Reason: ";
-
-//    if (reason == 4) { //"bad positioning input file"
-//        if (!param1 && !param2) //both files are bad
-//            fout << "Bad Positioning input file for both players - player 1: line " << lineNum1 <<
-//                 ", player 2: line " << lineNum2 << endl;
-//        else {
-//            updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
-//            fout << "Bad Positioning input file for player " << loser << " - line " << badLine << endl;
-//        }
-    if (reason == 1 || reason == 2) {
-        if (reason == 1)
-            fout << "All flags of the opponent are captured" << endl;
-        else
-            fout << "All moving PIECEs of the opponent are eaten" << endl;
-//    } else if (reason == 3)
-//        fout << "A tie - both Moves input files done without a winner" << endl;
 //
-//    else if (reason == 5) {
-//        updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
-//        fout << "Bad Moves input file for player " << loser << " - line " << badLine << endl;
-    } else { //(reason == 6)
-        fout << "A tie - 100 moves have invoked without a fight" << endl;
-    }
-
-    fout << endl;
-    // printing the game board state
-    for (int j = 0; j < N; j++) {
-        for (int i = 0; i < M; i++) {
-            fout << board.getPiece(i, j);
-        }
-        fout << endl;
-    }
-    fout.close();
-}
+//void RPSManager::makeOutputFile(int reason, int winner) {
+//    ofstream fout("rps.output");
+//    int loser;
+//    int badLine;
+//    if (winner == 3)
+//        winner = 0;
+//
+//    fout << "Winner: " << winner << endl;
+//    fout << "Reason: ";
+//
+////    if (reason == 4) { //"bad positioning input file"
+////        if (!param1 && !param2) //both files are bad
+////            fout << "Bad Positioning input file for both players - player 1: line " << lineNum1 <<
+////                 ", player 2: line " << lineNum2 << endl;
+////        else {
+////            updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
+////            fout << "Bad Positioning input file for player " << loser << " - line " << badLine << endl;
+////        }
+//    if (reason == 1 || reason == 2) {
+//        if (reason == 1)
+//            fout << "All flags of the opponent are captured" << endl;
+//        else
+//            fout << "All moving PIECEs of the opponent are eaten" << endl;
+////    } else if (reason == 3)
+////        fout << "A tie - both Moves input files done without a winner" << endl;
+////
+////    else if (reason == 5) {
+////        updateLoserAndBadLine(winner, loser, lineNum1, lineNum2, badLine);
+////        fout << "Bad Moves input file for player " << loser << " - line " << badLine << endl;
+//    } else { //(reason == 6)
+//        fout << "A tie - 100 moves have invoked without a fight" << endl;
+//    }
+//
+//    fout << endl;
+//    // printing the game board state
+//    for (int j = 0; j < N; j++) {
+//        for (int i = 0; i < M; i++) {
+//            fout << board.getPiece(i, j);
+//        }
+//        fout << endl;
+//    }
+//    fout.close();
+//}
 
 
 int RPSManager::checkWinner(int &reason) {
