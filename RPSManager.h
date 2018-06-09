@@ -3,7 +3,10 @@
 #ifndef EX1_RPSMANAGER_H
 #define EX1_RPSMANAGER_H
 
-#include "RPSGame.h"
+
+
+#include "RSPPlayer_203022041.h"
+
 
 /**
  * The handler of the game
@@ -15,8 +18,8 @@ class RPSManager {
 
     unique_ptr<PlayerAlgorithm> player1;
     unique_ptr<PlayerAlgorithm> player2;
-    int player1Points;
-    int player2Points;
+//    int player1Points;
+//    int player2Points;
     vector<unique_ptr<PiecePosition>> player1Positioning;
     vector<unique_ptr<PiecePosition>> player2Positioning;
     RPSBoard board;
@@ -25,7 +28,7 @@ class RPSManager {
 public:
 
     //<constructors>
-    RPSManager(bool isPlayer1Auto, bool isPlayer2Auto);
+    RPSManager(unique_ptr<PlayerAlgorithm> player1, unique_ptr<PlayerAlgorithm> player2);
     //</constructors>
 
     // friend declerations
@@ -51,7 +54,7 @@ public:
     /**
      * Checks who wins? attacker tool or defender tool. update fights vector
      */
-     void doFight(vector<unique_ptr<FightInfo>> & fights, unique_ptr<RPSMove>fightMove);
+    void doFight(vector<unique_ptr<FightInfo>> &fights, unique_ptr<RPSMove> fightMove);
 
 
     /**
@@ -102,7 +105,7 @@ public:
       * @param playerNum - the player to check its positioning
       * @return true - if the positioning is valid, false - otherwise
       */
-    bool initCheck(int playerNum);
+//    bool initCheck(int playerNum);
 
 
     /**
@@ -120,7 +123,7 @@ public:
      * if its a tie.
      *
      */
-    void updateWinner(bool param1, bool param2, int &winner);
+//    void updateWinner(bool param1, bool param2, int &winner);
 
     /**
      * Writes the output file "rps.output"
@@ -145,7 +148,7 @@ public:
      * @param param2
      * @param badLine
      */
-    void updateLoserAndBadLine(int winner, int &loser, int param1, int param2, int &badLine);
+//    void updateLoserAndBadLine(int winner, int &loser, int param1, int param2, int &badLine);
 
     /**
      * This function is called when we know that at least one of the players lost all of his flags or
@@ -165,7 +168,7 @@ public:
      * @param reason - will be 1 if all flags of the opponent are captured
      *                 or 2 if all moving pieces of the opponent are eaten.
      */
-    void checkAndUpdateReasonForWinner(int &reason);
+//    void checkAndUpdateReasonForWinner(int &reason);
 
     /**
      * Manages the first stage of the game, init stage
@@ -174,7 +177,7 @@ public:
      * @param fights - the fights vector to be filled
      * @return true if there are no winners during init stage, false otherwise
      */
-    bool initStage( int &winner, vector<unique_ptr<FightInfo>> &fights);
+//    bool initStage( int &winner, vector<unique_ptr<FightInfo>> &fights);
 
     /**
      * Performs a check on this specific move validity
@@ -183,7 +186,7 @@ public:
      * @param moreMoves - boolean parameter to be updated. passed by reference
      * @return true if this move is valid, false otherwise
      */
-    bool checkIfMoveIsValid(unique_ptr<Move> &curMove, int player, bool &moreMoves);
+    bool checkIfMoveIsValid(unique_ptr<Move> &curMove, int player);
 
     /**
      * Help function for the above checks on the board if this move is possible

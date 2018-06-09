@@ -3,13 +3,13 @@
 #ifndef EX1_RPSAUTOPLAYERALGORITHM_H
 #define EX1_RPSAUTOPLAYERALGORITHM_H
 
-
-#include <iostream>
+#include "gameDefinitions.h"
 #include "PlayerAlgorithm.h"
+#include "RPSBoard.h"
+#include "RPSMove.h"
+#include "RPSJokerChange.h"
+#include "RPSFightInfo.h"
 #include "RPSPiecePosition.h"
-#include <map>
-#include <algorithm>
-#include "RPSParser.h"
 
 /*
  * class RSPPlayer_203022041
@@ -32,12 +32,9 @@ class RSPPlayer_203022041 : public PlayerAlgorithm{
     map<RPSPoint, char> opponentTools;
     int _player;
     vector<unique_ptr<RPSPoint>> playerJokers;
+    bool noFight;
 
 public:
-
-    //friends decleration
-    friend class RPSManager;
-    friend class RPSGame;
 
 
 /**
@@ -57,7 +54,7 @@ public:
  * @param fights - all the fights that acccured after initial positioning.
  *
  */
-    virtual void notifyOnInitialBoard(const Board& b, const std::vector<unique_ptr<FightInfo>>& fights);
+    virtual void notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) ;
 
 /**
  * Gives information to the auto player about the last move the opponent done.
@@ -138,25 +135,23 @@ public:
  * return a "fake" point (-1,-1).
  *
  */
-    RPSPoint checkIfHasThisJokerRep(char c)const;
+    RPSPoint checkIfHasThisJokerRep(char c);
+
+    bool checkIfPlayerJokersHasPoint(const RPSPoint &p);
+
 
 /**
- * Deletes from the map m, the pair that its key is p.
- *
- * @param m - map of pairs of RPSPoint (key) and chars (value)
- * @param p - RPSPoint of the pair we want to erase from m.
- *
- */
-    void eraseFromMap(map<RPSPoint, char> &m, const RPSPoint &p);
-
-/**
- * Delets from the vector of RPSPoints "v" the RPSPoint "p".
+ * Deletes from the vector of Template T "v" the T object "p".
  *
  * @param v - the vector
- * @param p - the point to delete
+ * @param p - the object to delete
  *
- */
-    void eraseFromVector(vector<RPSPoint> &v, RPSPoint p);
+ */ template<class T>
+    void eraseFromVector(vector<T> &v, T p);
+
+
+    void eraseFromJokers(RPSPoint p, vector<unique_ptr<RPSPoint>> &v);
+//    void eraseFromJokers(unique_ptr<RPSPoint> p, vector<unique_ptr<RPSPoint>> v);
 
 /**
  * choses a random point from vector "v".
@@ -176,22 +171,11 @@ public:
     RPSPoint getRandomPoint(map<RPSPoint, char> m)const;
 
 
-
-    /**
-     * This function add a specific unique pointer of piece position to the player jokers vector
-     * @param pos - the position we want to add
-     */
-    void addJokerPositionToVector(unique_ptr<PiecePosition> &pos);
     /**
      *
      * @return player number
      */
     int getPlayer();
-    /**
-     * method that we don't use right now.. it suppose to update a specific place at the tool counter map of this player
-     * @param tool
-     */
-    void updateToolCounter(char tool);
 
     virtual ~RSPPlayer_203022041(){}
 
