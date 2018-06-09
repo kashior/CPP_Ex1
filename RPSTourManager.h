@@ -10,6 +10,16 @@
 #include "RPSManager.h"
 #include <mutex>
 #include <thread>
+#include <iostream>
+#include <map>
+#include <list>
+#include <vector>
+#include <string>
+#include <dlfcn.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 
 
 #define VICTORY_SCORE 3;
@@ -21,8 +31,6 @@ using namespace std;
 class RPSTourManager{
 
     string _directory;
-    map<string, atomic<int>> _scores;
-    map<string, function<unique_ptr<PlayerAlgorithm>()>> _algorithms;
     vector<pair<string, pair<string,bool>>> _gamesQueue;
     list<void *> _my_dl_list; // list to hold handles for dynamic libs
     int _num_of_threads;
@@ -31,7 +39,10 @@ class RPSTourManager{
 
 public:
 
-    RPSTourManager(){};
+    static map<string, atomic<int>> _scores;
+    static map<string, function<unique_ptr<PlayerAlgorithm>()>> _algorithms;
+
+    RPSTourManager(string dir, int threads){};
 
     void executeSingleGame(pair<string, pair<string,bool>> players);
 
@@ -46,6 +57,12 @@ public:
     void threadFunction();
 
     void playTheTournament();
+
+    void singleThreadTournament();
+
+    void START();
+
+    ~RPSTourManager();
 
 
 

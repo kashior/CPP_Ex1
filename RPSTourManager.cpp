@@ -3,6 +3,9 @@
 #include "RPSTourManager.h"
 
 
+RPSTourManager::RPSTourManager(string dir, int threads) : _directory(dir), _num_of_threads(threads){}
+
+
 void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) {
 
     bool countPoints = players.second.second;
@@ -59,6 +62,7 @@ void RPSTourManager::makeGamesQueue(){
     }
 }
 
+
 string RPSTourManager::getRandomPlayer(vector<string> list) {
     auto it = list.begin();
     std::advance(it, rand() % list.size());
@@ -97,6 +101,16 @@ void RPSTourManager::threadFunction() {
 }
 
 
+void RPSTourManager::singleThreadTournament() {
+
+    while (!(_gamesQueue.empty())){
+        pair<string, pair<string, bool>> playersPair = _gamesQueue.back();
+        _gamesQueue.pop_back();
+        executeSingleGame(playersPair);
+    }
+}
+
+
 void RPSTourManager::playTheTournament() {
 
     for (int i=0 ; i<_num_of_threads ; i++){
@@ -114,7 +128,7 @@ void RPSTourManager::playTheTournament() {
 void RPSTourManager::loadSOFiles() {
 
     FILE *dl;   // handle to read directory
-    const char *command_str = "ls " + directory +" *.so";  // command string to get dynamic lib names
+    const char *command_str = "ls " + _directory +" *.so";  // command string to get dynamic lib names
     char in_buf[BUF_SIZE]; // input buffer for lib names
 
     // get the names of all the dynamic libs (.so  files) in the current dir
@@ -139,4 +153,25 @@ void RPSTourManager::loadSOFiles() {
         // add the handle to our list
         _my_dl_list.insert(_my_dl_list.end(), dlib);
     }
+}
+
+
+void RPSTourManager::START() {
+    loadSOFiles();
+    makeGamesQueue();
+
+    if (_num_of_threads == 1)
+        singleThreadTournament();
+    else
+        playTheTournament();
+
+    printTheScores();
+}
+
+
+
+RPSTourManager::~RPSTourManager(){
+    // close all the dynamic libs we opened
+    for (list<void *>::iterator itr = my_dl_list.begin(); itr != my_dl_list.end(); itr++)
+        dlclose(*itr);
 }
