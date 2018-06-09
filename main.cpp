@@ -38,7 +38,8 @@ int main(int argc, char* argv[]) {
                 directory = argv[2];
             }
         default:
-            cout << "Error: invalid number of arguments!\n";
+            cout << "Usage: ./ex3 [-threads threadsNumber] [-path path]" << endl;
+            return 0;
     }
 
     if (directory.back() != '/')
