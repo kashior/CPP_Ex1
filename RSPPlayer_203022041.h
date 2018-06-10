@@ -43,7 +43,7 @@ public:
  * @param player - players number - 1 or 2
  *
  */
-   explicit  RSPPlayer_203022041(int player);
+   explicit  RSPPlayer_203022041();
 
 /**
  * This function is called from the game manager.
@@ -171,11 +171,6 @@ public:
     RPSPoint getRandomPoint(map<RPSPoint, char> m)const;
 
 
-    /**
-     *
-     * @return player number
-     */
-    int getPlayer();
 
     virtual ~RSPPlayer_203022041(){}
 

@@ -1,5 +1,6 @@
 
 
+#include <set>
 #include "RPSTourManager.h"
 
 
@@ -15,22 +16,22 @@
 void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) {
 
     bool countPoints = players.second.second;
-    unique_ptr<PlayerAlgorithm> player1 = _algorithms[players.first];
-    unique_ptr<PlayerAlgorithm> player2 = _algorithms[players.second];
+    unique_ptr<PlayerAlgorithm> player1 =move(_algorithms[players.first]());
+    unique_ptr<PlayerAlgorithm> player2 = move(_algorithms[players.second.first]());
 
-    RPSManager game = RPSManager(player1, player2);
+    RPSManager game = RPSManager(move(player1), move(player2));
     int score = game.gameHandler();
 
     if (score == 1) //player1 won
         _scores[players.first] += VICTORY_SCORE;
     else if (score == 2){ //player2 won
         if (countPoints)
-            _scores[players.second] += VICTORY_SCORE;
+            _scores[players.second.first] += VICTORY_SCORE;
     }
     else { //tie
-        _scores[player1] += TIE_SCORE;
+        _scores[players.first] += TIE_SCORE;
         if (countPoints)
-            _scores[players.second] += TIE_SCORE;
+            _scores[players.second.first] += TIE_SCORE;
     }
 }
 
@@ -65,7 +66,9 @@ void RPSTourManager::makeGamesQueue(){
     bool count = true;
     for (auto &p : players){
         player1 = p;
-        tmpPlayers.erase(p);
+        auto it =find(tmpPlayers.begin(), tmpPlayers.end(),p);
+        tmpPlayers.erase(it);
+//        tmpPlayers.pop_back(p);
         while (gamesCounter[p] < 30){
                 player2 = getRandomPlayer(tmpPlayers);
                 if (gamesCounter[player2] >= 30)
@@ -75,7 +78,7 @@ void RPSTourManager::makeGamesQueue(){
                 gamesCounter[player2]++;
                 count = true;
         }
-        tmpPlayers.insert(player1); //return the player to the vector
+        tmpPlayers.push_back(player1); //return the player to the vector
     }
 }
 
@@ -83,7 +86,7 @@ void RPSTourManager::makeGamesQueue(){
 string RPSTourManager::getRandomPlayer(vector<string> list) {
     auto it = list.begin();
     std::advance(it, rand() % list.size());
-    return it;
+    return *it;
 }
 
 
@@ -145,7 +148,12 @@ void RPSTourManager::playTheTournament() {
 void RPSTourManager::loadSOFiles() {
 
     FILE *dl;   // handle to read directory
-    const char *command_str = "ls " + _directory +" *.so";  // command string to get dynamic lib names
+    char* dir=(char*)malloc(_directory.size()+1);
+    copy(_directory.begin(),_directory.end(),dir);
+    char *command_str = (char*)malloc(_directory.size()+10);
+    strcat(command_str,"ls ");
+    strcat(command_str ,dir);
+    strcat(command_str," *.so");  // command string to get dynamic lib names
     char in_buf[BUF_SIZE]; // input buffer for lib names
 
     // get the names of all the dynamic libs (.so  files) in the current dir
@@ -189,6 +197,6 @@ void RPSTourManager::START() {
 
 RPSTourManager::~RPSTourManager(){
     // close all the dynamic libs we opened
-    for (list<void *>::iterator itr = my_dl_list.begin(); itr != my_dl_list.end(); itr++)
+    for (list<void *>::iterator itr = _my_dl_list.begin(); itr != _my_dl_list.end(); itr++)
         dlclose(*itr);
 }

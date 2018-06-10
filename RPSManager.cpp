@@ -6,9 +6,6 @@ RPSManager::RPSManager(unique_ptr<PlayerAlgorithm> player1, unique_ptr<PlayerAlg
     player1=move(player1);
     player2=move(player2);
     movesCounter=0;
-    //so files
-//    player1Points = 0;
-//    player2Points = 0;
 
 }
 

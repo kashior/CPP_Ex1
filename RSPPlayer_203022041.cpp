@@ -8,7 +8,7 @@
 REGISTER_ALGORITHM(203022041)
 
 
-RSPPlayer_203022041::RSPPlayer_203022041(int player) : _player(player) {
+RSPPlayer_203022041::RSPPlayer_203022041()   {
     srand(time(NULL));
     RPSPoint pointToAdd;
     noFight = true;
@@ -24,6 +24,7 @@ RSPPlayer_203022041::RSPPlayer_203022041(int player) : _player(player) {
 void RSPPlayer_203022041::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) {
     if (player != 1 && player != 2)
         return;
+    _player=player;
     RPSPoint pushedPoint;
     for (int i = 0; i < R; i++) {
         pushedPoint = getRandomPoint(emptyPositions);
@@ -315,7 +316,6 @@ RPSPoint RSPPlayer_203022041::getRandomPoint(map<RPSPoint, char> m) const {
     return RPSPoint(it->first.getX(), it->first.getY());
 }
 
-int RSPPlayer_203022041::getPlayer() { return _player; }
 
 bool RSPPlayer_203022041::checkIfPlayerJokersHasPoint(const RPSPoint &p) {
     for(auto& point:playerJokers){
@@ -335,14 +335,6 @@ void RSPPlayer_203022041::eraseFromJokers(RPSPoint p, vector<unique_ptr<RPSPoint
 
 }
 
-//void RSPPlayer_203022041::eraseFromJokers(unique_ptr<RPSPoint> p, vector<unique_ptr<RPSPoint>> v) {
-//    for (auto it = v.begin(); it != v.end(); ++it) {
-//        if ((*it)->getX() == p->getX() && (*it)->getY()==p->getY()) {
-//            playerJokers.erase(it);
-//            return;
-//        }
-//    }
-//}
 
 
 
