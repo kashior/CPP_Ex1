@@ -3,16 +3,9 @@
 #include <set>
 #include "RPSTourManager.h"
 
+RPSTourManager RPSTourManager::theTourManager;
 
-/**
- * Executes a single RPS game by the game manager with a pair of player algorythms.
- * Gets the game result and updates the players total scores so far according to the current game
- * result.
- *
- * @param players - a pair of the players algorithms. First string represents the ID of player1, second string
- * represents the ID of player2, the bool represents whether the score of player2 should be added to its
- * total score
- */
+
 void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) {
 
     bool countPoints = players.second.second;
@@ -36,15 +29,14 @@ void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) 
 }
 
 
-
 void RPSTourManager::registerAlgorithm(std::string id, std::function<std::unique_ptr<PlayerAlgorithm>()> factoryMethod){
 
     if (_algorithms[id] != NULL) //algorithm already registered
-        cout << "RSPPlayer_" << id << " already registered!" << endl;
+        cout << "Warning: RSPPlayer_" << id << " already registered!" << endl;
 
     else{
-        _algorithms[id] = factoryMethod;
-        _scores[id] = 0;
+        _algorithms[id] = factoryMethod; //add to the map of <id,playerAlgorithm>
+        _scores[id] = 0; //add to the map of <id,score>, sets score to 0
     }
 }
 
@@ -67,8 +59,7 @@ void RPSTourManager::makeGamesQueue(){
     for (auto &p : players){
         player1 = p;
         auto it =find(tmpPlayers.begin(), tmpPlayers.end(),p);
-        tmpPlayers.erase(it);
-//        tmpPlayers.pop_back(p);
+        tmpPlayers.erase(it); //because we want to choose a different algorithm to play against player1
         while (gamesCounter[p] < 30){
                 player2 = getRandomPlayer(tmpPlayers);
                 if (gamesCounter[player2] >= 30)
@@ -105,19 +96,26 @@ void RPSTourManager::printTheScores() {
     }
 }
 
-
+/**
+ * In case there is
+ */
 void RPSTourManager::threadFunction() {
 
-    unique_lock<mutex> my_lock(_mutex);
+    //unique_lock<mutex> my_lock(_mutex);
 
-    while (!(_gamesQueue.empty())){
-        pair<string, pair<string, bool>> playersPair = _gamesQueue.back();
-        _gamesQueue.pop_back();
-        my_lock.unlock();
-        executeSingleGame(playersPair);
-        my_lock.lock();
+    while (true){
+        _mutex.lock();
+        if (!_gamesQueue.empty()){
+            pair<string, pair<string, bool>> playersPair = _gamesQueue.back();
+            _gamesQueue.pop_back();
+            _mutex.unlock();
+            executeSingleGame(playersPair);
+        }
+        else{
+            _mutex.unlock();
+            break;
+        }
     }
-    my_lock.unlock();
 }
 
 
@@ -133,9 +131,12 @@ void RPSTourManager::singleThreadTournament() {
 
 void RPSTourManager::playTheTournament() {
 
-    for (int i=0 ; i<_num_of_threads ; i++){
+    for (int i=0 ; i<_num_of_threads-1 ; i++){
         _list_of_threads.push_back(thread([this] {threadFunction();}));
     }
+
+    //make the main thread to work to:
+    threadFunction();
 
     for (auto &t : _list_of_threads){
         if (t.joinable())
