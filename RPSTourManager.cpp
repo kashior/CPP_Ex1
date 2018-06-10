@@ -29,13 +29,14 @@ void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) 
 }
 
 
-void RPSTourManager::registerAlgorithm(std::string id, std::function<std::unique_ptr<PlayerAlgorithm>()> factoryMethod){
+void RPSTourManager::registerAlgorithm(string id,function<unique_ptr<PlayerAlgorithm>()> factoryMethod){
 
-    if (_algorithms[id] != NULL) //algorithm already registered
+    if (_algorithms.count(id) >0) //algorithm already registered
         cout << "Warning: RSPPlayer_" << id << " already registered!" << endl;
 
     else{
         _algorithms[id] = factoryMethod; //add to the map of <id,playerAlgorithm>
+        cout << "pushed. size : " <<_algorithms.size() << "first id is "<<_algorithms.begin()->first<<endl;
         _scores[id] = 0; //add to the map of <id,score>, sets score to 0
     }
 }
@@ -46,10 +47,11 @@ void RPSTourManager::makeGamesQueue(){
     map<string, int> gamesCounter;
     vector<string> players;
     vector<string> tmpPlayers;
+    cout << "alogrithms size : "<<_algorithms.size() << endl;
 
     for (auto &p : _algorithms) {
-        players.insert(players.end(), p.first);
-        tmpPlayers.insert(tmpPlayers.end(), p.first);
+        players.push_back( p.first);
+        tmpPlayers.push_back( p.first);
         gamesCounter[p.first] = 0;
     }
 
@@ -58,13 +60,14 @@ void RPSTourManager::makeGamesQueue(){
     bool count = true;
     for (auto &p : players){
         player1 = p;
-        auto it =find(tmpPlayers.begin(), tmpPlayers.end(),p);
+        auto it =find(tmpPlayers.begin(), tmpPlayers.end(),player1);
         tmpPlayers.erase(it); //because we want to choose a different algorithm to play against player1
         while (gamesCounter[p] < 30){
                 player2 = getRandomPlayer(tmpPlayers);
                 if (gamesCounter[player2] >= 30)
                     count = false; //player2 already plays in 30 games
-                _gamesQueue.insert(_gamesQueue.end(), {player1, {player2, count}});
+                    _gamesQueue.push_back( {player1, {player2, count}});
+                cout << "gamequeue size : "<<_gamesQueue.size() << endl;
                 gamesCounter[player1]++;
                 gamesCounter[player2]++;
                 count = true;
@@ -176,6 +179,8 @@ void RPSTourManager::loadSOFiles() {
     char name[BUF_SIZE];
     while(fgets(in_buf, BUF_SIZE, dl)){
         // trim off the whitespace
+        if (in_buf[0]!='R')
+            break;
         char *ws = strpbrk(in_buf, " \t\n");
         if(ws) *ws = '\0';
         // append ./ to the front of the lib name
@@ -186,7 +191,9 @@ void RPSTourManager::loadSOFiles() {
             exit(-1);
         }
         // add the handle to our list
-        _my_dl_list.insert(_my_dl_list.end(), dlib);
+
+        _my_dl_list.push_back( dlib);
+        cout << "in so func the alg size is: " <<_algorithms.size() << endl;
     }
 
 
@@ -197,10 +204,6 @@ void RPSTourManager::loadSOFiles() {
 
 
 void RPSTourManager::START() {
-
-
-    cout << "started the tournament!"<< endl;
-
 
     loadSOFiles();
     makeGamesQueue();

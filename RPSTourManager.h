@@ -51,7 +51,7 @@ public:
  * @param id
  * @param factoryMethod
  */
-    void registerAlgorithm(std::string id, std::function<std::unique_ptr<PlayerAlgorithm>()> factoryMethod);
+    void registerAlgorithm(string id, function<unique_ptr<PlayerAlgorithm>()> factoryMethod);
 
 /**
  * Executes a single RPS game by the game manager with a pair of player algorythms.

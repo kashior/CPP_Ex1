@@ -3,6 +3,8 @@
 #ifndef EX1_RPSAUTOPLAYERALGORITHM_H
 #define EX1_RPSAUTOPLAYERALGORITHM_H
 
+#include "AlgorithmRegistration.h"
+#include <ctime>
 #include "gameDefinitions.h"
 #include "PlayerAlgorithm.h"
 #include "RPSBoard.h"
@@ -10,6 +12,7 @@
 #include "RPSJokerChange.h"
 #include "RPSFightInfo.h"
 #include "RPSPiecePosition.h"
+#include "RPSPoint.h"
 
 /*
  * class RSPPlayer_203022041

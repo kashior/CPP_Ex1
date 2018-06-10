@@ -19,7 +19,6 @@ int main(int argc, char* argv[]) {
 
     string directory = "";
     int threads = 4;
-
     switch (argc) {
         case 1:
             break;
@@ -47,6 +46,7 @@ int main(int argc, char* argv[]) {
 
     if (directory.back() != '/')
         directory.push_back('/');
+
 
     RPSTourManager::getTourManager().setDirectory(directory);
     RPSTourManager::getTourManager().setThreads(threads);
