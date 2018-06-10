@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <atomic>
 
 
 #define VICTORY_SCORE 3;
