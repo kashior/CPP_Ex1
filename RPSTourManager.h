@@ -30,19 +30,27 @@ using namespace std;
 
 class RPSTourManager{
 
+    static RPSTourManager theTourManager;
     string _directory;
     vector<pair<string, pair<string,bool>>> _gamesQueue;
     list<void *> _my_dl_list; // list to hold handles for dynamic libs
     int _num_of_threads;
     mutex _mutex;
+    map<string, atomic<int>> _scores;
+    map<string, function<unique_ptr<PlayerAlgorithm>()>> _algorithms;
     vector<thread> _list_of_threads;
+
+    RPSTourManager(){};
 
 public:
 
-    static map<string, atomic<int>> _scores;
-    static map<string, function<unique_ptr<PlayerAlgorithm>()>> _algorithms;
+    static RPSTourManager& getTourManager(){return theTourManager;}
 
-    RPSTourManager(string dir, int threads){};
+    void setThreads(int t){_num_of_threads(t);}
+
+    void setDirectory(string d){_directory(d);}
+
+    void registerAlgorithm(std::string id, std::function<std::unique_ptr<PlayerAlgorithm>()> factoryMethod);
 
     void executeSingleGame(pair<string, pair<string,bool>> players);
 

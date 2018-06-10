@@ -8,6 +8,7 @@ REGISTER_ALGORITHM(203022041)
 
 
 RSPPlayer_203022041::RSPPlayer_203022041(int player) : _player(player) {
+    srand(time(NULL));
     RPSPoint pointToAdd;
     noFight = true;
     for (int j = 0; j < N; j++) {

@@ -3,9 +3,6 @@
 #include "RPSTourManager.h"
 
 
-RPSTourManager::RPSTourManager(string dir, int threads) : _directory(dir), _num_of_threads(threads){}
-
-
 void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) {
 
     bool countPoints = players.second.second;
@@ -29,13 +26,26 @@ void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) 
 }
 
 
+
+void RPSTourManager::registerAlgorithm(std::string id, std::function<std::unique_ptr<PlayerAlgorithm>()> factoryMethod){
+
+    if (_algorithms[id] != NULL) //algorithm already registered
+        cout << "RSPPlayer_" << id << " already registered!" << endl;
+
+    else{
+        _algorithms[id] = factoryMethod;
+        _scores[id] = 0;
+    }
+}
+
+
 void RPSTourManager::makeGamesQueue(){
 
     map<string, int> gamesCounter;
     vector<string> players;
     vector<string> tmpPlayers;
 
-    for (auto &p : gamesCounter) {
+    for (auto &p : _algorithms) {
         players.insert(players.end(), p.first);
         tmpPlayers.insert(tmpPlayers.end(), p.first);
         gamesCounter[p.first] = 0;
@@ -48,17 +58,15 @@ void RPSTourManager::makeGamesQueue(){
         player1 = p;
         tmpPlayers.erase(p);
         while (gamesCounter[p] < 30){
-            for (int i=0 ; i<30 ; i++){
-                player2 = getRandomPlayer();
+                player2 = getRandomPlayer(tmpPlayers);
                 if (gamesCounter[player2] >= 30)
-                    count = false;
+                    count = false; //player2 already plays in 30 games
                 _gamesQueue.insert(_gamesQueue.end(), {player1, {player2, count}});
                 gamesCounter[player1]++;
                 gamesCounter[player2]++;
                 count = true;
-            }
         }
-        tmpPlayers.insert(player1);
+        tmpPlayers.insert(player1); //return the player to the vector
     }
 }
 

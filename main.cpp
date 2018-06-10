@@ -28,14 +28,17 @@ int main(int argc, char* argv[]) {
                 threads = stoi(argv[2]);
             else if (argv[1] == "-path")
                 directory = argv[2];
+            break;
         case 5:
             if (argv[1] == "-threads" && argv[3] == "-path"){
                 threads = stoi(argv[2]);
                 directory = argv[4];
+                break;
             }
             else if (argv[3] == "-threads" && argv[1] == "-path"){
                 threads = stoi(argv[4]);
                 directory = argv[2];
+                break;
             }
         default:
             cout << "Usage: ./ex3 [-threads threadsNumber] [-path path]" << endl;
@@ -45,11 +48,9 @@ int main(int argc, char* argv[]) {
     if (directory.back() != '/')
         directory.push_back('/');
 
-    // initiate static members
-    RPSTourManager::_scores;
-    RPSTourManager::_algorithms;
-    RPSTourManager* manager = new RPSTourManager(directory, threads);
-    manager->START();
+    RPSTourManager::getTourManager().setDirectory(directory);
+    RPSTourManager::getTourManager().setThreads(threads);
+    RPSTourManager::getTourManager().START();
 
     return 0;
 }
