@@ -71,6 +71,9 @@ void RPSTourManager::makeGamesQueue(){
         }
         tmpPlayers.push_back(player1); //return the player to the vector
     }
+
+
+    cout << "Done making the games queue!! there are total " << _gamesQueue.size() << " games to play!" << endl;
 }
 
 
@@ -97,21 +100,25 @@ void RPSTourManager::printTheScores() {
 }
 
 /**
- * In case there is
+ * In case there is more then one thread that can be used, each thread (eccept the main thread) will execute
+ * this function, to do the games of the tournament.
  */
 void RPSTourManager::threadFunction() {
 
-    //unique_lock<mutex> my_lock(_mutex);
+
+    cout << "entered threadFunction!" << endl;
+
+
 
     while (true){
         _mutex.lock();
-        if (!_gamesQueue.empty()){
+        if (!_gamesQueue.empty()){ //check if there are still more games to play in the tournament
             pair<string, pair<string, bool>> playersPair = _gamesQueue.back();
-            _gamesQueue.pop_back();
+            _gamesQueue.pop_back(); //get this game out of the queue
             _mutex.unlock();
             executeSingleGame(playersPair);
         }
-        else{
+        else{ //no more games to play in the tournament
             _mutex.unlock();
             break;
         }
@@ -133,6 +140,8 @@ void RPSTourManager::playTheTournament() {
 
     for (int i=0 ; i<_num_of_threads-1 ; i++){
         _list_of_threads.push_back(thread([this] {threadFunction();}));
+
+        cout << "1 thread statrted working now!" << endl;
     }
 
     //make the main thread to work to:
@@ -179,10 +188,20 @@ void RPSTourManager::loadSOFiles() {
         // add the handle to our list
         _my_dl_list.insert(_my_dl_list.end(), dlib);
     }
+
+
+    cout << "done loading " << _my_dl_list.size() << " SO files!" << endl;
+
+
 }
 
 
 void RPSTourManager::START() {
+
+
+    cout << "started the tournament!"<< endl;
+
+
     loadSOFiles();
     makeGamesQueue();
 
