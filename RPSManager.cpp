@@ -2,9 +2,9 @@
 #include "RPSManager.h"
 
 
-RPSManager::RPSManager() {
-    player1=make_unique<RSPPlayer_203022041>(1);
-    player2=make_unique<RSPPlayer_203022041>(2);
+RPSManager::RPSManager(unique_ptr<PlayerAlgorithm> player1, unique_ptr<PlayerAlgorithm> player2) {
+    player1=move(player1);
+    player2=move(player2);
     movesCounter=0;
     //so files
 //    player1Points = 0;

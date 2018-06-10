@@ -28,7 +28,7 @@ class RPSManager {
 public:
 
     //<constructors>
-    RPSManager();
+    RPSManager(unique_ptr<PlayerAlgorithm> player1, unique_ptr<PlayerAlgorithm> player2);
     //</constructors>
 
     // friend declerations

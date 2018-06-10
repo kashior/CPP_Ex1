@@ -3,12 +3,13 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 
 #include "PlayerAlgorithm.h"
 
 class AlgorithmRegistration {
 public:
-    AlgorithmRegistration(std::string id, std::function<std::unique_ptr<PlayerAlgorithm>()>);
+	AlgorithmRegistration(std::string id, std::function<std::unique_ptr<PlayerAlgorithm>()>);
 };
 
 #define REGISTER_ALGORITHM(ID) \
