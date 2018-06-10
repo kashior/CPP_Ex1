@@ -46,9 +46,9 @@ public:
 
     static RPSTourManager& getTourManager(){return theTourManager;}
 
-    void setThreads(int t){_num_of_threads(t);}
+    void setThreads(int t){_num_of_threads=t;}
 
-    void setDirectory(string d){_directory(d);}
+    void setDirectory(string d){_directory=d;}
 
     void registerAlgorithm(std::string id, std::function<std::unique_ptr<PlayerAlgorithm>()> factoryMethod);
 

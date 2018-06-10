@@ -24,18 +24,18 @@ int main(int argc, char* argv[]) {
         case 1:
             break;
         case 3:
-            if (argv[1] == "-threads")
+            if (std::string(argv[1]) == "-threads")
                 threads = stoi(argv[2]);
-            else if (argv[1] == "-path")
+            else if (std::string(argv[1]) == "-path")
                 directory = argv[2];
             break;
         case 5:
-            if (argv[1] == "-threads" && argv[3] == "-path"){
+            if (std::string(argv[1]) == "-threads" && std::string(argv[3]) == "-path"){
                 threads = stoi(argv[2]);
                 directory = argv[4];
                 break;
             }
-            else if (argv[3] == "-threads" && argv[1] == "-path"){
+            else if (std::string(argv[3]) == "-threads" && std::string(argv[1]) == "-path"){
                 threads = stoi(argv[4]);
                 directory = argv[2];
                 break;

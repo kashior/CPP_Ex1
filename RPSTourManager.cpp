@@ -3,6 +3,15 @@
 #include "RPSTourManager.h"
 
 
+/**
+ * Executes a single RPS game by the game manager with a pair of player algorythms.
+ * Gets the game result and updates the players total scores so far according to the current game
+ * result.
+ *
+ * @param players - a pair of the players algorithms. First string represents the ID of player1, second string
+ * represents the ID of player2, the bool represents whether the score of player2 should be added to its
+ * total score
+ */
 void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) {
 
     bool countPoints = players.second.second;
