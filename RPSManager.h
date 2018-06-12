@@ -4,9 +4,11 @@
 #define EX1_RPSMANAGER_H
 
 
-
-#include "RSPPlayer_203022041.h"
-
+#include "PlayerAlgorithm.h"
+#include "gameDefinitions.h"
+#include "RPSBoard.h"
+#include "RPSMove.h"
+#include "RPSFightInfo.h"
 
 /**
  * The handler of the game
@@ -28,7 +30,7 @@ class RPSManager {
 public:
 
     //<constructors>
-    RPSManager(unique_ptr<PlayerAlgorithm> player1, unique_ptr<PlayerAlgorithm> player2);
+    RPSManager(unique_ptr<PlayerAlgorithm> &&player1, unique_ptr<PlayerAlgorithm> &&player2);
     //</constructors>
 
     // friend declerations
@@ -135,7 +137,7 @@ public:
      * @param lineNum1 - the bad line in player1's files (if there is)
      * @param lineNum2 - the bad line in player2's files (if there is)
      */
-    void makeOutputFile(int reason, int winner);
+//    void makeOutputFile(int reason, int winner);
 
     /**
      *
@@ -194,7 +196,7 @@ public:
      * @param player - the player that plays
      * @return true if this move is valid, false otherwise
      */
-    bool checkIfMoveIsValidBoardwise(unique_ptr<Move> &curMove, int player);
+//    bool checkIfMoveIsValidBoardwise(unique_ptr<Move> &curMove, int player);
 
     /**
      * Checks for validity of a joker change, if there is one

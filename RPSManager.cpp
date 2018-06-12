@@ -2,7 +2,7 @@
 #include "RPSManager.h"
 
 
-RPSManager::RPSManager(unique_ptr<PlayerAlgorithm> player1, unique_ptr<PlayerAlgorithm> player2) {
+RPSManager::RPSManager(unique_ptr<PlayerAlgorithm> &&player1, unique_ptr<PlayerAlgorithm> &&player2) {
     player1=move(player1);
     player2=move(player2);
     movesCounter=0;

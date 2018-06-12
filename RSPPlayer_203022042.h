@@ -15,7 +15,7 @@
 #include "RPSPoint.h"
 
 /*
- * class RSPPlayer_203022041
+ * class RSPPlayer_203022042
  *
  * This class represents an automatic player in the game.
  * This player will do moves in the game according to the information it has about the opponents pieces
@@ -28,7 +28,7 @@
  *    tools and the kind of the tool, if known (represented by char {'O' - for unknown kind of tool, 'R', 'P', 'S'}).
  */
 
-class RSPPlayer_203022041 : public PlayerAlgorithm{
+class RSPPlayer_203022042 : public PlayerAlgorithm{
 
     vector<RPSPoint> emptyPositions;
     map<RPSPoint, char> myTools;
@@ -46,7 +46,7 @@ public:
  * @param player - players number - 1 or 2
  *
  */
-   explicit  RSPPlayer_203022041();
+   explicit  RSPPlayer_203022042();
 
 /**
  * This function is called from the game manager.
@@ -175,7 +175,7 @@ public:
 
 
 
-    virtual ~RSPPlayer_203022041(){}
+    virtual ~RSPPlayer_203022042(){}
 
 };
 

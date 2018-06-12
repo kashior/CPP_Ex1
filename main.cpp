@@ -19,7 +19,6 @@ int main(int argc, char* argv[]) {
 
     string directory = "";
     int threads = 4;
-
     switch (argc) {
         case 1:
             break;

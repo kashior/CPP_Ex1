@@ -8,6 +8,8 @@
 #include <thread>
 #include <iostream>
 #include <list>
+#include <map>
+#include <memory>
 #include <string>
 #include <dlfcn.h>
 #include <cstdio>
@@ -15,6 +17,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <atomic>
+#include <functional>
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
 
 
 #define VICTORY_SCORE 3
@@ -51,7 +57,7 @@ public:
  * @param id
  * @param factoryMethod
  */
-    void registerAlgorithm(std::string id, std::function<std::unique_ptr<PlayerAlgorithm>()> factoryMethod);
+    void registerAlgorithm(string id, function<unique_ptr<PlayerAlgorithm>()> factoryMethod);
 
 /**
  * Executes a single RPS game by the game manager with a pair of player algorythms.
@@ -83,7 +89,7 @@ public:
  */
     void printTheScores();
 
-    void loadSOFiles();
+    int loadSOFiles();
 
     void threadFunction();
 

@@ -1,13 +1,14 @@
 
 
-#include "RSPPlayer_203022041.h"
+#include "RSPPlayer_203022042.h"
 
 
-REGISTER_ALGORITHM(203022041)
+REGISTER_ALGORITHM(203022042)
 
 
-RSPPlayer_203022041::RSPPlayer_203022041()   {
+RSPPlayer_203022042::RSPPlayer_203022042()   {
     srand(time(NULL));
+    cout << "inside algorithm " << endl;
     RPSPoint pointToAdd;
     noFight = true;
     for (int j = 0; j < N; j++) {
@@ -19,7 +20,7 @@ RSPPlayer_203022041::RSPPlayer_203022041()   {
     }
 }
 
-void RSPPlayer_203022041::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) {
+void RSPPlayer_203022042::getInitialPositions(int player, std::vector<unique_ptr<PiecePosition>> &vectorToFill) {
     if (player != 1 && player != 2)
         return;
     _player=player;
@@ -64,7 +65,7 @@ void RSPPlayer_203022041::getInitialPositions(int player, std::vector<unique_ptr
 }
 
 
-void RSPPlayer_203022041::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {
+void RSPPlayer_203022042::notifyOnInitialBoard(const Board &b, const std::vector<unique_ptr<FightInfo>> &fights) {
 
     RPSPoint curPoint;
 
@@ -103,7 +104,7 @@ void RSPPlayer_203022041::notifyOnInitialBoard(const Board &b, const std::vector
 }
 
 
-unique_ptr<Move> RSPPlayer_203022041::getMove() {
+unique_ptr<Move> RSPPlayer_203022042::getMove() {
 
     unique_ptr<Move> resMove;
     RPSPoint from;
@@ -183,7 +184,7 @@ unique_ptr<Move> RSPPlayer_203022041::getMove() {
 }
 
 
-void RSPPlayer_203022041::notifyFightResult(const FightInfo &fightInfo) {
+void RSPPlayer_203022042::notifyFightResult(const FightInfo &fightInfo) {
 
     RPSPoint curPoint(fightInfo.getPosition().getX(), fightInfo.getPosition().getY());
     if (curPoint.getX() == -1) { //if there was no fight in the last move, there's nothing to update
@@ -209,7 +210,7 @@ void RSPPlayer_203022041::notifyFightResult(const FightInfo &fightInfo) {
 
 }
 
-void RSPPlayer_203022041::notifyOnOpponentMove(const Move &move) {
+void RSPPlayer_203022042::notifyOnOpponentMove(const Move &move) {
     if (!noFight)
         return;
 
@@ -223,7 +224,7 @@ void RSPPlayer_203022041::notifyOnOpponentMove(const Move &move) {
 }
 
 
-unique_ptr<JokerChange> RSPPlayer_203022041::getJokerChange() {
+unique_ptr<JokerChange> RSPPlayer_203022042::getJokerChange() {
 
     if (playerJokers.empty()) //all the players jokers been eaten
         return nullptr;
@@ -261,7 +262,7 @@ unique_ptr<JokerChange> RSPPlayer_203022041::getJokerChange() {
 }
 
 
-RPSPoint RSPPlayer_203022041::checkIfHasThisJokerRep(char c) {
+RPSPoint RSPPlayer_203022042::checkIfHasThisJokerRep(char c) {
     RPSPoint curPoint;
     for (auto &point : playerJokers) {
         // go over the positions of the jokers
@@ -274,7 +275,7 @@ RPSPoint RSPPlayer_203022041::checkIfHasThisJokerRep(char c) {
 }
 
 
-RPSPoint RSPPlayer_203022041::findKeyOfValueInMyTools(char value) {
+RPSPoint RSPPlayer_203022042::findKeyOfValueInMyTools(char value) {
 
     for (auto pair : myTools) {
         if (pair.second == value)
@@ -286,7 +287,7 @@ RPSPoint RSPPlayer_203022041::findKeyOfValueInMyTools(char value) {
 
 
 template<class T>
-void RSPPlayer_203022041::eraseFromVector(vector<T> &v, T p) {
+void RSPPlayer_203022042::eraseFromVector(vector<T> &v, T p) {
 
     for (auto it = v.begin(); it != v.end(); ++it) {
         if (*it == p) {
@@ -298,7 +299,7 @@ void RSPPlayer_203022041::eraseFromVector(vector<T> &v, T p) {
 }
 
 
-RPSPoint RSPPlayer_203022041::getRandomPoint(vector<RPSPoint> v) const {
+RPSPoint RSPPlayer_203022042::getRandomPoint(vector<RPSPoint> v) const {
 
     auto it = v.begin();
     std::advance(it, rand() % v.size());
@@ -306,7 +307,7 @@ RPSPoint RSPPlayer_203022041::getRandomPoint(vector<RPSPoint> v) const {
 }
 
 
-RPSPoint RSPPlayer_203022041::getRandomPoint(map<RPSPoint, char> m) const {
+RPSPoint RSPPlayer_203022042::getRandomPoint(map<RPSPoint, char> m) const {
     if (m.empty())
         return RPSPoint(-1, -1);
     auto it = m.begin();
@@ -315,7 +316,7 @@ RPSPoint RSPPlayer_203022041::getRandomPoint(map<RPSPoint, char> m) const {
 }
 
 
-bool RSPPlayer_203022041::checkIfPlayerJokersHasPoint(const RPSPoint &p) {
+bool RSPPlayer_203022042::checkIfPlayerJokersHasPoint(const RPSPoint &p) {
     for(auto& point:playerJokers){
         if(p.getX()==point->getX() && p.getY()==point->getY())
             return true;
@@ -323,7 +324,7 @@ bool RSPPlayer_203022041::checkIfPlayerJokersHasPoint(const RPSPoint &p) {
     return false;
 }
 
-void RSPPlayer_203022041::eraseFromJokers(RPSPoint p, vector<unique_ptr<RPSPoint>> &v) {
+void RSPPlayer_203022042::eraseFromJokers(RPSPoint p, vector<unique_ptr<RPSPoint>> &v) {
     for (auto it = v.begin(); it != v.end(); ++it) {
         if ((*it)->getX()== p.getX() && (*it)->getY()==p.getY()) {
             playerJokers.erase(it);
