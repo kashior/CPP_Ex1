@@ -3,14 +3,14 @@
 #include <set>
 #include "RPSTourManager.h"
 
-RPSTourManager RPSTourManager::theTourManager;
 
+RPSTourManager RPSTourManager::theTourManager;
 
 void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) {
 
     bool countPoints = players.second.second;
-    unique_ptr<PlayerAlgorithm> player1 =move(_algorithms[players.first]());
-    unique_ptr<PlayerAlgorithm> player2 = move(_algorithms[players.second.first]());
+    unique_ptr<PlayerAlgorithm> player1 = _algorithms[players.first]();
+    unique_ptr<PlayerAlgorithm> player2 = _algorithms[players.second.first]();
 
     RPSManager game = RPSManager(move(player1), move(player2));
     int score = game.gameHandler();
@@ -34,11 +34,10 @@ void RPSTourManager::registerAlgorithm(string id,function<unique_ptr<PlayerAlgor
     if (_algorithms.count(id) >0) //algorithm already registered
         cout << "Warning: RSPPlayer_" << id << " already registered!" << endl;
 
-    else{
-        _algorithms[id] = factoryMethod; //add to the map of <id,playerAlgorithm>
-        cout << "pushed. size : " <<_algorithms.size() << "first id is "<<_algorithms.begin()->first<<endl;
-        _scores[id] = 0; //add to the map of <id,score>, sets score to 0
-    }
+    _algorithms[id] = factoryMethod; //add to the map of <id,playerAlgorithm>
+
+    cout << "pushed. size : " <<_algorithms.size() << " id is "<<_algorithms.begin()->first<<endl;
+    _scores[id] = 0; //add to the map of <id,score>, sets score to 0
 }
 
 
@@ -158,15 +157,20 @@ void RPSTourManager::playTheTournament() {
 
 
 
-void RPSTourManager::loadSOFiles() {
+int RPSTourManager::loadSOFiles() {
+
+    cout << "Starting load files" << endl;
 
     FILE *dl;   // handle to read directory
+
     char* dir=(char*)malloc(_directory.size()+1);
     copy(_directory.begin(),_directory.end(),dir);
     char *command_str = (char*)malloc(_directory.size()+10);
     strcat(command_str,"ls ");
     strcat(command_str ,dir);
     strcat(command_str," *.so");  // command string to get dynamic lib names
+
+    //string command_str = "ls "+ _directory + "*.so";
     char in_buf[BUF_SIZE]; // input buffer for lib names
 
     // get the names of all the dynamic libs (.so  files) in the current dir
@@ -177,6 +181,8 @@ void RPSTourManager::loadSOFiles() {
     }
     void *dlib;
     char name[BUF_SIZE];
+    unsigned int num_of_SOs = _algorithms.size();
+
     while(fgets(in_buf, BUF_SIZE, dl)){
         // trim off the whitespace
         if (in_buf[0]!='R')
@@ -187,25 +193,46 @@ void RPSTourManager::loadSOFiles() {
         sprintf(name, "./%s", in_buf);
         dlib = dlopen(name, RTLD_NOW);
         if(dlib == NULL){
+            cout << "Error in opening the file " << name << endl;
             cerr << dlerror() << endl;
             exit(-1);
         }
+
+        if (_algorithms.size() != num_of_SOs+1){
+            cout << "Error while loading SO file" << endl;
+            return -1;
+        }
+
+        num_of_SOs++;
+
         // add the handle to our list
 
         _my_dl_list.push_back( dlib);
         cout << "in so func the alg size is: " <<_algorithms.size() << endl;
     }
 
+    if (_algorithms.size() < 2){
+        cout << "Cannot play a tournament with less then two players!" << endl;
+        return -1;
+    }
 
     cout << "done loading " << _my_dl_list.size() << " SO files!" << endl;
-
-
+    return 0;
 }
 
 
 void RPSTourManager::START() {
 
-    loadSOFiles();
+
+
+    cout << "now in START" << endl;
+
+
+    int SOResult;
+    SOResult = loadSOFiles();
+    if (SOResult == -1)
+        return;
+
     makeGamesQueue();
 
     if (_num_of_threads == 1)

@@ -8,6 +8,8 @@
 #include <thread>
 #include <iostream>
 #include <list>
+#include <map>
+#include <memory>
 #include <string>
 #include <dlfcn.h>
 #include <cstdio>
@@ -15,6 +17,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <atomic>
+#include <functional>
+#include <stdio.h>
+#include <stdlib.h>
+#include <set>
 
 
 #define VICTORY_SCORE 3
@@ -83,7 +89,7 @@ public:
  */
     void printTheScores();
 
-    void loadSOFiles();
+    int loadSOFiles();
 
     void threadFunction();
 
