@@ -15,7 +15,6 @@ void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) 
     RPSManager game = RPSManager(player1, player2);
 
     int score = game.gameHandler();
-    cout << "game finished!" << endl;
 
     if (score == 1) //player1 won
         _scores[players.first] += VICTORY_SCORE;
@@ -94,11 +93,10 @@ void RPSTourManager::printTheScores() {
     };
 
     set<pair<string, int>, Comparator> sortedScores(_scores.begin(), _scores.end(), comparisonFunc);
-    cout << "printing scores"<<endl;
+
     for (pair<string, int> score : sortedScores){
         cout << score.first << " " << score.second << endl;
     }
-    cout << "done printing scores"<<endl;
 }
 
 /**

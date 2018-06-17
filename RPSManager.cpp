@@ -154,7 +154,6 @@ int RPSManager::gameHandler() {
     vector<unique_ptr<FightInfo>> fights;
     player1->getInitialPositions(1, player1Positioning);
     player2->getInitialPositions(2, player2Positioning);
-
     updateInitialBoard(fights);
 
     // lets notify on initial positions to the players algorithms
@@ -247,7 +246,7 @@ int RPSManager::gameHandler() {
         curJokerChangePtr = player2->getJokerChange(); // in case there was joker change, get it
         if (curJokerChangePtr != nullptr) {
             if (checkIfJokerChangeIsValid(curJokerChangePtr, 2)) {
-                auto jokerPiece = (char) tolower(curJokerChangePtr->getJokerNewRep());
+                char jokerPiece = (char) tolower(curJokerChangePtr->getJokerNewRep());
                 board.board[curJokerChangePtr->getJokerChangePosition().getY()]
                 [curJokerChangePtr->getJokerChangePosition().getX()] = jokerPiece;
             } else {

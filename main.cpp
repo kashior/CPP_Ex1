@@ -51,7 +51,6 @@ int main(int argc, char* argv[]) {
     RPSTourManager::getTourManager().setDirectory(directory);
     RPSTourManager::getTourManager().setThreads(threads);
     RPSTourManager::getTourManager().START();
-    cout << "done"<<endl;
 
     return 0;
 }

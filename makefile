@@ -3,21 +3,18 @@ CPP_COMP_FLAG = -std=c++14 -Wall -Wextra -Werror -pedantic-errors -DNDEBUG
 
 EXEC = ex3
 SO	 = RSPPlayer_203022041.so
-SO2	 = RSPPlayer_203022042.so
+
 
 OBJS = main.o RPSManager.o RPSPoint.o RPSPiecePosition.o RPSMove.o RPSJokerChange.o \
         RPSFightInfo.o RPSBoard.o RPSTourManager.o AlgorithmRegistration.o
 SO_OBJS = RSPPlayer_203022041.o RPSBoard.o RPSMove.o RPSPoint.o RPSJokerChange.o RPSFightInfo.o RPSPiecePosition.o
 
-SO_OBJS2 = RSPPlayer_203022042.o RPSBoard.o RPSMove.o RPSPoint.o RPSJokerChange.o RPSFightInfo.o RPSPiecePosition.o
 
 $(EXEC): $(OBJS)
 	$(COMP) $(OBJS) -ldl -pthread -rdynamic -o  $@
 $(SO): $(SO_OBJS)
 	$(COMP) $(SO_OBJS) -shared -Wl,-soname,RSPPlayer_203022041.so -o $@
 
-$(SO2): $(SO_OBJS2)
-	$(COMP) $(SO_OBJS2) -shared -Wl,-soname,RSPPlayer_203022042.so -o $@
 
 	
 main.o: main.cpp RPSTourManager.h RPSManager.h PlayerAlgorithm.h Point.h \
@@ -52,13 +49,6 @@ RSPPlayer_203022041.o: RSPPlayer_203022041.cpp RSPPlayer_203022041.h \
   RPSPiecePosition.h
 	$(COMP) -fPIC $(CPP_COMP_FLAG) -c $*.cpp
 
-RSPPlayer_203022042.o: RSPPlayer_203022042.cpp RSPPlayer_203022042.h \
-  AlgorithmRegistration.h PlayerAlgorithm.h Point.h PiecePosition.h \
-  Board.h FightInfo.h Move.h JokerChange.h gameDefinitions.h RPSBoard.h \
-  RPSMove.h RPSPoint.h RPSJokerChange.h RPSFightInfo.h \
-  RPSPiecePosition.h
-	$(COMP) -fPIC $(CPP_COMP_FLAG) -c $*.cpp
-
 AlgorithmRegistration.o: AlgorithmRegistration.cpp \
   AlgorithmRegistration.h PlayerAlgorithm.h Point.h PiecePosition.h \
   Board.h FightInfo.h Move.h JokerChange.h RPSTourManager.h RPSManager.h \
@@ -70,8 +60,6 @@ AlgorithmRegistration.o: AlgorithmRegistration.cpp \
 rps_tournament: $(EXEC)
 .PHONY: rps_lib
 rps_lib: $(SO)
-.PHONY: rps_lib2
-rps_lib2: $(SO2)
 .PHONY: all
 all: $(EXEC) $(SO)
 
