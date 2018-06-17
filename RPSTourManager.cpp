@@ -7,13 +7,15 @@
 RPSTourManager RPSTourManager::theTourManager;
 
 void RPSTourManager::executeSingleGame(pair<string, pair<string,bool>> players) {
-
     bool countPoints = players.second.second;
-    unique_ptr<PlayerAlgorithm> player1 = _algorithms[players.first]();
-    unique_ptr<PlayerAlgorithm> player2 = _algorithms[players.second.first]();
+    auto player1 = _algorithms[players.first];
+    auto player2 = _algorithms[players.second.first];
 
-    RPSManager game = RPSManager(move(player1), move(player2));
+
+    RPSManager game = RPSManager(player1, player2);
+
     int score = game.gameHandler();
+    cout << "game finished!" << endl;
 
     if (score == 1) //player1 won
         _scores[players.first] += VICTORY_SCORE;
@@ -36,7 +38,6 @@ void RPSTourManager::registerAlgorithm(string id,function<unique_ptr<PlayerAlgor
 
     _algorithms[id] = factoryMethod; //add to the map of <id,playerAlgorithm>
 
-    cout << "pushed. size : " <<_algorithms.size() << " id is "<<_algorithms.begin()->first<<endl;
     _scores[id] = 0; //add to the map of <id,score>, sets score to 0
 }
 
@@ -46,7 +47,6 @@ void RPSTourManager::makeGamesQueue(){
     map<string, int> gamesCounter;
     vector<string> players;
     vector<string> tmpPlayers;
-    cout << "alogrithms size : "<<_algorithms.size() << endl;
 
     for (auto &p : _algorithms) {
         players.push_back( p.first);
@@ -66,7 +66,6 @@ void RPSTourManager::makeGamesQueue(){
                 if (gamesCounter[player2] >= 30)
                     count = false; //player2 already plays in 30 games
                     _gamesQueue.push_back( {player1, {player2, count}});
-                cout << "gamequeue size : "<<_gamesQueue.size() << endl;
                 gamesCounter[player1]++;
                 gamesCounter[player2]++;
                 count = true;
@@ -95,10 +94,11 @@ void RPSTourManager::printTheScores() {
     };
 
     set<pair<string, int>, Comparator> sortedScores(_scores.begin(), _scores.end(), comparisonFunc);
-
+    cout << "printing scores"<<endl;
     for (pair<string, int> score : sortedScores){
         cout << score.first << " " << score.second << endl;
     }
+    cout << "done printing scores"<<endl;
 }
 
 /**
@@ -106,9 +106,6 @@ void RPSTourManager::printTheScores() {
  * this function, to do the games of the tournament.
  */
 void RPSTourManager::threadFunction() {
-
-
-    cout << "entered threadFunction!" << endl;
 
 
 
@@ -119,6 +116,7 @@ void RPSTourManager::threadFunction() {
             _gamesQueue.pop_back(); //get this game out of the queue
             _mutex.unlock();
             executeSingleGame(playersPair);
+
         }
         else{ //no more games to play in the tournament
             _mutex.unlock();
@@ -143,7 +141,6 @@ void RPSTourManager::playTheTournament() {
     for (int i=0 ; i<_num_of_threads-1 ; i++){
         _list_of_threads.push_back(thread([this] {threadFunction();}));
 
-        cout << "1 thread statrted working now!" << endl;
     }
 
     //make the main thread to work to:
@@ -159,7 +156,6 @@ void RPSTourManager::playTheTournament() {
 
 int RPSTourManager::loadSOFiles() {
 
-    cout << "Starting load files" << endl;
 
     FILE *dl;   // handle to read directory
 
@@ -167,7 +163,8 @@ int RPSTourManager::loadSOFiles() {
     copy(_directory.begin(),_directory.end(),dir);
     char *command_str = (char*)malloc(_directory.size()+10);
     strcat(command_str,"ls ");
-    strcat(command_str ,dir);
+    if(strcmp("/",dir)!=0)
+        strcat(command_str ,dir);
     strcat(command_str," *.so");  // command string to get dynamic lib names
 
     //string command_str = "ls "+ _directory + "*.so";
@@ -208,7 +205,6 @@ int RPSTourManager::loadSOFiles() {
         // add the handle to our list
 
         _my_dl_list.push_back( dlib);
-        cout << "in so func the alg size is: " <<_algorithms.size() << endl;
     }
 
     if (_algorithms.size() < 2){
@@ -223,9 +219,6 @@ int RPSTourManager::loadSOFiles() {
 
 void RPSTourManager::START() {
 
-
-
-    cout << "now in START" << endl;
 
 
     int SOResult;
@@ -247,6 +240,6 @@ void RPSTourManager::START() {
 
 RPSTourManager::~RPSTourManager(){
     // close all the dynamic libs we opened
-    for (list<void *>::iterator itr = _my_dl_list.begin(); itr != _my_dl_list.end(); itr++)
-        dlclose(*itr);
+//    for (auto itr = _my_dl_list.begin(); itr != _my_dl_list.end(); itr++)
+//        dlclose(itr);
 }

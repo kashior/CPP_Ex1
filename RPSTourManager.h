@@ -18,8 +18,8 @@
 #include <cstring>
 #include <atomic>
 #include <functional>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <set>
 
 
@@ -41,12 +41,14 @@ class RPSTourManager{
     vector<thread> _list_of_threads;
 
     RPSTourManager(){}
-    ~RPSTourManager();
+
 
 public:
 
 
     static RPSTourManager& getTourManager(){return theTourManager;}
+
+//    void printAdress(){cout << &theTourManager<<endl;}
 
     void setThreads(int t){_num_of_threads=t;}
 
@@ -99,6 +101,7 @@ public:
 
     void START();
 
+    ~RPSTourManager();
 
 
 

@@ -2,8 +2,8 @@
 
 #include "RSPPlayer_203022041.h"
 
-
 REGISTER_ALGORITHM(203022041)
+
 
 
 RSPPlayer_203022041::RSPPlayer_203022041()   {
